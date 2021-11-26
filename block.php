@@ -11,7 +11,7 @@
  * @package         bucket-browser-block
  */
 
-function bucket-browser_block_init() {
+function bucket_browser_block_init() {
 	$dir = dirname( __FILE__ );
 
 	$script_asset_path = "$dir/build/index.asset.php";
@@ -33,6 +33,6 @@ function bucket-browser_block_init() {
 
 	register_block_type( __DIR__ );
 }
-add_action( 'init', 'bucket-browser_block_init' );
+add_action( 'init', 'bucket_browser_block_init' );
 
 ?>

@@ -9,9 +9,17 @@ registerBlockType( metadata.name,
 	{
 		...metadata,
 		attributes: {
-			example: {
+			allFiles: {
+				type: "array",
+				default: []
+			},
+			selectedFiles: {
+				type: "array",
+				default: []
+			},
+			selectedFilesString: {
 				type: "string",
-				default: "Example"
+				default: ""
 			}
 		},
 		edit: Edit,

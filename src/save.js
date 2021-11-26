@@ -1,10 +1,14 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps } from '@wordpress/block-editor';
 
-export default function save() {
+export default function save(props) {
 	return (
 		<div { ...useBlockProps.save() }>
-			{ __('Render me pls in save', 'example') }
+			<ul>
+				{props.attributes.selectedFilesString && JSON.parse(props.attributes.selectedFilesString).map(function(item, index) {
+					return <li key={index}><a rel="noopener" target="_blank" href={item.mediaLink}>{item.name}</a></li>
+				})}
+			</ul>
 		</div>
 	);
 }
