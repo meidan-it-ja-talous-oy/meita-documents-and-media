@@ -1,0 +1,17 @@
+{
+	"$schema": "https://json.schemastore.org/block.json",
+	"apiVersion": 2,
+	"version": "0.1.0",
+	"name": "bucket-browser-block/bucket-browser-block",
+	"title": "bucket-browser Block",
+	"category": "widgets",
+	"icon": "smiley",
+	"description": "bucket-browser plugin for gutenberg block",
+	"textdomain": "bucket-browser-block",
+	"supports": {
+		"html": false
+	},
+	"editorScript": "file:./build/index.js",
+	"editorStyle": "file:./build/index.css",
+	"style": "file:./build/style-index.css"
+}
