@@ -13,13 +13,41 @@ registerBlockType( metadata.name,
 				type: "array",
 				default: []
 			},
-			selectedFiles: {
+			selectedFilesString: {
+				type: "string",
+				default: "[]"
+			},
+			files: {
 				type: "array",
 				default: []
 			},
-			selectedFilesString: {
+			filter: {
 				type: "string",
 				default: ""
+			},
+			datasource: {
+				type: "string",
+				default: "wordpress"
+			},
+			datasourceURL: {
+				type: "string",
+				default: "https://storage.googleapis.com/storage/v1/b/hoitopolut/o"
+			},
+			showIcon: {
+				type: "boolean",
+				default: true
+			},
+			showDate: {
+				type: "boolean",
+				default: true
+			},
+			showDescription: {
+				type: "boolean",
+				default: true
+			},
+			showDownloadLink: {
+				type: "boolean",
+				default: true
 			}
 		},
 		edit: Edit,

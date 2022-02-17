@@ -6,7 +6,7 @@
 	"license": "GPL-2.0-or-later",
 	"main": "build/index.js",
 	"scripts": {
-		"build": "rm -rf dist && wp-scripts build && mkdir dist && cp -r build dist && cp bucket-browser-block.php dist/ && cp block.json dist/ && bash ../../deploy-local.sh",
+		"build": "rm -rf dist && wp-scripts build && mkdir dist && cp -r build dist && cp bucket-browser-block.php dist/ && cp block.json dist/",
 		"format:js": "wp-scripts format-js",
 		"lint:css": "wp-scripts lint-style",
 		"lint:js": "wp-scripts lint-js",
@@ -14,6 +14,7 @@
 		"packages-update": "wp-scripts packages-update"
 	},
 	"devDependencies": {
-		"@wordpress/scripts": "^12.2.0"
+		"@wordpress/scripts": "^21.0.2",
+		"@wordpress/icons": "^6.3.0"
 	}
 }
