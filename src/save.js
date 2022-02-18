@@ -7,7 +7,7 @@ export default function save(props) {
 		<div { ...useBlockProps.save() }>
 			{(props.attributes.datasource == "google") ? (
 				<ul>
-					{props.attributes.selectedFilesString && JSON.parse(props.attributes.selectedFilesString).map(function(item, index) {
+					{props.attributes.selectedFiles && props.attributes.selectedFiles.map(function(item, index) {
 						return <li key={index}>
 									<a rel="noopener" target="_blank" href={item.mediaLink}>{item.name}</a>
 									{ showIcon && (item.contentType.indexOf("application") != -1) && <Icon icon="media-document" /> }

@@ -13,9 +13,9 @@ registerBlockType( metadata.name,
 				type: "array",
 				default: []
 			},
-			selectedFilesString: {
-				type: "string",
-				default: "[]"
+			selectedFiles: {
+				type: "array",
+				default: []
 			},
 			files: {
 				type: "array",
@@ -48,6 +48,14 @@ registerBlockType( metadata.name,
 			showDownloadLink: {
 				type: "boolean",
 				default: true
+			},
+			orderBy: {
+				type: "string",
+				default: "title"
+			},
+			order: {
+				type: "string",
+				default: "ascending"
 			}
 		},
 		edit: Edit,

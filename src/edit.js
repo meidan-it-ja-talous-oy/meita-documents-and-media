@@ -1,11 +1,8 @@
 import { __ } from '@wordpress/i18n';
-import { useEffect } from '@wordpress/element';
+import { useEffect, useState } from '@wordpress/element';
 import { Icon, Button, PanelBody, SelectControl, CheckboxControl, TextControl, ToggleControl } from '@wordpress/components';
 import { InspectorControls, useBlockProps, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import { more } from '@wordpress/icons';
-import { useState } from '@wordpress/element';
-import { select, subscribe } from '@wordpress/data';
-import { store as editorStore } from '@wordpress/editor';
 import './editor.scss';
 import apiFetch from '@wordpress/api-fetch';
 
@@ -18,17 +15,57 @@ export default function Edit(props) {
 	const [ datasource, setDatasource ] = useState( props.attributes.datasource );
 	const [ datasourceURL, setDatasourceURL ] = useState( props.attributes.datasourceURL );
 	const [ files, setFiles ] = useState( props.attributes.files );
+	const [ selectedFiles, setSelectedFiles ] = useState( props.attributes.selectedFiles );
+	const [ allFiles, setAllFiles ] = useState( props.attributes.allFiles );
+	const [ order, setOrder ] = useState( props.attributes.order );
+	const [ orderBy, setOrderBy ] = useState( props.attributes.orderBy );
 
 	useEffect(() => {
 		if(datasourceURL != "" && datasource == "google") {
 			apiFetch( { url: datasourceURL } ).then( ( files ) => {
-				console.log(JSON.stringify(files));
-				props.setAttributes( { allFiles: files.items } );
+				setAllFiles(files.items);
 			});
 		}
 	},[datasourceURL, datasource])
 
 	useEffect(() => {
+		if(datasource == "google") {
+			var tmpArr = selectedFiles;
+			if(orderBy == "title") {
+				if(order == "ascending") {
+					tmpArr.sort((a, b) => a.name - b.name);
+				} else {
+					tmpArr.sort((a, b) => b.name - a.name);
+				}
+			} else {
+				if(order == "ascending") {
+					tmpArr.sort((a, b) => a.timeCreated - b.timeCreated);
+				} else {
+					tmpArr.sort((a, b) => b.timeCreated - a.timeCreated);
+				}
+			}
+			setSelectedFiles(tmpArr);
+		} else {
+			var tmpArr = files;
+			if(orderBy == "title") {
+				if(order == "ascending") {
+					tmpArr.sort((a, b) => a.title - b.title);
+				} else {
+					tmpArr.sort((a, b) => b.title - a.title);
+				}
+			} else {
+				if(order == "ascending") {
+					tmpArr.sort((a, b) => a.date - b.date);
+				} else {
+					tmpArr.sort((a, b) => b.date - a.date);
+				}
+			}
+			setFiles(tmpArr);
+		}
+	},[order, orderBy])
+
+	useEffect(() => {
+			console.log("Triggering use effect")
 			props.setAttributes( { 
 				showIcon: showIcon,
 				showDate: showDate,
@@ -36,31 +73,24 @@ export default function Edit(props) {
 				showDownloadLink: showDownloadLink,
 				files: files,
 				datasource: datasource
-			} );
+			});
 	},[showIcon, showDate, showDescription, showDownloadLink, files, datasource, datasourceURL])
 
 	const onChangeElement = ( id ) => {
-		var tmpArr = JSON.parse(props.attributes.selectedFilesString); 
-		const index = tmpArr.findIndex(obj => obj.id===id);
+		var tmpArr = selectedFiles;
+		const index = selectedFiles.findIndex(obj => obj.id===id);
 		if(index !== -1) {
 			tmpArr.splice(index,1);
 		} else {
-			const el = props.attributes.allFiles.find(obj => obj.id === id );
+			const el = allFiles.find(obj => obj.id === id );
 			tmpArr.push(el);
 		}
-		props.setAttributes( { selectedFilesString: JSON.stringify(tmpArr) } );
+		setSelectedFiles(tmpArr);
     }
 
 	const ClientId = `${props.clientId}`;
 
-	const isSelected = ( id ) => {
-		if(props.attributes.selectedFilesString.indexOf(id) !== -1) {
-			return true;
-		}
-		return false;
-	}
-
-	return(
+	return( 
 		<div>
 		<div { ...useBlockProps( { className: 'bucket-browser-block-bucket-browser' } ) }>
 			<label>Valitse näytettävät tiedostot</label>
@@ -74,9 +104,9 @@ export default function Edit(props) {
 					/>
 					</div>
 					<ul id={ClientId+"_dataList"}>
-						{props.attributes.allFiles && props.attributes.allFiles.map(function(item, index) {
-							{ if(item.size !== "0" && (filter === "" || filter !== "" && item.name.indexOf(filter) !== -1) ) 
-								return <li key={index}><CheckboxControl checked={ isSelected(item.id) } onChange={ () => onChangeElement(item.id) } label={item.name} /></li>
+						{allFiles && allFiles.map(function(item, index) {
+							{ if(item.size !== "0" && (filter === "" || filter !== "" && item.name.indexOf(filter) !== -1)) 
+								return <li key={index}><CheckboxControl checked={ selectedFiles.findIndex(obj => obj.id == item.id) != -1 } value={item.id} onChange={ () => { onChangeElement(item.id); } } label={item.name} /></li>
 							}
 						})}
 					</ul>
@@ -148,12 +178,40 @@ export default function Edit(props) {
 						} }
 					/>
 				</PanelBody>
+				<PanelBody title="Järjestys" icon={ more } initialOpen={ false }>
+					<SelectControl 
+						id="orderBy"
+						label="Järjestä mukaan"
+						name="orderBy"
+						onChange={(selection) => {
+							setOrderBy(selection)
+						}}
+						options={[
+							{label: "Otsikko", value:"title"},
+							{label: "Päivämäärä", value:"date"}
+						]}
+						value={orderBy}
+					/>
+					<SelectControl 
+						id="order"
+						label="Järjestys"
+						name="order"
+						onChange={(selection) => {
+							setOrder(selection)
+						}}
+						options={[
+							{label: "Nouseva", value:"ascending"},
+							{label: "Laskeva", value:"descending"}
+						]}
+						value={order}
+					/>
+				</PanelBody>
 			</InspectorControls>
 		</div>
 			<div class="filesPreview">
 				{(datasource == "google") ? (
 				<ul>
-					{props.attributes.selectedFilesString && JSON.parse(props.attributes.selectedFilesString).map(function(item, index) {
+					{selectedFiles && selectedFiles.map(function(item, index) {
 						return <li key={index}>
 									<a rel="noopener" target="_blank" href={item.mediaLink}>{item.name}</a>
 									{ showIcon && (item.contentType.indexOf("application") != -1) && <Icon icon="media-document" /> }
