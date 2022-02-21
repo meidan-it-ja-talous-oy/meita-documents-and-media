@@ -28,12 +28,10 @@ export default function Edit(props) {
 			});
 		}
 	},[datasourceURL, datasource])
-	
+
 	useEffect(() => {
-		console.log(orderBy + " " + order + " " + datasource);
 		if(datasource == "google") {
 			var tmpArr = selectedFiles;
-			console.log(tmpArr);
 			if(orderBy == "title") {
 				if(order == "ascending") {
 					tmpArr.sort((a, b) => a.name.toUpperCase() > b.name.toUpperCase() ? 1 : -1);
@@ -47,7 +45,6 @@ export default function Edit(props) {
 					tmpArr.sort((a, b) => new Date(b.timeCreated).getTime() - new Date(a.timeCreated).getTime());
 				}
 			}
-			console.log(tmpArr);
 			setSelectedFiles(tmpArr);
 			setChanged((changed ? false : true));
 		} else {
