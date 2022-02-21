@@ -28,13 +28,7 @@ export default function Edit(props) {
 			});
 		}
 	},[datasourceURL, datasource])
-
-	const sortByString = (a, b) => {
-		if (a < b) {return -1;}
-  		if (a > b) {return 1;}
-  		return 0;
-	}
-
+	
 	useEffect(() => {
 		console.log(orderBy + " " + order + " " + datasource);
 		if(datasource == "google") {
