@@ -19,6 +19,7 @@ export default function Edit(props) {
 	const [ allFiles, setAllFiles ] = useState( props.attributes.allFiles );
 	const [ order, setOrder ] = useState( props.attributes.order );
 	const [ orderBy, setOrderBy ] = useState( props.attributes.orderBy );
+	const [ changed, setChanged ] = useState( false );
 
 	useEffect(() => {
 		if(datasourceURL != "" && datasource == "google") {
@@ -28,44 +29,54 @@ export default function Edit(props) {
 		}
 	},[datasourceURL, datasource])
 
+	const sortByString = (a, b) => {
+		if (a < b) {return -1;}
+  		if (a > b) {return 1;}
+  		return 0;
+	}
+
 	useEffect(() => {
+		console.log(orderBy + " " + order + " " + datasource);
 		if(datasource == "google") {
 			var tmpArr = selectedFiles;
+			console.log(tmpArr);
 			if(orderBy == "title") {
 				if(order == "ascending") {
-					tmpArr.sort((a, b) => a.name - b.name);
+					tmpArr.sort((a, b) => a.name.toUpperCase() > b.name.toUpperCase() ? 1 : -1);
 				} else {
-					tmpArr.sort((a, b) => b.name - a.name);
+					tmpArr.sort((a, b) => a.name.toUpperCase() < b.name.toUpperCase() ? 1 : -1);
 				}
 			} else {
 				if(order == "ascending") {
-					tmpArr.sort((a, b) => a.timeCreated - b.timeCreated);
+					tmpArr.sort((a, b) => new Date(a.timeCreated).getTime() - new Date(b.timeCreated).getTime());
 				} else {
-					tmpArr.sort((a, b) => b.timeCreated - a.timeCreated);
+					tmpArr.sort((a, b) => new Date(b.timeCreated).getTime() - new Date(a.timeCreated).getTime());
 				}
 			}
+			console.log(tmpArr);
 			setSelectedFiles(tmpArr);
+			setChanged((changed ? false : true));
 		} else {
 			var tmpArr = files;
 			if(orderBy == "title") {
 				if(order == "ascending") {
-					tmpArr.sort((a, b) => a.title - b.title);
+					tmpArr.sort((a, b) => a.title.toUpperCase() > b.title.toUpperCase() ? 1 : -1);
 				} else {
-					tmpArr.sort((a, b) => b.title - a.title);
+					tmpArr.sort((a, b) => a.title.toUpperCase() < b.title.toUpperCase() ? 1 : -1);
 				}
 			} else {
 				if(order == "ascending") {
-					tmpArr.sort((a, b) => a.date - b.date);
+					tmpArr.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 				} else {
-					tmpArr.sort((a, b) => b.date - a.date);
+					tmpArr.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 				}
 			}
 			setFiles(tmpArr);
+			setChanged((changed ? false : true));
 		}
 	},[order, orderBy])
 
 	useEffect(() => {
-			console.log("Triggering use effect")
 			props.setAttributes( { 
 				showIcon: showIcon,
 				showDate: showDate,
@@ -86,6 +97,7 @@ export default function Edit(props) {
 			tmpArr.push(el);
 		}
 		setSelectedFiles(tmpArr);
+		setChanged((changed ? false : true));
     }
 
 	const ClientId = `${props.clientId}`;
