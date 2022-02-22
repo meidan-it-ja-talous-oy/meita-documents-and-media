@@ -5,7 +5,7 @@ import { Icon } from '@wordpress/components';
 export default function save(props) {
 	return (
 		<div { ...useBlockProps.save() }>
-			{(props.attributes.datasource == "google") ? (
+			{(props.attributes.datasource == "google") && (
 				<ul>
 					{props.attributes.selectedFiles && props.attributes.selectedFiles.map(function(item, index) {
 						return <li key={index}>
@@ -19,8 +19,8 @@ export default function save(props) {
 									{ showDownloadLink && <a href={item.selfLink} download={item.name}>Lataa {item.name}</a> }
 								</li>
 					})}
-				</ul>)
-				: (
+				</ul>)}
+				{(props.attributes.datasource == "wordpress" && props.attributes.wpSelect == "files") && (
 				<ul>
 					{props.attributes.files && props.attributes.files.map(function(item, index) {
 						return 	<li key={index}>
@@ -32,6 +32,17 @@ export default function save(props) {
 								</li>
 					})}
 				</ul> )}
+				{(props.attributes.datasource == "wordpress" && props.attributes.wpSelect == "folder") && (
+					<ul className="meitaDocumentList" meta-folders={props.attributes.selectedFolder}>
+						<script>
+							var fbak = "{props.attributes.filebirdApiKey}";
+							var showIcon = "{props.attributes.showIcon}";
+							var showDescription = "{props.attributes.showDescription}";
+							var showDate = "{props.attributes.showDate}";
+							var showDownloadLink = "{props.attributes.showDownloadLink}";
+						</script>
+					</ul>
+				)}
 		</div>
 	);
 }

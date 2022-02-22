@@ -23,13 +23,13 @@ export default function Edit(props) {
 	const [ changed, setChanged ] = useState( false );
 	const [ folders, setFolders ] = useState( [] );
 	const [ selectedAttachments, setSelectedAttachments ] = useState( props.attributes.selectedAttachments );
-	const [ selectedFolders, setSelectedFolders ] = useState( props.attributes.selectedFolders );
+	const [ selectedFolder, setSelectedFolder ] = useState( props.attributes.selectedFolder );
 	const [ filebirdApiKey, setFilebirdApiKey ] = useState( props.attributes.filebirdApiKey );
 	
 	useEffect(() => {
 		if(datasourceURL != "" && datasource == "google") {
 			apiFetch( { url: datasourceURL } ).then( ( files ) => {
-				setFolders(files.items);
+				setAllFiles(files.items);
 			});
 		}
 	},[datasourceURL, datasource])
@@ -43,14 +43,14 @@ export default function Edit(props) {
 	},[wpSelect])
 
 	useEffect(() => {
-		if(wpSelect == "folder" && datasource == "wordpress" && selectedFolders.length != 0) {
-			apiFetch( { url: "/wp-json/filebird/public/v1/attachment-id/?folder_id="+selectedFolders, headers: { "Authorization": `Bearer ${filebirdApiKey}` } } ).then( ( response ) => {
+		if(wpSelect == "folder" && datasource == "wordpress" && selectedFolder != "") {
+			apiFetch( { url: "/wp-json/filebird/public/v1/attachment-id/?folder_id="+selectedFolder, headers: { "Authorization": `Bearer ${filebirdApiKey}` } } ).then( ( response ) => {
 				apiFetch( { url: "/wp-json/wp/v2/media?include="+response.data.attachment_ids, headers: { "Authorization": `Bearer ${filebirdApiKey}` } } ).then( ( attachments ) => {
 					setSelectedAttachments(attachments);
 				});
 			});
 		}
-	},[selectedFolders])
+	},[selectedFolder])
 
 	useEffect(() => {
 		if(datasource == "google") {
@@ -97,9 +97,14 @@ export default function Edit(props) {
 				showDescription: showDescription,
 				showDownloadLink: showDownloadLink,
 				files: files,
-				datasource: datasource
+				datasource: datasource,
+				selectedFolder: selectedFolder,
+				wpSelect: wpSelect,
+				order: order,
+				orderBy: orderBy
+
 			});
-	},[showIcon, showDate, showDescription, showDownloadLink, files, datasource, datasourceURL])
+	},[showIcon, showDate, showDescription, showDownloadLink, files, datasource, datasourceURL, wpSelect, selectedFolder, order, orderBy])
 
 	const onChangeElement = ( id ) => {
 		var tmpArr = selectedFiles;
@@ -120,7 +125,7 @@ export default function Edit(props) {
 		<div>
 		<div { ...useBlockProps( { className: 'bucket-browser-block-bucket-browser' } ) }>
 			<label>Valitse näytettävät tiedostot</label>
-			{ (datasource == "google") ? (
+			{ (datasource == "google") && (
 				<div>
 					<div>
 					<TextControl
@@ -137,8 +142,9 @@ export default function Edit(props) {
 						})}
 					</ul>
 				</div>
-			) : 
-			    <div>
+			)} 
+			{ (datasource == "wordpress" && wpSelect == "files") && (<div>
+					
 					<MediaUploadCheck>
 						<MediaUpload
 							multiple={ true }
@@ -150,7 +156,7 @@ export default function Edit(props) {
 						/>
 					</MediaUploadCheck>
 				</div>
-			}
+			)}
 			<InspectorControls key="setting">
 				<PanelBody title="Tietolähteen asetukset" icon={ more } initialOpen={ false }>
 					<SelectControl 
@@ -176,7 +182,7 @@ export default function Edit(props) {
 					{ (datasource == "wordpress") && 
 						(<SelectControl 
 							id="wpSelect"
-							label="Järjestä mukaan"
+							label="Näytettävä tieto"
 							name="wpSelect"
 							onChange={(selection) => {
 								setWpSelect(selection)
@@ -190,14 +196,13 @@ export default function Edit(props) {
 					}
 					{ (datasource == "wordpress" && wpSelect == "folder") && 
 						(<SelectControl 
-							id="selectedFolders"
+							id="selectedFolder"
 							label="Kansio"
-							name="selectedFolders"
-							multiple={ true }
+							name="selectedFolder"
 							onChange={(selection) => {
-								setSelectedFolders(selection)
+								setSelectedFolder(selection)
 							}}
-							value={selectedFolders}
+							value={selectedFolder}
 						>
 							<option value="">Valitse kansio</option>
 							{folders.map(function(item, index) { 

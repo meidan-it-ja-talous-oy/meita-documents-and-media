@@ -62,8 +62,8 @@ registerBlockType( metadata.name,
 				default: "od27BXgkknzLqfj8m458Rr3nWn0kM9dgn6WkFTzy"
 			},
 			selectedFolders: {
-				type: "array",
-				default: []
+				type: "string",
+				default: ""
 			},
 			selectedAttachments: {
 				type: "array",

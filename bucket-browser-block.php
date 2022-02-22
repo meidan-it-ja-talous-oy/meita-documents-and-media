@@ -34,5 +34,17 @@ function bucket_browser_block_init() {
 	register_block_type( __DIR__ );
 }
 add_action( 'init', 'bucket_browser_block_init' );
-
+function wpb_meita_document_block_hook_javascript() {
 ?>
+	<script>
+		function meitaLoadDocuments() {
+			var documentLists = document.getElementsByClassName("meitaDocumentList");
+			for (var i = 0; i < documentLists.length; i++) {
+				console.log("iiiiii")
+			}
+		}
+		window.onload = meitaLoadDocuments;
+	</script>
+<?php
+}
+add_action('wp_head', 'wpb_meita_document_block_hook_javascript');
