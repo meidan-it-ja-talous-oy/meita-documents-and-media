@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { useEffect, useState } from '@wordpress/element';
+import { useEffect, useState, RawHTML } from '@wordpress/element';
 import { Icon, Button, PanelBody, SelectControl, CheckboxControl, TextControl, ToggleControl } from '@wordpress/components';
 import { InspectorControls, useBlockProps, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import { more } from '@wordpress/icons';
@@ -19,15 +19,38 @@ export default function Edit(props) {
 	const [ allFiles, setAllFiles ] = useState( props.attributes.allFiles );
 	const [ order, setOrder ] = useState( props.attributes.order );
 	const [ orderBy, setOrderBy ] = useState( props.attributes.orderBy );
+	const [ wpSelect, setWpSelect ] = useState( props.attributes.wpSelect );
 	const [ changed, setChanged ] = useState( false );
-
+	const [ folders, setFolders ] = useState( [] );
+	const [ selectedAttachments, setSelectedAttachments ] = useState( props.attributes.selectedAttachments );
+	const [ selectedFolders, setSelectedFolders ] = useState( props.attributes.selectedFolders );
+	const [ filebirdApiKey, setFilebirdApiKey ] = useState( props.attributes.filebirdApiKey );
+	
 	useEffect(() => {
 		if(datasourceURL != "" && datasource == "google") {
 			apiFetch( { url: datasourceURL } ).then( ( files ) => {
-				setAllFiles(files.items);
+				setFolders(files.items);
 			});
 		}
 	},[datasourceURL, datasource])
+
+	useEffect(() => {
+		if(wpSelect == "folder" && datasource == "wordpress") {
+			apiFetch( { url: "/wp-json/filebird/public/v1/folders", headers: { "Authorization": `Bearer ${filebirdApiKey}` } } ).then( ( response ) => {
+				setFolders(response.data.folders);
+			});
+		}
+	},[wpSelect])
+
+	useEffect(() => {
+		if(wpSelect == "folder" && datasource == "wordpress" && selectedFolders.length != 0) {
+			apiFetch( { url: "/wp-json/filebird/public/v1/attachment-id/?folder_id="+selectedFolders, headers: { "Authorization": `Bearer ${filebirdApiKey}` } } ).then( ( response ) => {
+				apiFetch( { url: "/wp-json/wp/v2/media?include="+response.data.attachment_ids, headers: { "Authorization": `Bearer ${filebirdApiKey}` } } ).then( ( attachments ) => {
+					setSelectedAttachments(attachments);
+				});
+			});
+		}
+	},[selectedFolders])
 
 	useEffect(() => {
 		if(datasource == "google") {
@@ -150,6 +173,38 @@ export default function Edit(props) {
 							onChange={ ( value ) => setDatasourceURL( value ) }
 						/>)
 					}
+					{ (datasource == "wordpress") && 
+						(<SelectControl 
+							id="wpSelect"
+							label="Järjestä mukaan"
+							name="wpSelect"
+							onChange={(selection) => {
+								setWpSelect(selection)
+							}}
+							options={[
+								{label: "Tiedostoja", value:"files"},
+								{label: "Kansio", value:"folder"}
+							]}
+							value={wpSelect}
+						/>)
+					}
+					{ (datasource == "wordpress" && wpSelect == "folder") && 
+						(<SelectControl 
+							id="selectedFolders"
+							label="Kansio"
+							name="selectedFolders"
+							multiple={ true }
+							onChange={(selection) => {
+								setSelectedFolders(selection)
+							}}
+							value={selectedFolders}
+						>
+							<option value="">Valitse kansio</option>
+							{folders.map(function(item, index) { 
+								return <option value={item.id}>{item.text}</option>
+							})}
+						</SelectControl>)
+					}
 				</PanelBody>
 				<PanelBody title="Näyttöasetukset" icon={ more } initialOpen={ false }>
 					<ToggleControl
@@ -212,7 +267,7 @@ export default function Edit(props) {
 			</InspectorControls>
 		</div>
 			<div class="filesPreview">
-				{(datasource == "google") ? (
+				{(datasource == "google") && (
 				<ul>
 					{selectedFiles && selectedFiles.map(function(item, index) {
 						return <li key={index}>
@@ -227,7 +282,8 @@ export default function Edit(props) {
 								</li>
 					})}
 				</ul>)
-				: (
+				}
+				{ (datasource == "wordpress" && wpSelect == "files") && (
 				<ul>
 					{files && files.map(function(item, index) {
 						return 	<li key={index}>
@@ -236,6 +292,22 @@ export default function Edit(props) {
 									{ showDate && <span>{item.dateFormatted}</span> }
 									{ showDescription && <p>{item.description}</p> }
 									{ showDownloadLink && <a href={item.url} download={item.filename}>Lataa {item.title}</a> }
+								</li>
+					})}
+				</ul> )}
+				{ (datasource == "wordpress" && wpSelect == "folder") && (
+				<ul>
+					{selectedAttachments && selectedAttachments.map(function(item, index) {
+							return 	<li key={index}>
+									<a rel="noopener" target="_blank" href={item.link}>{item.title.rendered}</a>
+									{ showIcon && (item.mime_type.indexOf("application") != -1) && <Icon icon="media-document" /> }
+									{ showIcon && (item.mime_type.indexOf("audio") != -1) && <Icon icon="media-audio" /> }
+									{ showIcon && (item.mime_type.indexOf("image") != -1) && <Icon icon="media-image" /> }
+									{ showIcon && (item.mime_type.indexOf("video") != -1) && <Icon icon="media-video" /> }
+									{ showIcon && (item.mime_type.indexOf("text") != -1) && <Icon icon="media-text" /> }
+									{ showDate && <span>{item.modified}</span> }
+									{ showDescription && <RawHTML>{item.caption.rendered}</RawHTML> }
+									{ showDownloadLink && <a href={item.source_url}>Lataa {item.title.rendered}</a> }
 								</li>
 					})}
 				</ul> )}

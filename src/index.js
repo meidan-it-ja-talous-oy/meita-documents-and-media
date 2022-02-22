@@ -56,6 +56,18 @@ registerBlockType( metadata.name,
 			order: {
 				type: "string",
 				default: "ascending"
+			},
+			filebirdApiKey: {
+				type: "string",
+				default: "od27BXgkknzLqfj8m458Rr3nWn0kM9dgn6WkFTzy"
+			},
+			selectedFolders: {
+				type: "array",
+				default: []
+			},
+			selectedAttachments: {
+				type: "array",
+				default: []
 			}
 		},
 		edit: Edit,
