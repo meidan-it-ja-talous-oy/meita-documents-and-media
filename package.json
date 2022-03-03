@@ -7,6 +7,7 @@
 	"main": "build/index.js",
 	"scripts": {
 		"build": "rm -rf dist && wp-scripts build && mkdir dist && cp -r build dist && cp bucket-browser-block.php dist/ && cp block.json dist/",
+        "cloudbuild": "wp-scripts build && mkdir dist && cp -r build dist && head bucket-browser-block.php && cp bucket-browser-block.php dist/",
 		"format:js": "wp-scripts format-js",
 		"lint:css": "wp-scripts lint-style",
 		"lint:js": "wp-scripts lint-js",
