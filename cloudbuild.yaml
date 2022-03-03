@@ -1,0 +1,34 @@
+steps:
+# meita-bucket-browser-block
+
+- name: node
+  entrypoint: yarn
+
+- name: node
+  entrypoint: yarn
+  args: ['add', 'replace-in-files-cli', '-D']
+
+- name: node
+  entrypoint: yarn
+  args: ['run', 'replace-in-files', '--regex="Version:.*"', '--replacement="Version:         $TAG_NAME"', 'block.php']
+
+- name: node:16
+  entrypoint: yarn
+  args: ['run','cloudbuild']
+
+- name: gcr.io/cloud-builders/gcloud
+  entrypoint: 'mv'
+  args: [ 'dist', 'bucket-browser-block' ]
+
+# Taged
+- name: eu.gcr.io/rauni-0/zip
+  args: ['-r9T', 'bucket-browser-block-$TAG_NAME.zip', './bucket-browser-block']
+
+# Overwrite latest
+- name: eu.gcr.io/rauni-0/zip
+  args: ['-r9T', 'bucket-browser-block-latest.zip', './bucket-browser-block']
+
+artifacts:
+  objects:
+    location: 'gs://wp-repository/plugins'
+    paths: ['bucket-browser-block-$TAG_NAME.zip', 'bucket-browser-block-latest.zip']
