@@ -11,6 +11,9 @@
  * @package         bucket-browser-block
  */
 
+ // Admin options page for setting defaults
+require plugin_dir_path( __DIR__ ) . basename( __DIR__ ) . '/admin.php';
+
 function bucket_browser_block_init() {
 	$dir = dirname( __FILE__ );
 
@@ -30,10 +33,24 @@ function bucket_browser_block_init() {
 	);
 	wp_set_script_translations( 'create-bucket-browser-block', 'bucket-browser-block' );
 
+    wp_localize_script( 'create-bucket-browser-block', 'bucketbrowserBlockDefaults', get_option( 'bucketbrowser_options' ) );
 
-	register_block_type( __DIR__ );
+    register_block_type( 'bucket-browser-block/bucketbrowser', array(
+		'editor_script' => 'create-bucket-browser-block',
+	) );
 }
 add_action( 'init', 'bucket_browser_block_init' );
+
+function bucketbrowser_block_plugin_settings_link( $links ) : array {
+	$label = esc_html__( 'Settings', 'bucketbrowser-plugin' );
+	$slug  = 'bucketbrowser-settings';
+
+	array_unshift( $links, "<a href='options-general.php?page=$slug'>$label</a>" );
+
+	return $links;
+}
+add_action( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'bucketbrowser_block_plugin_settings_link', 10 );
+
 function wpb_meita_document_block_hook_javascript() {
 ?>
 	<script>

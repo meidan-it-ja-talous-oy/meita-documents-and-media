@@ -35,18 +35,18 @@ export default function Edit(props) {
 	},[datasourceURL, datasource])
 
 	useEffect(() => {
-		if(wpSelect == "folder" && datasource == "wordpress") {
+		if(wpSelect == "folder" && datasource == "wordpress" && filebirdApiKey) {
 			apiFetch( { url: "/wp-json/filebird/public/v1/folders", headers: { "Authorization": `Bearer ${filebirdApiKey}` } } ).then( ( response ) => {
 				setFolders(response.data.folders);
 			});
 		}
-	},[wpSelect])
+	},[wpSelect, filebirdApiKey])
 
 	useEffect(() => {
 		if(wpSelect == "folder" && datasource == "wordpress" && selectedFolder != "") {
 			fetchFolderContents();
 		}
-	},[selectedFolder])
+	},[selectedFolder, filebirdApiKey])
 
 	useEffect(() => {
 		if(datasource == "google") {
@@ -97,19 +97,26 @@ export default function Edit(props) {
 				selectedFolder: selectedFolder,
 				wpSelect: wpSelect,
 				order: order,
-				orderBy: orderBy
+				orderBy: orderBy,
+                filebirdApiKey: filebirdApiKey
 
 			});
-	},[showIcon, showDate, showDescription, showDownloadLink, files, datasource, datasourceURL, wpSelect, selectedFolder, order, orderBy])
+	},[showIcon, showDate, showDescription, showDownloadLink, files, datasource, datasourceURL, wpSelect, selectedFolder, order, orderBy, filebirdApiKey])
 
     // INITIAL LOADS
 	useEffect(() => {
+        // Defaults from settings if new
+		if(bucketbrowserBlockDefaults){
+            if(bucketbrowserBlockDefaults.fbApiKeykey) setFilebirdApiKey(bucketbrowserBlockDefaults.fbApiKeykey);
+		}
+
 		if(wpSelect == "folder" && datasource == "wordpress" && selectedFolder) {
 			fetchFolderContents();
 		}
 	},[])
 
     const fetchFolderContents = () => {
+        if(!filebirdApiKey) return;
         apiFetch( { url: "/wp-json/filebird/public/v1/attachment-id/?folder_id="+selectedFolder, headers: { "Authorization": `Bearer ${filebirdApiKey}` } } ).then( ( response ) => {
             apiFetch( { url: "/wp-json/wp/v2/media?include="+response.data.attachment_ids, headers: { "Authorization": `Bearer ${filebirdApiKey}` } } ).then( ( attachments ) => {
                 setSelectedAttachments(attachments);

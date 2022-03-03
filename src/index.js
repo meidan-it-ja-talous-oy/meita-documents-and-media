@@ -58,8 +58,7 @@ registerBlockType( metadata.name,
 				default: "ascending"
 			},
 			filebirdApiKey: {
-				type: "string",
-				default: ""
+				type: "string"
 			},
 			selectedFolder: {
 				type: "string",
