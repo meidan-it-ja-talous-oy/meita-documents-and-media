@@ -59,16 +59,20 @@ registerBlockType( metadata.name,
 			},
 			filebirdApiKey: {
 				type: "string",
-				default: "od27BXgkknzLqfj8m458Rr3nWn0kM9dgn6WkFTzy"
+				default: ""
 			},
-			selectedFolders: {
+			selectedFolder: {
 				type: "string",
 				default: ""
 			},
 			selectedAttachments: {
 				type: "array",
 				default: []
-			}
+			},
+            wpSelect: {
+                type: "string",
+                default: "files"
+            }
 		},
 		edit: Edit,
 		save: Save

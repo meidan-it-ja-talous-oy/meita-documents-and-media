@@ -37,7 +37,50 @@ add_action( 'init', 'bucket_browser_block_init' );
 function wpb_meita_document_block_hook_javascript() {
 ?>
 	<script>
+
+        function fetchFolderContents(wordpressFoldersConfig, index) {
+            var selectedFolder = wordpressFoldersConfig.attributes["meta-folders"].nodeValue;
+            var fbak = wordpressFoldersConfig.attributes["meta-fbak"].nodeValue;
+            var showIcon = wordpressFoldersConfig.attributes["meta-showIcon"].nodeValue;
+            var showDescription = wordpressFoldersConfig.attributes["meta-showDescription"].nodeValue;
+            var showDate = wordpressFoldersConfig.attributes["meta-showDate"].nodeValue;
+            var showDownloadLink = wordpressFoldersConfig.attributes["meta-showDownloadLink"].nodeValue;
+            fetch("/wp-json/filebird/public/v1/attachment-id/?folder_id="+selectedFolder, {headers: { "Authorization": `Bearer ${fbak}` }} )
+            .then(response => response.json())
+            .then(data => {
+                fetch( "/wp-json/wp/v2/media?include="+data.data.attachment_ids, {headers: { "Authorization": `Bearer ${fbak}` }} )
+                .then(rawFiles => rawFiles.json())
+                .then(files => {
+                    let rawHtml = "";
+                    files.map((item, index) => {
+                        rawHtml += (`<li key=${index}>
+                            <a rel="noopener" target="_blank" href=${item.link}>${item.title.rendered}</a>
+                            ${ showIcon && (item.mime_type.indexOf("application") != -1) ? `<br><span class="dashicons dashicons-media-document"></span><br>` : "" }
+                            ${ showIcon && (item.mime_type.indexOf("audio") != -1) ? `<br><span class="dashicons dashicons-media-audio"></span><br>` : "" }
+                            ${ showIcon && (item.mime_type.indexOf("image") != -1) ? `<br><span class="dashicons dashicons-format-image"></span><br>` : "" }
+                            ${ showIcon && (item.mime_type.indexOf("video") != -1) ? `<br><span class="dashicons dashicons-format-video"></span><br>` : "" }
+                            ${ showIcon && (item.mime_type.indexOf("text") != -1)  ? `<br><span class="dashicons dashicons-media-text"></span><br>` : "" }
+                            ${ showDate ? `<span>${item.modified}</span>` : "" }
+                            ${ showDescription ? `<p>${item.caption.rendered}</p>` : "" }
+                            ${ showDownloadLink ? `<a href=${item.source_url}>Lataa ${item.title.rendered}</a>` : "" }
+                        </li>
+                        `);
+                    })
+                    return rawHtml;
+                })
+                .then(html => {
+                    document.getElementsByClassName("wordpressFolders")[index].innerHTML = html;
+                })
+            })
+        }
+
 		function meitaLoadDocuments() {
+            if(document.getElementsByClassName("wordpressFolders").length > 0) {
+                var wordpressFoldersConfigs = document.getElementsByClassName("wordpressFolders");
+                for (var i = 0; i < wordpressFoldersConfigs.length; i++) {
+                    fetchFolderContents(wordpressFoldersConfigs[i], i)
+                }
+            }
 			var documentLists = document.getElementsByClassName("meitaDocumentList");
 			for (var i = 0; i < documentLists.length; i++) {
 				console.log("iiiiii")

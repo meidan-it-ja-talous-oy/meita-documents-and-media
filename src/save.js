@@ -33,14 +33,20 @@ export default function save(props) {
 					})}
 				</ul> )}
 				{(props.attributes.datasource == "wordpress" && props.attributes.wpSelect == "folder") && (
-					<ul className="meitaDocumentList" meta-folders={props.attributes.selectedFolder}>
-						<script>
-							var fbak = "{props.attributes.filebirdApiKey}";
-							var showIcon = "{props.attributes.showIcon}";
-							var showDescription = "{props.attributes.showDescription}";
-							var showDate = "{props.attributes.showDate}";
-							var showDownloadLink = "{props.attributes.showDownloadLink}";
-						</script>
+					<ul 
+                        className="meitaDocumentList wordpressFolders"
+                        meta-folders={`${props.attributes.selectedFolder}`}
+                        meta-fbak={`${props.attributes.filebirdApiKey}`}
+                        meta-showIcon={`${props.attributes.showIcon}`}
+                        meta-showDescription={`${props.attributes.showDescription}`}
+                        meta-showDate={`${props.attributes.showDate}`}
+                        meta-showDownloadLink={`${props.attributes.showDownloadLink}`}
+                    >
+                        {
+                            <script>
+                                meitaLoadDocuments()
+                            </script>
+                        }
 					</ul>
 				)}
 		</div>

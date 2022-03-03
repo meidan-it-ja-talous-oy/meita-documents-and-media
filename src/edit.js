@@ -44,11 +44,7 @@ export default function Edit(props) {
 
 	useEffect(() => {
 		if(wpSelect == "folder" && datasource == "wordpress" && selectedFolder != "") {
-			apiFetch( { url: "/wp-json/filebird/public/v1/attachment-id/?folder_id="+selectedFolder, headers: { "Authorization": `Bearer ${filebirdApiKey}` } } ).then( ( response ) => {
-				apiFetch( { url: "/wp-json/wp/v2/media?include="+response.data.attachment_ids, headers: { "Authorization": `Bearer ${filebirdApiKey}` } } ).then( ( attachments ) => {
-					setSelectedAttachments(attachments);
-				});
-			});
+			fetchFolderContents();
 		}
 	},[selectedFolder])
 
@@ -106,6 +102,21 @@ export default function Edit(props) {
 			});
 	},[showIcon, showDate, showDescription, showDownloadLink, files, datasource, datasourceURL, wpSelect, selectedFolder, order, orderBy])
 
+    // INITIAL LOADS
+	useEffect(() => {
+		if(wpSelect == "folder" && datasource == "wordpress" && selectedFolder) {
+			fetchFolderContents();
+		}
+	},[])
+
+    const fetchFolderContents = () => {
+        apiFetch( { url: "/wp-json/filebird/public/v1/attachment-id/?folder_id="+selectedFolder, headers: { "Authorization": `Bearer ${filebirdApiKey}` } } ).then( ( response ) => {
+            apiFetch( { url: "/wp-json/wp/v2/media?include="+response.data.attachment_ids, headers: { "Authorization": `Bearer ${filebirdApiKey}` } } ).then( ( attachments ) => {
+                setSelectedAttachments(attachments);
+            });
+        });
+    }
+
 	const onChangeElement = ( id ) => {
 		var tmpArr = selectedFiles;
 		const index = selectedFiles.findIndex(obj => obj.id===id);
@@ -122,8 +133,8 @@ export default function Edit(props) {
 	const ClientId = `${props.clientId}`;
 
 	return( 
-		<div>
 		<div { ...useBlockProps( { className: 'bucket-browser-block-bucket-browser' } ) }>
+		<div>
 			<label>Valitse näytettävät tiedostot</label>
 			{ (datasource == "google") && (
 				<div>
@@ -151,7 +162,7 @@ export default function Edit(props) {
 							onSelect={ (media) => setFiles(media) }
 							value={ files.map(item => item.id) }
 							render={ ( { open } ) => (
-								<Button onClick={ open }>Avaa mediakirjasto</Button>
+								<Button onClick={ open } isPrimary>Avaa mediakirjasto</Button>
 							) }
 						/>
 					</MediaUploadCheck>
@@ -204,7 +215,7 @@ export default function Edit(props) {
 							}}
 							value={selectedFolder}
 						>
-							<option value="">Valitse kansio</option>
+							<option value="" unselectable='true'>Valitse kansio</option>
 							{folders.map(function(item, index) { 
 								return <option value={item.id}>{item.text}</option>
 							})}
@@ -215,29 +226,29 @@ export default function Edit(props) {
 					<ToggleControl
 						label="Näytä ikonit"
 						checked={ showIcon }
-						onChange={ () => {
-							setShowIcon( ( state ) => ! state );
+						onChange={ (value) => {
+							setShowIcon(value);
 						} }
 					/>
 					<ToggleControl
 						label="Näytä päivämäärä"
 						checked={ showDate }
-						onChange={ () => {
-							setShowDate( ( state ) => ! state );
+						onChange={ (value) => {
+							setShowDate(value);
 						} }
 					/>
 					<ToggleControl
 						label="Näytä kuvaus"
 						checked={ showDescription }
-						onChange={ () => {
-							setShowDescription( ( state ) => ! state );
+						onChange={ (value) => {
+							setShowDescription(value);
 						} }
 					/>
 					<ToggleControl
 						label="Näytä latauslinkki"
 						checked={ showDownloadLink }
-						onChange={ () => {
-							setShowDownloadLink( ( state ) => ! state );
+						onChange={ (value) => {
+							setShowDownloadLink(value);
 						} }
 					/>
 				</PanelBody>
@@ -307,8 +318,8 @@ export default function Edit(props) {
 									<a rel="noopener" target="_blank" href={item.link}>{item.title.rendered}</a>
 									{ showIcon && (item.mime_type.indexOf("application") != -1) && <Icon icon="media-document" /> }
 									{ showIcon && (item.mime_type.indexOf("audio") != -1) && <Icon icon="media-audio" /> }
-									{ showIcon && (item.mime_type.indexOf("image") != -1) && <Icon icon="media-image" /> }
-									{ showIcon && (item.mime_type.indexOf("video") != -1) && <Icon icon="media-video" /> }
+									{ showIcon && (item.mime_type.indexOf("image") != -1) && <Icon icon="format-image" /> }
+									{ showIcon && (item.mime_type.indexOf("video") != -1) && <Icon icon="format-video" /> }
 									{ showIcon && (item.mime_type.indexOf("text") != -1) && <Icon icon="media-text" /> }
 									{ showDate && <span>{item.modified}</span> }
 									{ showDescription && <RawHTML>{item.caption.rendered}</RawHTML> }
