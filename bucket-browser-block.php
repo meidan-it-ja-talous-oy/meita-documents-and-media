@@ -6,7 +6,7 @@
  * Author:          Meidän IT ja Talous Oy
  * License:         GPL-2.0-or-later
  * License URI:     https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:     microservices-block
+ * Text Domain:     bucket-browser-block
  *
  * @package         bucket-browser-block
  */
@@ -69,17 +69,23 @@ function wpb_meita_document_block_hook_javascript() {
                 .then(rawFiles => rawFiles.json())
                 .then(files => {
                     let rawHtml = "";
+                    let modifiedDate = "";
                     files.map((item, index) => {
-                        rawHtml += (`<li key=${index}>
-                            <a rel="noopener" target="_blank" href=${item.link}>${item.title.rendered}</a>
-                            ${ showIcon && (item.mime_type.indexOf("application") != -1) ? `<br><span class="dashicons dashicons-media-document"></span><br>` : "" }
-                            ${ showIcon && (item.mime_type.indexOf("audio") != -1) ? `<br><span class="dashicons dashicons-media-audio"></span><br>` : "" }
-                            ${ showIcon && (item.mime_type.indexOf("image") != -1) ? `<br><span class="dashicons dashicons-format-image"></span><br>` : "" }
-                            ${ showIcon && (item.mime_type.indexOf("video") != -1) ? `<br><span class="dashicons dashicons-format-video"></span><br>` : "" }
-                            ${ showIcon && (item.mime_type.indexOf("text") != -1)  ? `<br><span class="dashicons dashicons-media-text"></span><br>` : "" }
-                            ${ showDate ? `<span>${item.modified}</span>` : "" }
-                            ${ showDescription ? `<p>${item.caption.rendered}</p>` : "" }
-                            ${ showDownloadLink ? `<a href=${item.source_url}>Lataa ${item.title.rendered}</a>` : "" }
+                        modifiedDate = new Date(item.modified);
+                        rawHtml += (`<li class='bucket-browser-block-listitem' key=${index}>
+                            <div class='bucket-browser-block-icon'>
+                                ${ showIcon && (item.mime_type.indexOf("application") != -1) ? `<span class="dashicons dashicons-media-document"></span>` : "" }
+                                ${ showIcon && (item.mime_type.indexOf("audio") != -1) ? `<span class="dashicons dashicons-media-audio"></span>` : "" }
+                                ${ showIcon && (item.mime_type.indexOf("image") != -1) ? `<span class="dashicons dashicons-format-image"></span>` : "" }
+                                ${ showIcon && (item.mime_type.indexOf("video") != -1) ? `<span class="dashicons dashicons-format-video"></span>` : "" }
+                                ${ showIcon && (item.mime_type.indexOf("text") != -1)  ? `<span class="dashicons dashicons-media-text"></span>` : "" }
+                            </div>
+                            <div class='bucket-browser-block-content'>
+                                <a rel="noopener" target="_blank" href=${item.link}>${item.title.rendered}</a>
+                                ${ showDate ? `<p class='date'>${ modifiedDate.getDay() +"."+ modifiedDate.getMonth() +"."+ modifiedDate.getFullYear()}</p>` : "" }
+                                ${ showDescription ? `<p class='description'>${item.caption.rendered}</p>` : "" }
+                                ${ showDownloadLink ? `<a class='download-link' href=${item.source_url}>Lataa</a>` : "" }
+                            </div>
                         </li>
                         `);
                     })

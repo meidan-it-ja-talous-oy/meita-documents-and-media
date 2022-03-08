@@ -5,6 +5,8 @@ import { InspectorControls, useBlockProps, MediaUpload, MediaUploadCheck } from 
 import { more } from '@wordpress/icons';
 import './editor.scss';
 import apiFetch from '@wordpress/api-fetch';
+import Listitem from './components/Listitem';
+import { format } from 'date-fns'
 
 export default function Edit(props) {
 	const [ filter, setFilter ] = useState( '' );
@@ -293,45 +295,71 @@ export default function Edit(props) {
 				{(datasource == "google") && (
 				<ul>
 					{selectedFiles && selectedFiles.map(function(item, index) {
-						return <li key={index}>
-									<a rel="noopener" target="_blank" href={item.mediaLink}>{item.name}</a>
-									{ showIcon && (item.contentType.indexOf("application") != -1) && <Icon icon="media-document" /> }
-									{ showIcon && (item.contentType.indexOf("audio") != -1) && <Icon icon="media-audio" /> }
-									{ showIcon && (item.contentType.indexOf("image") != -1) && <Icon icon="media-image" /> }
-									{ showIcon && (item.contentType.indexOf("video") != -1) && <Icon icon="media-video" /> }
-									{ showIcon && (item.contentType.indexOf("text") != -1) && <Icon icon="media-text" /> }
-									{ showDate && <span>{item.updated}</span> }
-									{ showDownloadLink && <a href={item.selfLink} download={item.name}>Lataa {item.name}</a> }
-								</li>
+                        return(
+                            <Listitem
+                                index = {index}
+                                link = {item.mediaLink}
+                                title = {item.name}
+                                showDate = {showDate}
+                                showDescription = {false}
+                                showDownloadLink = {showDownloadLink}
+                                showIcon = {showIcon}
+                                dateFormatted = {format(new Date(item.updated), 'dd.mm.yyyy')}
+                                // description = { item.caption.rendered }
+                                // rawHtmldescription = {  }
+                                // iconImg
+                                iconMimetype = { item.contentType }
+                                url = {item.selfLink}
+                                filename = {item.name}
+                            />
+                        );
 					})}
 				</ul>)
 				}
 				{ (datasource == "wordpress" && wpSelect == "files") && (
 				<ul>
 					{files && files.map(function(item, index) {
-						return 	<li key={index}>
-									<a href={item.link}>{item.title}</a>
-									{ showIcon && <img src={item.icon} /> }
-									{ showDate && <span>{item.dateFormatted}</span> }
-									{ showDescription && <p>{item.description}</p> }
-									{ showDownloadLink && <a href={item.url} download={item.filename}>Lataa {item.title}</a> }
-								</li>
+                        return(
+                            <Listitem
+                                index = {index}
+                                link = {item.link}
+                                title = {item.title}
+                                showDate = {showDate}
+                                showDescription = {showDescription}
+                                showDownloadLink = {showDownloadLink}
+                                showIcon = {showIcon}
+                                dateFormatted = {item.dateFormatted}
+                                description = { item.description }
+                                // rawHtmldescription = { item.caption.rendered }
+                                iconImg = {item.icon}
+                                // iconMimetype = {item.icon}
+                                url = {item.url}
+                                filename = {item.filename}
+                            />
+                        );
 					})}
 				</ul> )}
 				{ (datasource == "wordpress" && wpSelect == "folder") && (
 				<ul>
 					{selectedAttachments && selectedAttachments.map(function(item, index) {
-							return 	<li key={index}>
-									<a rel="noopener" target="_blank" href={item.link}>{item.title.rendered}</a>
-									{ showIcon && (item.mime_type.indexOf("application") != -1) && <Icon icon="media-document" /> }
-									{ showIcon && (item.mime_type.indexOf("audio") != -1) && <Icon icon="media-audio" /> }
-									{ showIcon && (item.mime_type.indexOf("image") != -1) && <Icon icon="format-image" /> }
-									{ showIcon && (item.mime_type.indexOf("video") != -1) && <Icon icon="format-video" /> }
-									{ showIcon && (item.mime_type.indexOf("text") != -1) && <Icon icon="media-text" /> }
-									{ showDate && <span>{item.modified}</span> }
-									{ showDescription && <RawHTML>{item.caption.rendered}</RawHTML> }
-									{ showDownloadLink && <a href={item.source_url}>Lataa {item.title.rendered}</a> }
-								</li>
+                        return(
+                            <Listitem
+                                index = {index}
+                                link = {item.link}
+                                title = {item.title.rendered}
+                                showDate = {showDate}
+                                showDescription = {showDescription}
+                                showDownloadLink = {showDownloadLink}
+                                showIcon = {showIcon}
+                                dateFormatted = {format(new Date(item.modified), 'dd.mm.yyyy')}
+                                // description = { item.caption.rendered }
+                                rawHtmldescription = { item.caption.rendered }
+                                // iconImg
+                                iconMimetype = { item.mime_type }
+                                url = {item.source_url}
+                                filename = {item.filename}
+                            />
+                        );
 					})}
 				</ul> )}
 			</div>
