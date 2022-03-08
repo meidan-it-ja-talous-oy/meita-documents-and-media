@@ -3,9 +3,9 @@
 	"apiVersion": 2,
 	"version": "0.1.0",
 	"name": "bucket-browser-block/bucket-browser-block",
-	"title": "bucket-browser Block",
+	"title": "Dokumentit ja media",
 	"category": "widgets",
-	"icon": "smiley",
+	"icon": "media-document",
 	"description": "bucket-browser plugin for gutenberg block",
 	"textdomain": "bucket-browser-block",
 	"supports": {
