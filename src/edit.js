@@ -39,7 +39,8 @@ export default function Edit(props) {
 	useEffect(() => {
 		if(wpSelect == "folder" && datasource == "wordpress" && filebirdApiKey) {
 			apiFetch( { url: "/wp-json/filebird/public/v1/folders", headers: { "Authorization": `Bearer ${filebirdApiKey}` } } ).then( ( response ) => {
-				setFolders(response.data.folders);
+                const parsedFolders = folderParser(response.data.folders);
+                setFolders(parsedFolders);
 			});
 		}
 	},[wpSelect, filebirdApiKey])
@@ -120,10 +121,26 @@ export default function Edit(props) {
     const fetchFolderContents = () => {
         if(!filebirdApiKey) return;
         apiFetch( { url: "/wp-json/filebird/public/v1/attachment-id/?folder_id="+selectedFolder, headers: { "Authorization": `Bearer ${filebirdApiKey}` } } ).then( ( response ) => {
+            if(response.data.attachment_ids.length === 0) return setSelectedAttachments([]); 
             apiFetch( { url: "/wp-json/wp/v2/media?include="+response.data.attachment_ids, headers: { "Authorization": `Bearer ${filebirdApiKey}` } } ).then( ( attachments ) => {
                 setSelectedAttachments(attachments);
             });
         });
+    }
+
+    const folderParser = (filebirdFolders, iteration = 0) => {
+        if(Array.isArray(filebirdFolders.children) && filebirdFolders.children.length !== 0) {
+            return filebirdFolders.map((folder) => {return { label: folder.text, value: folder.id }})
+        } else {
+            let sum = filebirdFolders.map((folder) => {return { label: folder.text, value: folder.id }});
+            for (let subfolder of Object.values(filebirdFolders)) {
+                let content = folderParser(subfolder.children)
+                sum.push(content);
+            }
+            return sum.reduce((previousValue, currentValue) => {
+                return previousValue.concat(currentValue)
+            },[])
+        }
     }
 
 	const onChangeElement = ( id ) => {
@@ -223,9 +240,7 @@ export default function Edit(props) {
 								setSelectedFolder(selection)
 							}}
 							value={selectedFolder}
-                            options={folders.map((item) => { 
-								return { label: item.text, value:item.id }
-							})}
+                            options={folders}
 						/>)
 					}
 				</PanelBody>
