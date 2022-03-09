@@ -223,12 +223,10 @@ export default function Edit(props) {
 								setSelectedFolder(selection)
 							}}
 							value={selectedFolder}
-						>
-							<option value="" unselectable='true'>Valitse kansio</option>
-							{folders.map(function(item, index) { 
-								return <option value={item.id}>{item.text}</option>
+                            options={folders.map((item) => { 
+								return { label: item.text, value:item.id }
 							})}
-						</SelectControl>)
+						/>)
 					}
 				</PanelBody>
 				<PanelBody title="Näyttöasetukset" icon={ more } initialOpen={ false }>
