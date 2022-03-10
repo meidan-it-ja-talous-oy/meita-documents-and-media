@@ -122,7 +122,7 @@ export default function Edit(props) {
         if(!filebirdApiKey) return;
         apiFetch( { url: "/wp-json/filebird/public/v1/attachment-id/?folder_id="+selectedFolder, headers: { "Authorization": `Bearer ${filebirdApiKey}` } } ).then( ( response ) => {
             if(response.data.attachment_ids.length === 0) return setSelectedAttachments([]); 
-            apiFetch( { url: "/wp-json/wp/v2/media?include="+response.data.attachment_ids, headers: { "Authorization": `Bearer ${filebirdApiKey}` } } ).then( ( attachments ) => {
+            apiFetch( { url: "/wp-json/wp/v2/media?per_page=100&include="+response.data.attachment_ids, headers: { "Authorization": `Bearer ${filebirdApiKey}` } } ).then( ( attachments ) => {
                 setSelectedAttachments(attachments);
             });
         });
@@ -134,7 +134,7 @@ export default function Edit(props) {
         } else {
             let sum = filebirdFolders.map((folder) => {return { label: folder.text, value: folder.id }});
             for (let subfolder of Object.values(filebirdFolders)) {
-                let content = folderParser(subfolder.children)
+                let content = folderParser(subfolder.children, iteration + 1)
                 sum.push(content);
             }
             return sum.reduce((previousValue, currentValue) => {
