@@ -364,7 +364,7 @@ export default function Edit(props) {
                                 showDescription = {showDescription}
                                 showDownloadLink = {showDownloadLink}
                                 showIcon = {showIcon}
-                                dateFormatted = {format(new Date(item.modified), 'dd.mm.yyyy')}
+                                dateFormatted = {format(new Date(item.modified), 'd.M.y')}
                                 // description = { item.caption.rendered }
                                 rawHtmldescription = { item.caption.rendered }
                                 // iconImg
