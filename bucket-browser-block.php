@@ -82,7 +82,7 @@ function wpb_meita_document_block_hook_javascript() {
                             </div>
                             <div class='bucket-browser-block-content'>
                                 <a rel="noopener" target="_blank" href=${item.link}>${item.title.rendered}</a>
-                                ${ showDate ? `<p class='date'>${ modifiedDate.getDay() +"."+ modifiedDate.getMonth()+1 +"."+ modifiedDate.getFullYear()}</p>` : "" }
+                                ${ showDate ? `<p class='date'>${ modifiedDate.getDate() +"."+ (modifiedDate.getMonth()+1) +"."+ modifiedDate.getFullYear()}</p>` : "" }
                                 ${ showDescription ? `<p class='description'>${item.caption.rendered}</p>` : "" }
                                 ${ showDownloadLink ? `<a class='download-link' href=${item.source_url}>Lataa</a>` : "" }
                             </div>
