@@ -6,7 +6,7 @@ import { more } from '@wordpress/icons';
 import './editor.scss';
 import apiFetch from '@wordpress/api-fetch';
 import Listitem from './components/Listitem';
-import { format } from 'date-fns'
+import { format } from 'date-fns';
 
 export default function Edit(props) {
 	const [ filter, setFilter ] = useState( '' );

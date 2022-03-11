@@ -53,6 +53,33 @@ add_action( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'bucketbrowser
 
 function wpb_meita_document_block_hook_javascript() {
 ?>
+    <style>
+    .bucket-browser-block-listitem {
+        display: flex;
+    }
+    .bucket-browser-block-listitem .bucket-browser-block-icon {
+        width: 50px;
+        height: 65px;
+        margin-right: 15px;
+        border-radius: 5px;
+    }
+    .bucket-browser-block-listitem .bucket-browser-block-icon span,
+    .bucket-browser-block-listitem .bucket-browser-block-icon svg {
+        font-size: 54px;
+        margin: 5px;
+    }
+    .bucket-browser-block-listitem .bucket-browser-block-icon svg {
+        font-size: 54px;
+        margin: 5px;
+    }
+    .bucket-browser-block-listitem .bucket-browser-block-content .download-link {
+        margin: 0px;
+    }
+    .bucket-browser-block-listitem .bucket-browser-block-content p {
+        margin: 0px;
+    }
+    </style>
+    <script src="https://code.iconify.design/2/2.1.2/iconify.min.js"></script>
 	<script>
 
         function fetchFolderContents(wordpressFoldersConfig, index) {
@@ -74,11 +101,11 @@ function wpb_meita_document_block_hook_javascript() {
                         modifiedDate = new Date(item.modified);
                         rawHtml += (`<li class='bucket-browser-block-listitem' key=${index}>
                             <div class='bucket-browser-block-icon'>
-                                ${ showIcon && (item.mime_type.indexOf("application") != -1) ? `<span class="dashicons dashicons-media-document"></span>` : "" }
-                                ${ showIcon && (item.mime_type.indexOf("audio") != -1) ? `<span class="dashicons dashicons-media-audio"></span>` : "" }
-                                ${ showIcon && (item.mime_type.indexOf("image") != -1) ? `<span class="dashicons dashicons-format-image"></span>` : "" }
-                                ${ showIcon && (item.mime_type.indexOf("video") != -1) ? `<span class="dashicons dashicons-format-video"></span>` : "" }
-                                ${ showIcon && (item.mime_type.indexOf("text") != -1)  ? `<span class="dashicons dashicons-media-text"></span>` : "" }
+                                ${ showIcon && (item.mime_type.indexOf("application") != -1) ? `<span class="iconify" data-icon="fa-solid:file"></span>` : "" }
+                                ${ showIcon && (item.mime_type.indexOf("audio") != -1) ? `<span class="iconify" data-icon="fa-solid:file-audio"></span>` : "" }
+                                ${ showIcon && (item.mime_type.indexOf("image") != -1) ? `<span class="iconify" data-icon="fa-solid:file-image"></span>` : "" }
+                                ${ showIcon && (item.mime_type.indexOf("video") != -1) ? `<span class="iconify" data-icon="fa-solid:file-video"></span>` : "" }
+                                ${ showIcon && (item.mime_type.indexOf("text") != -1)  ? `<span class="iconify" data-icon="fa-solid:file-alt"></span>` : "" }
                             </div>
                             <div class='bucket-browser-block-content'>
                                 <a rel="noopener" target="_blank" href=${item.link}>${item.title.rendered}</a>
