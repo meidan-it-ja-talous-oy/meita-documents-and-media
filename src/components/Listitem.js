@@ -56,7 +56,7 @@ export default function listitem(props) {
 
     return (
         <li className='bucket-browser-block-listitem' key={index} style={styles.bucketBrowserBlockListitem}>
-            <div className='bucket-browser-block-icon ' style={styles.bucketBrowserBlockIcon} >
+            <div className={"bucket-browser-block-icon " + iconMimetype} style={styles.bucketBrowserBlockIcon} >
                 { showIcon && iconImg && <center><img src={iconImg} /></center> }
                 { showIcon && iconMimetype && <InlineIcon icon={iconType(iconMimetype)} style={styles.bucketBrowserBlockIconSpan} /> }
             </div>

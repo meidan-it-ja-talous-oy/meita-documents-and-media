@@ -100,7 +100,7 @@ function wpb_meita_document_block_hook_javascript() {
                     files.map((item, index) => {
                         modifiedDate = new Date(item.modified);
                         rawHtml += (`<li class='bucket-browser-block-listitem' key=${index}>
-                            <div class='bucket-browser-block-icon'>
+                            <div class='bucket-browser-block-icon ${item.mime_type}'>
                                 ${ showIcon && (item.mime_type.indexOf("application") != -1) ? `<span class="iconify" data-icon="fa-solid:file"></span>` : "" }
                                 ${ showIcon && (item.mime_type.indexOf("audio") != -1) ? `<span class="iconify" data-icon="fa-solid:file-audio"></span>` : "" }
                                 ${ showIcon && (item.mime_type.indexOf("image") != -1) ? `<span class="iconify" data-icon="fa-solid:file-image"></span>` : "" }
