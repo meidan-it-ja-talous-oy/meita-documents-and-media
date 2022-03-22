@@ -345,7 +345,7 @@ export default function Edit(props) {
                                 description = { item.description }
                                 // rawHtmldescription = { item.caption.rendered }
                                 iconImg = {item.icon}
-                                // iconMimetype = {item.icon}
+                                iconMimetype = {item.mime}
                                 url = {item.url}
                                 filename = {item.filename}
                             />
