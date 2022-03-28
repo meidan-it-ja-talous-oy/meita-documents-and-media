@@ -17,6 +17,10 @@ registerBlockType( metadata.name,
 				type: "array",
 				default: []
 			},
+			selectedFilesSTR: {
+				type: "string",
+				default: ""
+			},
 			files: {
 				type: "array",
 				default: []

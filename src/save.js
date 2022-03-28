@@ -26,31 +26,25 @@ export default function save(props) {
 					})}
 				</ul>)}
 				{(props.attributes.datasource == "wordpress" && props.attributes.wpSelect == "files") && (
-				<ul>
-					{props.attributes.files && props.attributes.files.map(function(item, index) {
-                        return(
-                            <Listitem
-                                index = {index}
-                                link = {item.link}
-                                title = {item.title}
-                                showDate = {props.attributes.showDate}
-                                showDescription = {props.attributes.showDescription}
-                                showDownloadLink = {props.attributes.showDownloadLink}
-                                showIcon = {props.attributes.showIcon}
-                                dateFormatted = {item.dateFormatted}
-                                description = { item.description }
-                                // rawHtmldescription = { item.caption.rendered }
-                                iconImg = {item.icon}
-                               	iconMimetype = {item.mime}
-                                url = {item.url}
-                                filename = {item.filename}
-                            />
-                        );
-					})}
+				<ul 
+                    className="meitaDocumentList wordpressFolders"
+                    meta-type="files"
+                    meta-files={ props.attributes.selectedFilesSTR }
+                    meta-showIcon={`${props.attributes.showIcon}`}
+                    meta-showDescription={`${props.attributes.showDescription}`}
+                    meta-showDate={`${props.attributes.showDate}`}
+                    meta-showDownloadLink={`${props.attributes.showDownloadLink}`}
+                >
+			{
+                            <script>
+                                meitaLoadDocuments()
+                            </script>
+                        }
 				</ul> )}
 				{(props.attributes.datasource == "wordpress" && props.attributes.wpSelect == "folder") && (
 					<ul 
                         className="meitaDocumentList wordpressFolders"
+                        meta-type="folder"
                         meta-folders={`${props.attributes.selectedFolder}`}
                         meta-fbak={`${props.attributes.filebirdApiKey}`}
                         meta-showIcon={`${props.attributes.showIcon}`}

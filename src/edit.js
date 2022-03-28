@@ -90,6 +90,22 @@ export default function Edit(props) {
 	},[order, orderBy])
 
 	useEffect(() => {
+			if(datasource == "wordpress" && wpSelect == "files") {
+				var selectedFiles = "";
+				files.map(function(item, index) {
+					if( index === 0 ) {
+						selectedFiles = item.id;
+					} else {
+						selectedFiles = selectedFiles + "," + item.id;
+					}
+					if(index === (files.length-1)) {
+						console.log(selectedFiles)
+						props.setAttributes( {
+							selectedFilesSTR: selectedFiles
+						});
+					}
+				});
+			}
 			props.setAttributes( { 
 				showIcon: showIcon,
 				showDate: showDate,
@@ -102,7 +118,6 @@ export default function Edit(props) {
 				order: order,
 				orderBy: orderBy,
                 filebirdApiKey: filebirdApiKey
-
 			});
 	},[showIcon, showDate, showDescription, showDownloadLink, files, datasource, datasourceURL, wpSelect, selectedFolder, order, orderBy, filebirdApiKey])
 
