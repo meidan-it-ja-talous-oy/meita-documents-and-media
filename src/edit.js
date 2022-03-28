@@ -99,7 +99,6 @@ export default function Edit(props) {
 						selectedFiles = selectedFiles + "," + item.id;
 					}
 					if(index === (files.length-1)) {
-						console.log(selectedFiles)
 						props.setAttributes( {
 							selectedFilesSTR: selectedFiles
 						});
