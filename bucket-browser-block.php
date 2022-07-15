@@ -61,7 +61,7 @@ function wpb_meita_document_block_hook_javascript() {
         width: 50px;
         height: 65px;
         margin-right: 15px;
-        border-radius: 5px;
+        border-radius: 5px; 
     }
     .bucket-browser-block-listitem .bucket-browser-block-icon span,
     .bucket-browser-block-listitem .bucket-browser-block-icon svg {
@@ -81,7 +81,7 @@ function wpb_meita_document_block_hook_javascript() {
     </style>
     <script src="https://code.iconify.design/2/2.1.2/iconify.min.js"></script>
 	<script>
-
+        
         function fetchFolderContents(wordpressFoldersConfig, index) {
             var selectedType = wordpressFoldersConfig.attributes["meta-type"].nodeValue;
             var showIcon = wordpressFoldersConfig.attributes["meta-showIcon"].nodeValue;
@@ -131,7 +131,11 @@ function wpb_meita_document_block_hook_javascript() {
                     .then(files => {
                         let rawHtml = "";
                         let modifiedDate = "";
-                        files.map((item, index) => {
+                        // The file order remains the same in the public view and editing view
+                        var orderedFiles = files.sort(function(a, b){
+                            return selectedFiles.indexOf(a.id) - selectedFiles.indexOf(b.id);
+                        });
+                        orderedFiles.map((item, index) => {
                             modifiedDate = new Date(item.modified);
                             rawHtml += (`<li class='bucket-browser-block-listitem' key=${index}>
                                 <div class='bucket-browser-block-icon ${item.mime_type}'>
