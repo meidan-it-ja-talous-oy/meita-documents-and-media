@@ -35,7 +35,7 @@ registerBlockType( metadata.name,
 			},
 			datasourceURL: {
 				type: "string",
-				default: "https://storage.googleapis.com/storage/v1/b/hoitopolut/o"
+				default: ""
 			},
 			showIcon: {
 				type: "boolean",

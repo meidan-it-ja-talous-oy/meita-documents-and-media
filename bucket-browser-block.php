@@ -33,13 +33,25 @@ function bucket_browser_block_init() {
 	);
 	wp_set_script_translations( 'create-bucket-browser-block', 'bucket-browser-block' );
 
-    wp_localize_script( 'create-bucket-browser-block', 'bucketbrowserBlockDefaults', get_option( 'bucketbrowser_options' ) );
+    wp_localize_script( 'create-bucket-browser-block', 'bucketbrowserBlockDefaults', array( 
+        'bucketbrowseroptions' => get_option('bucketbrowser_options') ) );
 
     register_block_type( 'bucket-browser-block/bucketbrowser', array(
 		'editor_script' => 'create-bucket-browser-block',
 	) );
 }
 add_action( 'init', 'bucket_browser_block_init' );
+
+
+if (file_exists( ABSPATH . 'wp-content/plugins/filebird' ) && is_admin()) {
+    function add_filebird_bearer_token() {
+    wp_localize_script('create-bucket-browser-block', 'apikey', array(
+        'FILEBIRD_BEARER_TOKEN' => get_option('fbv_rest_api_key')
+    ));
+}
+add_action('admin_enqueue_scripts', 'add_filebird_bearer_token');
+}
+
 
 function bucketbrowser_block_plugin_settings_link( $links ) : array {
 	$label = esc_html__( 'Settings', 'bucketbrowser-plugin' );

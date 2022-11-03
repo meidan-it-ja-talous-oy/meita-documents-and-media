@@ -36,19 +36,23 @@ function bucketbrowser_settings_init() {
         'bucketbrowser'
     );
 
+   
+  
     add_settings_field(
-        'bucketbrowser_fb_api_key_field',   // As of WP 4.6 this value is used only internally.
-        __( 'Filebird api key', 'bucketbrowser' ),
+        'Default GCP Bucket API url',   // As of WP 4.6 this value is used only internally.
+        __( 'Default GCP Bucket API url', 'bucketbrowser' ),
         'bucketbrowser_text_field',
         'bucketbrowser',
         'bucketbrowser_defaults_section',
         array(
-            'field' => 'fbApiKeykey',
-            'description' => __('Filebird api key', 'bucketbrowser')
+            'field' => 'GCPBucketAPIurl',
+            'description' => __('GCP Bucket API url', 'bucketbrowser')
         )
     );
 
 }
+
+
 
 add_action( 'admin_init', 'bucketbrowser_settings_init', 30 );
 

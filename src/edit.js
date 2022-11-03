@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { useEffect, useState, RawHTML } from '@wordpress/element';
-import { Icon, Button, PanelBody, SelectControl, CheckboxControl, TextControl, ToggleControl } from '@wordpress/components';
+import { Icon, Button, PanelBody, SelectControl, CheckboxControl, TextControl, ToggleControl, Modal } from '@wordpress/components';
 import { InspectorControls, useBlockProps, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import { more } from '@wordpress/icons';
 import './editor.scss';
@@ -9,24 +9,25 @@ import Listitem from './components/Listitem';
 import { format } from 'date-fns';
 
 export default function Edit(props) {
-	const [ filter, setFilter ] = useState( '' );
-	const [ showIcon, setShowIcon] = useState( props.attributes.showIcon );
-	const [ showDate, setShowDate] = useState( props.attributes.showDate );
-	const [ showDescription, setShowDescription] = useState( props.attributes.showDescription );
-	const [ showDownloadLink, setShowDownloadLink] = useState( props.attributes.showDownloadLink );
-	const [ datasource, setDatasource ] = useState( props.attributes.datasource );
-	const [ datasourceURL, setDatasourceURL ] = useState( props.attributes.datasourceURL );
-	const [ files, setFiles ] = useState( props.attributes.files );
-	const [ selectedFiles, setSelectedFiles ] = useState( props.attributes.selectedFiles );
-	const [ allFiles, setAllFiles ] = useState( props.attributes.allFiles );
-	const [ order, setOrder ] = useState( props.attributes.order );
-	const [ orderBy, setOrderBy ] = useState( props.attributes.orderBy );
-	const [ wpSelect, setWpSelect ] = useState( props.attributes.wpSelect );
-	const [ changed, setChanged ] = useState( false );
-	const [ folders, setFolders ] = useState( [] );
-	const [ selectedAttachments, setSelectedAttachments ] = useState( props.attributes.selectedAttachments );
-	const [ selectedFolder, setSelectedFolder ] = useState( props.attributes.selectedFolder );
-	const [ filebirdApiKey, setFilebirdApiKey ] = useState( props.attributes.filebirdApiKey );
+		const [ filter, setFilter ] = useState( '' );
+		const [ showIcon, setShowIcon] = useState( props.attributes.showIcon );
+		const [ showDate, setShowDate] = useState( props.attributes.showDate );
+		const [ showDescription, setShowDescription] = useState( props.attributes.showDescription );
+		const [ showDownloadLink, setShowDownloadLink] = useState( props.attributes.showDownloadLink );
+		const [ datasource, setDatasource ] = useState( props.attributes.datasource );
+		const [ datasourceURL, setDatasourceURL ] = useState( props.attributes.datasourceURL );
+		const [ files, setFiles ] = useState( props.attributes.files );
+		const [ selectedFiles, setSelectedFiles ] = useState( props.attributes.selectedFiles );
+		const [ allFiles, setAllFiles ] = useState( props.attributes.allFiles );
+		const [ order, setOrder ] = useState( props.attributes.order );
+		const [ orderBy, setOrderBy ] = useState( props.attributes.orderBy );
+		const [ wpSelect, setWpSelect ] = useState( props.attributes.wpSelect );
+		const [ changed, setChanged ] = useState( false );
+		const [ folders, setFolders ] = useState( [] );
+		const [ selectedAttachments, setSelectedAttachments ] = useState( props.attributes.selectedAttachments );
+		const [ selectedFolder, setSelectedFolder ] = useState( props.attributes.selectedFolder );
+		const [ filebirdApiKey, setFilebirdApiKey ] = useState( props.attributes.filebirdApiKey );
+		const [isOpen, setOpenModal]=useState(false)
 	
 	useEffect(() => {
 		if(datasourceURL != "" && datasource == "google") {
@@ -116,21 +117,35 @@ export default function Edit(props) {
 				wpSelect: wpSelect,
 				order: order,
 				orderBy: orderBy,
-                filebirdApiKey: filebirdApiKey
+                filebirdApiKey: filebirdApiKey,
+				selectedAttachments: selectedAttachments
 			});
-	},[showIcon, showDate, showDescription, showDownloadLink, files, datasource, datasourceURL, wpSelect, selectedFolder, order, orderBy, filebirdApiKey])
+	},[showIcon, showDate, showDescription, showDownloadLink, files, datasource, datasourceURL, wpSelect, selectedFolder, order, orderBy, filebirdApiKey,selectedAttachments])
 
     // INITIAL LOADS
 	useEffect(() => {
         // Defaults from settings if new
-		if(bucketbrowserBlockDefaults){
-            if(bucketbrowserBlockDefaults.fbApiKeykey) setFilebirdApiKey(bucketbrowserBlockDefaults.fbApiKeykey);
+		if(bucketbrowserBlockDefaults.bucketbrowseroptions){
+			if(bucketbrowserBlockDefaults.bucketbrowseroptions.GCPBucketAPIurl) setDatasourceURL(bucketbrowserBlockDefaults.bucketbrowseroptions.GCPBucketAPIurl);
+		}
+		if(apikey){
+			if(apikey.FILEBIRD_BEARER_TOKEN) setFilebirdApiKey(apikey.FILEBIRD_BEARER_TOKEN);
 		}
 
 		if(wpSelect == "folder" && datasource == "wordpress" && selectedFolder) {
 			fetchFolderContents();
 		}
 	},[])
+
+	const openModal = () => {
+		setOpenModal(true)	
+	}
+    const closeModal = () => {
+		setOpenModal(false)
+	}
+	const saveTheChoiches=()=>{
+		closeModal()
+	}
 
     const fetchFolderContents = () => {
         if(!filebirdApiKey) return;
@@ -174,155 +189,242 @@ export default function Edit(props) {
 
 	return( 
 		<div { ...useBlockProps( { className: 'bucket-browser-block-bucket-browser' } ) }>
-		<div>
-			<label>Valitse näytettävät tiedostot</label>
-			{ (datasource == "google") && (
-				<div>
-					<div>
-					<TextControl
-						label="Filter"
-						value={ filter }
-						onChange={ ( value ) => setFilter( value ) }
-					/>
-					</div>
-					<ul id={ClientId+"_dataList"}>
-						{allFiles && allFiles.map(function(item, index) {
-							{ if(item.size !== "0" && (filter === "" || filter !== "" && item.name.indexOf(filter) !== -1)) 
-								return <li key={index}><CheckboxControl checked={ selectedFiles.findIndex(obj => obj.id == item.id) != -1 } value={item.id} onChange={ () => { onChangeElement(item.id); } } label={item.name} /></li>
-							}
-						})}
-					</ul>
-				</div>
-			)} 
-			{ (datasource == "wordpress" && wpSelect == "files") && (<div>
-					
-					<MediaUploadCheck>
-						<MediaUpload
-							multiple={ true }
-							onSelect={ (media) => setFiles(media) }
-							value={ files.map(item => item.id) }
-							render={ ( { open } ) => (
-								<Button onClick={ open } isPrimary>Avaa mediakirjasto</Button>
-							) }
-						/>
-					</MediaUploadCheck>
-				</div>
-			)}
-			<InspectorControls key="setting">
-				<PanelBody title="Tietolähteen asetukset" icon={ more } initialOpen={ false }>
+
+		<div>	
+			{(files.length===0 && selectedFiles.length==0 && selectedAttachments.length==0)  &&
+			<label>{__('Select the information to display')}</label>
+			}
+
+<InspectorControls key="setting">
+				<PanelBody title={__('Data source settings')} icon={ more } initialOpen={ false }>
 					<SelectControl 
 						id="datasource"
-						label="Tietolähde"
+						label={__('data source')}
 						name="datasource"
 						onChange={(selection) => {
 							setDatasource(selection)
 						}}
 						options={[
-							{label: "WordPress", value:"wordpress"},
-							{label: "Google", value:"google"}
+							{label: __("WordPress"), value:"wordpress"},
+							{label: __("Google"), value:"google"}
 						]}
 						value={datasource}
 					/>
 					{ (datasource == "google") && 
-						(<TextControl
-							label="Googlen bucket URL"
-							value={ datasourceURL }
-							onChange={ ( value ) => setDatasourceURL( value ) }
-						/>)
+					( 	
+						<div>
+							<TextControl
+								label={__("Google bucket URL")}
+								value={ datasourceURL }
+								
+								onChange={ ( value ) => setDatasourceURL( value ) }
+						/>
+							
+							<Button
+								variant="primary"
+								className={`is-primary`}
+								onClick={ () => {
+									openModal();
+								} }
+								>{__('Browse')}</Button>
+						</div>)
 					}
+					
+					{(isOpen===true)&& (
+						<Modal
+							isFullScreen={true}
+							title={__("Select files to display")}	
+						>
+						
+						
+							<div className='components-modal__header'>
+							<TextControl
+								style={{"margin-top": 10, "margin-left": 280, "max-width": 315}}
+								placeholder={__('Filter')}
+								value={ filter }
+								onChange={ ( value ) => {setFilter( value )} }	
+							/>
+							<Button
+								onClick={()=>{closeModal()}}	
+								></Button>
+							</div>
+						
+
+							<div></div>
+							<div>
+							
+								<ul id={ClientId+"_dataList"} style={{"listStyle": "none"}}>
+									{allFiles && allFiles.map(function(item, index) {
+										{ if(item.size !== "0" && (filter === "" || filter !== "" && item.name.indexOf(filter) !== -1)) 
+											return <li key={index}><CheckboxControl checked={ selectedFiles.findIndex(obj => obj.id == item.id) != -1 } value={item.id} onChange={ () => { onChangeElement(item.id); } } 
+												label={item.name} /></li>
+										}
+									})}
+								</ul>
+
+							</div>
+
+							<div class='bbb-footer' style={{		
+								"position": "absolute",
+								"bottom": 0,
+								"padding-left": 32,
+								"padding-right": 32,
+       	 						"display": "flex",
+        						"flex-direction": "row",
+        						"justify-content": "space-between",
+       							"align-items": "center",
+       							"height": 60,
+       							"width": "100%",
+       							"z-index": 10,
+        						"left": 0,
+								"border-top": "1px solid #ddd",
+								"background-color": "white" }}>
+
+							<Button 
+								style={{"position": "absolute","right": 35}}
+								variant="primary"
+								onClick={() => {
+								saveTheChoiches();
+								}}>{__('SAVE')}
+							</Button>
+								
+								
+							</div>
+						
+							
+					
+						</Modal>
+
+					)} 
+
 					{ (datasource == "wordpress") && 
-						(<SelectControl 
+						(
+						<div>
+						<SelectControl 
 							id="wpSelect"
-							label="Näytettävä tieto"
+							label={__("Information to display")}
 							name="wpSelect"
 							onChange={(selection) => {
 								setWpSelect(selection)
 							}}
 							options={[
-								{label: "Tiedostoja", value:"files"},
-								{label: "Kansio", value:"folder"}
+								{label: __("Files"), value:"files"},
+								{label: __("Folder"), value:"folder"}
 							]}
 							value={wpSelect}
-						/>)
+						/>
+
+						</div>)
+
 					}
+					{ (datasource == "wordpress" && wpSelect == "files") && (
+					
+						<MediaUploadCheck>
+							<MediaUpload
+								multiple={ true }
+								onSelect={ (media) => { setFiles(media) }}
+								value={ files.map(item => item.id) }
+								render={ ( { open } ) => (
+									<Button onClick={ open } isPrimary>{__('Open Media Library')}</Button>
+							) }
+						/>
+						</MediaUploadCheck>
+						
+					)}	
+
 					{ (datasource == "wordpress" && wpSelect == "folder") && 
-						(<SelectControl 
+						(<div>
+							{!(folders.length===0)
+								
+						?
+						<SelectControl 
 							id="selectedFolder"
-							label="Kansio"
+							label={__("Folder")}
 							name="selectedFolder"
-							onChange={(selection) => {
+							onChange={(selection) =>{
 								setSelectedFolder(selection)
-							}}
+								}}
 							value={selectedFolder}
                             options={folders}
-						/>)
+						/>
+						:
+						<label style={{color: "red" }}>{__('You have to have Filebirds ApiKey, if you want to browse folders!')}</label>
+						
+						}
+						</div>
+						)
+						
+						
 					}
 				</PanelBody>
-				<PanelBody title="Näyttöasetukset" icon={ more } initialOpen={ false }>
+				<PanelBody title={__("Display settings")} icon={ more } initialOpen={ false }>
 					<ToggleControl
-						label="Näytä ikonit"
+						label={__("Show icons")}
 						checked={ showIcon }
 						onChange={ (value) => {
 							setShowIcon(value);
 						} }
+						
 					/>
 					<ToggleControl
-						label="Näytä päivämäärä"
+						label={__("Show date")}
 						checked={ showDate }
 						onChange={ (value) => {
 							setShowDate(value);
 						} }
 					/>
 					<ToggleControl
-						label="Näytä kuvaus"
+						label={__("Show description")}
 						checked={ showDescription }
 						onChange={ (value) => {
 							setShowDescription(value);
 						} }
 					/>
 					<ToggleControl
-						label="Näytä latauslinkki"
+						label={__("Show download link")}
 						checked={ showDownloadLink }
 						onChange={ (value) => {
 							setShowDownloadLink(value);
 						} }
 					/>
 				</PanelBody>
-				<PanelBody title="Järjestys" icon={ more } initialOpen={ false }>
+				<PanelBody title={__("Order")} icon={ more } initialOpen={ false }>
 					<SelectControl 
 						id="orderBy"
-						label="Järjestä mukaan"
+						label={__("Order by")}
 						name="orderBy"
 						onChange={(selection) => {
 							setOrderBy(selection)
 						}}
 						options={[
-							{label: "Otsikko", value:"title"},
-							{label: "Päivämäärä", value:"date"}
+							{label: __("Title"), value:"title"},
+							{label: __("Date"), value:"date"}
 						]}
 						value={orderBy}
 					/>
 					<SelectControl 
 						id="order"
-						label="Järjestys"
+						label={__("Order")}
 						name="order"
 						onChange={(selection) => {
 							setOrder(selection)
 						}}
 						options={[
-							{label: "Nouseva", value:"ascending"},
-							{label: "Laskeva", value:"descending"}
+							{label: __("Ascending"), value:"ascending"},
+							{label: __("Descending"), value:"descending"}
 						]}
 						value={order}
 					/>
 				</PanelBody>
 			</InspectorControls>
 		</div>
-			<div class="filesPreview">
+		<div class="filesPreview">
 				{(datasource == "google") && (
-				<ul>
+				<ul className='googlebucketlist'>
 					{selectedFiles && selectedFiles.map(function(item, index) {
                         return(
+							<div>
+							
                             <Listitem
                                 index = {index}
                                 link = {item.mediaLink}
@@ -331,15 +433,17 @@ export default function Edit(props) {
                                 showDescription = {false}
                                 showDownloadLink = {showDownloadLink}
                                 showIcon = {showIcon}
-                                dateFormatted = {format(new Date(item.updated), 'dd.mm.yyyy')}
+                                dateFormatted = {format(new Date(item.updated), 'd.M.yy')}
                                 // description = { item.caption.rendered }
                                 // rawHtmldescription = {  }
                                 // iconImg
                                 iconMimetype = { item.contentType }
-                                url = {item.selfLink}
+                                url = {"https://storage.googleapis.com/"+item.bucket+"/"+ encodeURIComponent(item.name)}
                                 filename = {item.name}
                             />
+							</div>
                         );
+
 					})}
 				</ul>)
 				}
@@ -347,6 +451,8 @@ export default function Edit(props) {
 				<ul>
 					{files && files.map(function(item, index) {
                         return(
+						<div>
+							{}
                             <Listitem
                                 index = {index}
                                 link = {item.link}
@@ -361,8 +467,9 @@ export default function Edit(props) {
                                 iconImg = {item.icon}
                                 iconMimetype = {item.mime}
                                 url = {item.url}
-                                filename = {item.filename}
+                                filename = {item.name}
                             />
+							</div>
                         );
 					})}
 				</ul> )}
@@ -370,6 +477,8 @@ export default function Edit(props) {
 				<ul>
 					{selectedAttachments && selectedAttachments.map(function(item, index) {
                         return(
+							<div>
+								
                             <Listitem
                                 index = {index}
                                 link = {item.link}
@@ -378,18 +487,21 @@ export default function Edit(props) {
                                 showDescription = {showDescription}
                                 showDownloadLink = {showDownloadLink}
                                 showIcon = {showIcon}
-                                dateFormatted = {format(new Date(item.modified), 'd.M.y')}
+                                dateFormatted = {format(new Date(item.modified), 'd.M.yy')}
                                 // description = { item.caption.rendered }
                                 rawHtmldescription = { item.caption.rendered }
                                 // iconImg
                                 iconMimetype = { item.mime_type }
                                 url = {item.source_url}
-                                filename = {item.filename}
+                                filename = {item.slug}
                             />
+							</div>
                         );
 					})}
 				</ul> )}
 			</div>
+
 		</div>
+
 	);
 }
