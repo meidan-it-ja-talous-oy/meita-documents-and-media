@@ -92,16 +92,16 @@ export default function Edit(props) {
 
 	useEffect(() => {
 			if(datasource == "wordpress" && wpSelect == "files") {
-				var selectedFiles = "";
+				var selectedFiles2 = "";
 				files.map(function(item, index) {
 					if( index === 0 ) {
-						selectedFiles = item.id;
+						selectedFiles2 = item.id;
 					} else {
-						selectedFiles = selectedFiles + "," + item.id;
+						selectedFiles2 = selectedFiles2 + "," + item.id;
 					}
 					if(index === (files.length-1)) {
 						props.setAttributes( {
-							selectedFilesSTR: selectedFiles
+							selectedFilesSTR: selectedFiles2
 						});
 					}
 				});
@@ -118,9 +118,11 @@ export default function Edit(props) {
 				order: order,
 				orderBy: orderBy,
                 filebirdApiKey: filebirdApiKey,
-				selectedAttachments: selectedAttachments
+				selectedAttachments: selectedAttachments,
+				selectedFiles: selectedFiles,
+				
 			});
-	},[showIcon, showDate, showDescription, showDownloadLink, files, datasource, datasourceURL, wpSelect, selectedFolder, order, orderBy, filebirdApiKey,selectedAttachments])
+	},[showIcon, showDate, showDescription, showDownloadLink, files, datasource, datasourceURL, wpSelect, selectedFolder, order, orderBy, filebirdApiKey,selectedAttachments, selectedFiles])
 
     // INITIAL LOADS
 	useEffect(() => {
@@ -138,14 +140,21 @@ export default function Edit(props) {
 	},[])
 
 	const openModal = () => {
-		setOpenModal(true)	
+		setSelectedFiles([]);
+		setOpenModal(true);	
 	}
     const closeModal = () => {
 		setOpenModal(false)
 	}
 	const saveTheChoiches=()=>{
+		
 		closeModal()
 	}
+	console.log("selected Files/google:",selectedFiles)
+	console.log("Files/mediakirjasto:",files)
+	console.log("Folders/kansiot:",selectedAttachments)
+
+	console.log("CHANGED: ", changed)
 
     const fetchFolderContents = () => {
         if(!filebirdApiKey) return;
@@ -191,11 +200,12 @@ export default function Edit(props) {
 		<div { ...useBlockProps( { className: 'bucket-browser-block-bucket-browser' } ) }>
 
 		<div>	
-			{(files.length===0 && selectedFiles.length==0 && selectedAttachments.length==0)  &&
+			{(files.length===0 && (changed==true) && selectedAttachments.length==0)  &&
 			<label>{__('Select the information to display')}</label>
 			}
+			
 
-<InspectorControls key="setting">
+			<InspectorControls key="setting">
 				<PanelBody title={__('Data source settings')} icon={ more } initialOpen={ false }>
 					<SelectControl 
 						id="datasource"

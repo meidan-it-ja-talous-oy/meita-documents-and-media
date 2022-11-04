@@ -81,11 +81,11 @@ export default function save(props) {
                         );
 					})}
                     
-                    {
+                    {/* {
                         <script>
                             meitaLoadDocuments()
                         </script>
-                    }
+                    } */}
 
 			    </ul>     
             )}
@@ -126,11 +126,11 @@ export default function save(props) {
 							</div>
                         );
 					})}
-                        {
+                        {/* {
                             <script>
                                 meitaLoadDocuments()
                             </script>
-                        }
+                        } */}
 
 					</ul>
 				)}
