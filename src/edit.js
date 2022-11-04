@@ -150,11 +150,7 @@ export default function Edit(props) {
 		
 		closeModal()
 	}
-	console.log("selected Files/google:",selectedFiles)
-	console.log("Files/mediakirjasto:",files)
-	console.log("Folders/kansiot:",selectedAttachments)
-
-	console.log("CHANGED: ", changed)
+	
 
     const fetchFolderContents = () => {
         if(!filebirdApiKey) return;
