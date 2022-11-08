@@ -196,10 +196,9 @@ export default function Edit(props) {
 		<div { ...useBlockProps( { className: 'bucket-browser-block-bucket-browser' } ) }>
 
 		<div>	
-			{(files.length===0 && (changed==true) && selectedAttachments.length==0)  &&
+			{(files.length===0 && (changed==true) && selectedAttachments.length==0 && selectedFiles.length==0)  &&
 			<label>{__('Select the information to display')}</label>
 			}
-			
 
 			<InspectorControls key="setting">
 				<PanelBody title={__('Data source settings')} icon={ more } initialOpen={ false }>
