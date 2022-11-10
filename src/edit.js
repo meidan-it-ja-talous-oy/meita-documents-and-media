@@ -149,7 +149,6 @@ export default function Edit(props) {
 
 	const openModal = () => {
 		setDatasourceURL( datasourceURL )
-		//setSelectedFiles([]);
 		setOpenModal(true);	
 	}
     const closeModal = () => {
@@ -244,8 +243,6 @@ export default function Edit(props) {
 							<TextControl
 								label={__("Google bucket URL")}
 								value={ datasourceURL }
-								
-								//onChange={ ( value ) => setDatasourceURL( value ) }
 						/>
 							
 							<Button

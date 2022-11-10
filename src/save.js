@@ -8,7 +8,7 @@ import { format } from 'date-fns';
 export default function save(props) {
 
     const blockprops= useBlockProps.save();
-    console.log(props.attributes.showIcon)
+  
   
 	return (
        
