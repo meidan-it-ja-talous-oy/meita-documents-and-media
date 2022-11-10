@@ -38,6 +38,11 @@ export default function listitem(props) {
                 marginRight: "15px",
                 borderRadius: "5px"
             },
+            bucketBrowserBlockIcon2: {
+                height: "65px",
+                marginRight: "15px",
+                borderRadius: "5px"
+            },
             bucketBrowserBlockIconSpan: {
                 fontSize: '54px',
                 margin: '5px',
@@ -45,7 +50,9 @@ export default function listitem(props) {
             },
             noMargin: {
                 margin: "0px"
-            }        
+            },
+            
+                  
         }
         const iconType = (mime_type) => {
             switch (true) {
@@ -65,10 +72,16 @@ export default function listitem(props) {
         }
         return (
             <li className='bucket-browser-block-listitem' key={index} style={styles.bucketBrowserBlockListitem}>
-                <div className={"bucket-browser-block-icon " + iconMimetype} style={styles.bucketBrowserBlockIcon} >
+                {showIcon 
+                ?<div className={"bucket-browser-block-icon " + iconMimetype} style={styles.bucketBrowserBlockIcon} >
                     { showIcon && iconMimetype && <div><span className="iconify" data-icon={iconType(iconMimetype)} style={styles.bucketBrowserBlockIconSpan}></span></div>}
-                       
+                   
                 </div>
+                :<div className={"bucket-browser-block-icon " + iconMimetype} style={styles.bucketBrowserBlockIcon2} >
+                    { !showIcon && !iconMimetype && <div><span className="iconify" style={styles.noMargin} ></span></div>}
+                   
+                </div>
+                }
                 <div className='bucket-browser-block-content'>
                     <a rel="noopener" target="_blank" href={url}>{title}</a>
                     { showDate && <p className='date' style={styles.noMargin}>{dateFormatted}</p> }

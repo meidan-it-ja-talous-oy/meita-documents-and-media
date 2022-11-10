@@ -8,6 +8,7 @@ import { format } from 'date-fns';
 export default function save(props) {
 
     const blockprops= useBlockProps.save();
+    console.log(props.attributes.showIcon)
   
 	return (
        
@@ -58,7 +59,7 @@ export default function save(props) {
                 {props.attributes.files && props.attributes.files.map(function(item, index) {
                         return(
 						<div>
-                            {props.attributes.showIcon}
+                            
 							
                             <Listitem
                                 index = {index}

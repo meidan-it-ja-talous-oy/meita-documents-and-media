@@ -28,11 +28,15 @@ export default function Edit(props) {
 		const [ selectedFolder, setSelectedFolder ] = useState( props.attributes.selectedFolder );
 		const [ filebirdApiKey, setFilebirdApiKey ] = useState( props.attributes.filebirdApiKey );
 		const [isOpen, setOpenModal]=useState(false)
+		const [istrue, setTrue]=useState(false)
+		const[checked, setChecked]=useState(props.attributes.checked)
+		const [clicked, setClicked]=useState(false)
 	
 	useEffect(() => {
 		if(datasourceURL != "" && datasource == "google") {
 			apiFetch( { url: datasourceURL } ).then( ( files ) => {
 				setAllFiles(files.items);
+				
 			});
 		}
 	},[datasourceURL, datasource])
@@ -120,9 +124,10 @@ export default function Edit(props) {
                 filebirdApiKey: filebirdApiKey,
 				selectedAttachments: selectedAttachments,
 				selectedFiles: selectedFiles,
+				checked: checked
 				
 			});
-	},[showIcon, showDate, showDescription, showDownloadLink, files, datasource, datasourceURL, wpSelect, selectedFolder, order, orderBy, filebirdApiKey,selectedAttachments, selectedFiles])
+	},[showIcon, showDate, showDescription, showDownloadLink, files, datasource, datasourceURL, wpSelect, selectedFolder, order, orderBy, filebirdApiKey,selectedAttachments, selectedFiles, checked])
 
     // INITIAL LOADS
 	useEffect(() => {
@@ -137,10 +142,14 @@ export default function Edit(props) {
 		if(wpSelect == "folder" && datasource == "wordpress" && selectedFolder) {
 			fetchFolderContents();
 		}
+		if(selectedFiles.length!=0){
+			setTrue(true)
+		}
 	},[])
 
 	const openModal = () => {
-		setSelectedFiles([]);
+		setDatasourceURL( datasourceURL )
+		//setSelectedFiles([]);
 		setOpenModal(true);	
 	}
     const closeModal = () => {
@@ -149,6 +158,15 @@ export default function Edit(props) {
 	const saveTheChoiches=()=>{
 		
 		closeModal()
+	}
+	const clicktoTest=()=>{
+		if(clicked==false){
+			setClicked(true)
+		}else{
+			setClicked(false)
+		}
+	
+		
 	}
 	
 
@@ -187,8 +205,11 @@ export default function Edit(props) {
 			tmpArr.push(el);
 		}
 		setSelectedFiles(tmpArr);
+		setChecked(tmpArr);
 		setChanged((changed ? false : true));
+		setTrue(true)
     }
+
 
 	const ClientId = `${props.clientId}`;
 
@@ -196,9 +217,10 @@ export default function Edit(props) {
 		<div { ...useBlockProps( { className: 'bucket-browser-block-bucket-browser' } ) }>
 
 		<div>	
-			{(files.length===0 && (changed==true) && selectedAttachments.length==0 && selectedFiles.length==0)  &&
+			{(files.length===0 && selectedAttachments.length==0 && istrue==false)  &&
 			<label>{__('Select the information to display')}</label>
 			}
+			
 
 			<InspectorControls key="setting">
 				<PanelBody title={__('Data source settings')} icon={ more } initialOpen={ false }>
@@ -208,9 +230,10 @@ export default function Edit(props) {
 						name="datasource"
 						onChange={(selection) => {
 							setDatasource(selection)
+							setSelectedFiles([]);
 						}}
 						options={[
-							{label: __("WordPress"), value:"wordpress"},
+							{label: __("WordPress"), value:"wordpress", selected: true},
 							{label: __("Google"), value:"google"}
 						]}
 						value={datasource}
@@ -222,7 +245,7 @@ export default function Edit(props) {
 								label={__("Google bucket URL")}
 								value={ datasourceURL }
 								
-								onChange={ ( value ) => setDatasourceURL( value ) }
+								//onChange={ ( value ) => setDatasourceURL( value ) }
 						/>
 							
 							<Button
@@ -244,11 +267,16 @@ export default function Edit(props) {
 						
 							<div className='components-modal__header'>
 							<TextControl
-								style={{"margin-top": 10, "margin-left": 280, "max-width": 315}}
+								style={{"margin-top": 10, "margin-left": 203, "max-width": 229, "margin-right": 36}}
 								placeholder={__('Filter')}
 								value={ filter }
 								onChange={ ( value ) => {setFilter( value )} }	
 							/>
+							<Button
+								variant='primary'
+								onClick={()=>{clicktoTest()}}						
+								>{__('Filter only selected')}</Button>
+
 							<Button
 								onClick={()=>{closeModal()}}	
 								></Button>
@@ -259,12 +287,22 @@ export default function Edit(props) {
 							<div>
 							
 								<ul id={ClientId+"_dataList"} style={{"listStyle": "none"}}>
-									{allFiles && allFiles.map(function(item, index) {
-										{ if(item.size !== "0" && (filter === "" || filter !== "" && item.name.indexOf(filter) !== -1)) 
-											return <li key={index}><CheckboxControl checked={ selectedFiles.findIndex(obj => obj.id == item.id) != -1 } value={item.id} onChange={ () => { onChangeElement(item.id); } } 
-												label={item.name} /></li>
-										}
+									{allFiles && clicked==false && allFiles.map(function(item, index) {
+										
+										if(item.size !== "0" && (filter === "" || filter !== "" && item.name.indexOf(filter) !== -1)) {
+											return <li key={index}><CheckboxControl checked={ checked.findIndex(obj => obj.id == item.id) != -1 } value={item.id} onChange={ () => { onChangeElement(item.id); } } 
+												label={item.name} /></li>}
+													
 									})}
+									{checked && clicked==true && checked.map(function(item, index) {
+										
+										if(item.size !== "0" && (filter === "" || filter !== "" && item.name.indexOf(filter) !== -1)) {
+											return <li key={index}><CheckboxControl checked={ checked.findIndex(obj => obj.id == item.id) != -1 } value={item.id} onChange={ () => { onChangeElement(item.id); } } 
+												label={item.name} /></li>}
+										
+													
+									})}
+									
 								</ul>
 
 							</div>

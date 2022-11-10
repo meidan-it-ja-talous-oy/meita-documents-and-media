@@ -24,6 +24,10 @@ registerBlockType( metadata.name,
 			files: {
 				type: "array",
 				default: []
+			},			
+			checked:{
+				type: "array",
+				default: []
 			},
 			filter: {
 				type: "string",

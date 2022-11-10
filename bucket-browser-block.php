@@ -70,7 +70,7 @@ function wpb_meita_document_block_hook_javascript() {
         display: flex;
     }
     .bucket-browser-block-listitem .bucket-browser-block-icon {
-        width: 50px;
+        /* width: 50px; */
         height: 65px;
         margin-right: 15px;
         border-radius: 5px; 
@@ -79,6 +79,7 @@ function wpb_meita_document_block_hook_javascript() {
     .bucket-browser-block-listitem .bucket-browser-block-icon svg {
         font-size: 54px;
         margin: 5px;
+        padding-top: 2px;
     }
     .bucket-browser-block-listitem .bucket-browser-block-icon svg {
         font-size: 54px;
