@@ -8,8 +8,6 @@ import { format } from 'date-fns';
 export default function save(props) {
 
     const blockprops= useBlockProps.save();
-  
-  
 	return (
        
 		<div { ...blockprops}>
@@ -44,23 +42,11 @@ export default function save(props) {
             )}
 
 			{(props.attributes.datasource == "wordpress" && props.attributes.wpSelect == "files") &&(
-                
-                 
-                <ul 
-                    className="meitaDocumentList wordpressFolders"
-                    meta-type="files"
-                    meta-files={ props.attributes.selectedFilesSTR }
-                    meta-showIcon={`${props.attributes.showIcon}`}
-                    meta-showDescription={`${props.attributes.showDescription}`}
-                    meta-showDate={`${props.attributes.showDate}`}
-                    meta-showDownloadLink={`${props.attributes.showDownloadLink}`}
-                >
-
+                                 
+                <ul>
                 {props.attributes.files && props.attributes.files.map(function(item, index) {
                         return(
-						<div>
-                            
-							
+						<div>	
                             <Listitem
                                 index = {index}
                                 link = {item.link}
@@ -81,32 +67,14 @@ export default function save(props) {
 							</div>
                         );
 					})}
-                    
-                    {/* {
-                        <script>
-                            meitaLoadDocuments()
-                        </script>
-                    } */}
-
 			    </ul>     
             )}
 
             {(props.attributes.datasource == "wordpress" && props.attributes.wpSelect == "folder") && (
-					<ul 
-                        className="meitaDocumentList wordpressFolders"
-                        meta-type="folder"
-                        meta-folders={`${props.attributes.selectedFolder}`}
-                        meta-fbak={`${props.attributes.filebirdApiKey}`}
-                        meta-showIcon={`${props.attributes.showIcon}`}
-                        meta-showDescription={`${props.attributes.showDescription}`}
-                        meta-showDate={`${props.attributes.showDate}`}
-                        meta-showDownloadLink={`${props.attributes.showDownloadLink}`}
-                    >
-
+					<ul>
                     {props.attributes.selectedAttachments && props.attributes.selectedAttachments.map(function(item, index) {
                         return(
-							<div>
-								
+							<div>					
                             <Listitem
                                 index = {index}
                                 link = {item.link}
@@ -127,12 +95,6 @@ export default function save(props) {
 							</div>
                         );
 					})}
-                        {/* {
-                            <script>
-                                meitaLoadDocuments()
-                            </script>
-                        } */}
-
 					</ul>
 				)}
            

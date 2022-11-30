@@ -1,5 +1,5 @@
 import { RawHTML } from '@wordpress/element';
-import { InlineIcon } from '@iconify/react';
+
 import { __ } from '@wordpress/i18n';
 
 // import { InlineIcon } from '@iconify/react';
