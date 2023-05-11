@@ -2,7 +2,7 @@
 /**
  * Plugin Name:     bucket-browser Block
  * Description:     bucket-browser block description
- * Version:         1.0.0
+ * Version:         Development
  * Author:          Meidän IT ja Talous Oy
  * License:         GPL-2.0-or-later
  * License URI:     https://www.gnu.org/licenses/gpl-2.0.html

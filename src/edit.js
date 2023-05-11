@@ -39,7 +39,7 @@ export default function Edit(props) {
 				
 			});
 		}
-	},[datasourceURL, datasource])
+	},[datasourceURL, datasource, allFiles])
 
 	useEffect(() => {
 		if(wpSelect == "folder" && datasource == "wordpress" && filebirdApiKey) {
