@@ -21,11 +21,11 @@ steps:
   args: [ 'dist', 'bucket-browser-block' ]
 
 # Taged
-- name: eu.gcr.io/rauni-0/zip
+- name: europe-north1-docker.pkg.dev/rauni-0/tools/zip
   args: ['-r9T', 'bucket-browser-block-$TAG_NAME.zip', './bucket-browser-block']
 
 # Overwrite latest
-- name: eu.gcr.io/rauni-0/zip
+- name: europe-north1-docker.pkg.dev/rauni-0/tools/zip
   args: ['-r9T', 'bucket-browser-block-latest.zip', './bucket-browser-block']
 
 artifacts:
