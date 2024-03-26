@@ -16,6 +16,7 @@ export default function save(props) {
 
                 <ul>
                     {props.attributes.selectedFiles && props.attributes.selectedFiles.map(function (item, index) {
+
                         return (
                             <div>
                                 <Listitem
