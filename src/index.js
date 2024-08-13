@@ -5,7 +5,7 @@ import Edit from './edit';
 import Save from './save';
 import metadata from '../block.json';
 
-registerBlockType( metadata.name,
+registerBlockType(metadata.name,
 	{
 		...metadata,
 		attributes: {
@@ -24,8 +24,8 @@ registerBlockType( metadata.name,
 			files: {
 				type: "array",
 				default: []
-			},			
-			checked:{
+			},
+			checked: {
 				type: "array",
 				default: []
 			},
@@ -76,10 +76,14 @@ registerBlockType( metadata.name,
 				type: "array",
 				default: []
 			},
-            wpSelect: {
-                type: "string",
-                default: "files"
-            }
+			wpSelect: {
+				type: "string",
+				default: "files"
+			},
+			listScreen: {
+				type: "boolean",
+				default: false
+			}
 		},
 		edit: Edit,
 		save: Save

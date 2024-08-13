@@ -9,7 +9,7 @@ import Listitem from './components/Listitem';
 import { format } from 'date-fns';
 
 export default function Edit(props) {
-	const [filter, setFilter] = useState('');
+	const [filter, setFilter] = useState(props.attributes.filter);
 	const [showIcon, setShowIcon] = useState(props.attributes.showIcon);
 	const [showDate, setShowDate] = useState(props.attributes.showDate);
 	const [showDescription, setShowDescription] = useState(props.attributes.showDescription);
@@ -27,10 +27,11 @@ export default function Edit(props) {
 	const [selectedAttachments, setSelectedAttachments] = useState(props.attributes.selectedAttachments);
 	const [selectedFolder, setSelectedFolder] = useState(props.attributes.selectedFolder);
 	const [filebirdApiKey, setFilebirdApiKey] = useState(props.attributes.filebirdApiKey);
-	const [isOpen, setOpenModal] = useState(false)
-	const [istrue, setTrue] = useState(false)
-	const [checked, setChecked] = useState(props.attributes.checked)
-	const [clicked, setClicked] = useState(false)
+	const [isOpen, setOpenModal] = useState(false);
+	const [listScreen, setlistScreen] = useState(props.attributes.listScreen);
+	const [istrue, setTrue] = useState(false);
+	const [checked, setChecked] = useState(props.attributes.checked);
+	const [clicked, setClicked] = useState(false);
 
 	useEffect(() => {
 		if (datasourceURL != "" && datasource == "google") {
@@ -124,10 +125,13 @@ export default function Edit(props) {
 			filebirdApiKey: filebirdApiKey,
 			selectedAttachments: selectedAttachments,
 			selectedFiles: selectedFiles,
-			checked: checked
+			checked: checked,
+			listScreen: listScreen,
+			filter: filter,
+			allFiles: allFiles
 
 		});
-	}, [showIcon, showDate, showDescription, showDownloadLink, files, datasource, datasourceURL, wpSelect, selectedFolder, order, orderBy, filebirdApiKey, selectedAttachments, selectedFiles, checked])
+	}, [showIcon, showDate, showDescription, showDownloadLink, files, datasource, datasourceURL, wpSelect, selectedFolder, order, orderBy, filebirdApiKey, selectedAttachments, selectedFiles, checked, listScreen, filter, allFiles])
 
 	// INITIAL LOADS
 	useEffect(() => {
@@ -155,7 +159,6 @@ export default function Edit(props) {
 		setOpenModal(false)
 	}
 	const saveTheChoiches = () => {
-
 		closeModal()
 	}
 	const clicktoTest = () => {
@@ -164,10 +167,11 @@ export default function Edit(props) {
 		} else {
 			setClicked(false)
 		}
-
-
 	}
-
+	const listOnScreen = () => {
+		setDatasourceURL(datasourceURL);
+		setlistScreen(true);
+	}
 
 	const fetchFolderContents = () => {
 		if (!filebirdApiKey) return;
@@ -248,9 +252,21 @@ export default function Edit(props) {
 										variant="primary"
 										className={`is-primary`}
 										onClick={() => {
+											setlistScreen(false);
 											openModal();
 										}}
 									>{__('Browse')}</Button>
+
+
+									<Button
+										variant="primary"
+										className={`is-primary`}
+										onClick={() => {
+											setShowIcon(false);
+											listOnScreen();
+										}}
+										style={{ "margin-left": 10 }}
+									>{__('List on screen')}</Button>
 								</div>)
 						}
 
@@ -489,6 +505,50 @@ export default function Edit(props) {
 						})}
 					</ul>)
 				}
+
+				{(datasource == "google" && listScreen == true) && (
+
+					<div>
+						<div className='filterlist'>
+							<TextControl
+								label={__("Select files to display")}
+								style={{ "margin-top": 10, "margin-left": 60, "max-width": 229, "margin-right": 16 }}
+								placeholder={__('Filter')}
+								value={filter}
+								onChange={(value) => { setFilter(value) }}
+							></TextControl>
+							<Button
+								style={{ "right": 35 }}
+								variant="primary"
+								onClick={() => {
+									setlistScreen(false);
+								}}>{__('Close')}
+							</Button>
+						</div>
+
+						<ul className='googlebucketlist' style={{ "list-style": "none" }}>
+							<div>
+								{allFiles.map(function (item, index) {
+
+									if (item.size !== "0" && (filter === "" || filter !== "" && item.name.indexOf(filter) !== -1)) {
+										return <li key={index}><CheckboxControl checked={checked.findIndex(obj => obj.id == item.id) != -1} value={item.id} onChange={() => { onChangeElement(item.id); }}
+											label={item.name} /></li>
+									}
+									{
+										checked && clicked == true && checked.map(function (item, index) {
+											if (item.size !== "0" && (filter === "" || filter !== "" && item.name.indexOf(filter) !== -1)) {
+												return <li key={index}><CheckboxControl checked={checked.findIndex(obj => obj.id == item.id) != -1} value={item.id} onChange={() => { onChangeElement(item.id); }}
+													label={item.name} /></li>
+											}
+										})
+									}
+
+								})}
+							</div>
+						</ul>
+					</div>)
+				}
+
 				{(datasource == "wordpress" && wpSelect == "files") && (
 					<ul>
 						{files && files.map(function (item, index) {
@@ -514,7 +574,8 @@ export default function Edit(props) {
 								</div>
 							);
 						})}
-					</ul>)}
+					</ul>
+				)}
 				{(datasource == "wordpress" && wpSelect == "folder") && (
 					<ul>
 						{selectedAttachments && selectedAttachments.map(function (item, index) {
