@@ -51,7 +51,7 @@ function bucket_browser_block_init()
 
 	wp_register_script(
 		'filter-script',
-		plugin_dir_url(__FILE__) . 'components/filter-script.js',
+		plugin_dir_url(__FILE__) . 'build/filter-script.js',
 		array('jquery-core'), // Dependencies
 		null,
 		true // Load in footer
