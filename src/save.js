@@ -103,6 +103,7 @@ export default function save(props) {
                             style={{ "margin-top": 10, "margin-left": 50, "width": 290, "margin-right": 36, "padding": 10 }}
                             type="text"
                             id="filter"
+                            className='filterResults'
                             name="filter"
                             placeholder='filter'
                         >
