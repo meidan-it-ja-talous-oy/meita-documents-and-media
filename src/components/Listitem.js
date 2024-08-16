@@ -22,8 +22,10 @@ export default function listitem(props) {
         url,
         filename,
         rawHtmldescription,
+        allFiles
 
     } = props;
+
 
 
     const styles = {

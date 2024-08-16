@@ -204,6 +204,7 @@ export default function Edit(props) {
 		if (index !== -1) {
 			tmpArr.splice(index, 1);
 		} else {
+			//const el = allFiles.find(obj => obj.id === id);
 			const el = allFiles.find(obj => obj.id === id);
 			tmpArr.push(el);
 		}

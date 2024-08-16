@@ -19,38 +19,48 @@ export default function save(props) {
 
     const blockprops = useBlockProps.save();
 
-    let list = Array();
-    let val = "";
+    let checkedFiles = [];
+    let testi = "ennen";
     let all = "no";
+    let val = "";
 
 
 
-    const onChangeElement = (value) => {
 
 
-        var inputElements = document.getElementsByClassName('file-checkbox').checked;
+    const onChangeElement = (event, id, name) => {
 
-        if (inputElements == true) {
-            alert("tere", value);
-            selectedFiles.push(value);
+        alert("this is a testi " + name);
+
+        const isChecked = event.target.checked;
+
+        if (isChecked) {
+            alert("tässä");
+            const file = allFiles.find(obj => obj.id === id);
+            selectedFiles.push(file);
+        } else {
+            selectedFiles = selectedFiles.filter(file => file.id !== id);
         }
 
     };
 
 
     const showedItems = (val) => {
+        alert("this is a testi " + val);
 
-        for (let i = allFiles.length - 1; i >= 0; i--) {
-            if (allFiles[i].value) {
-                list.push(showedItems[i].key);
-            }
-        }
     }
+
+
 
 
     return (
 
-        <div {...blockprops}>
+        <div
+            {...blockprops}
+
+        >
+
+            <p>{testi}</p>
 
             {(props.attributes.datasource == "google") && (
 
@@ -83,18 +93,18 @@ export default function save(props) {
             )}
 
             {(props.attributes.datasource == "google" && props.attributes.listScreen == true) && (
+
+
                 <div>
 
-                    <form>
-                        <label for="filter">Select files to display</label>
+                    <div className='filterlist'>
+                        <label for="filter">Valitse näytettävät tiedostot</label>
                         <input
                             style={{ "margin-top": 10, "margin-left": 50, "width": 290, "margin-right": 36, "padding": 10 }}
                             type="text"
                             id="filter"
                             name="filter"
                             placeholder='filter'
-                            value={val}
-                            onChange={() => showedItems(val)}
                         >
                         </input>
 
@@ -106,75 +116,76 @@ export default function save(props) {
                             }}
                         >Näytä kaikki</button>
 
-                    </form>
-
-                    <div>{selectedFiles}</div>
-
-                    {/* <ul className='googlebucketlist' style={{ "list-style": "none" }}>
-                      
-
-                        {allFiles && allFiles.map(function (item, index) {
-                            return (
-
-                                <div>
-                                    <form>
-
-                                        <li>
-                                            <label style={{ "display": "block" }}>
-                                                <input
-                                                    type="checkbox"
-                                                    className="file-checkbox"
-                                                    data-file-name={item.name}
-                                                    style={{ "margin-right": 10 }}
-                                                    value={item}
-                                                    onChange={() => onChangeElement(item)}
-                                                >
-                                                </input>
-                                                <span>{item.name}</span>
-                                            </label>
-                                        </li>
-
-                                    </form>
-                                </div>
-                            )
-                        })}
+                    </div>
 
 
-                    </ul> */}
+                    <ul className='googlebucketlist' style={{ "list-style": "none" }}>
+
+                        <div>
+                            {allFiles && allFiles.map(function (item, index) {
+
+                                if (index < 10) {
+                                    return (
+                                        <div>
+
+                                            <Listitem
+                                                className={'bucket-browser-block-listitem'}
+                                                index={index}
+                                                link={item.mediaLink}
+                                                title={item.metadata ? item.metadata.FileTitle : item.name}
+                                                showDate={props.attributes.showDate}
+                                                showDescription={false}
+                                                showDownloadLink={props.attributes.showDownloadLink}
+                                                showIcon={props.attributes.showIcon}
+                                                dateFormatted={format(new Date(item.updated), 'd.M.yy')}
+                                                iconMimetype={item.contentType}
+                                                url={"https://storage.googleapis.com/" + item.bucket + "/" + encodeURIComponent(item.name)}
+                                                filename={item.name}
+
+                                            />
+                                        </div>
+                                    );
+                                }
+                            })}
+                        </div>
+
+                    </ul>
 
 
                 </div>
 
 
-            )}
-            {(props.attributes.datasource == "wordpress" && props.attributes.wpSelect == "files") && (
-
-                <ul>
-                    {props.attributes.files && props.attributes.files.map(function (item, index) {
-                        return (
-                            <div>
-                                <Listitem
-                                    index={index}
-                                    link={item.link}
-                                    title={item.title}
-                                    showDate={props.attributes.showDate}
-                                    showDescription={props.attributes.showDescription}
-                                    showDownloadLink={props.attributes.showDownloadLink}
-                                    showIcon={props.attributes.showIcon}
-                                    dateFormatted={item.dateFormatted}
-                                    description={item.description}
-                                    // rawHtmldescription = { item.caption.rendered }
-                                    iconImg={item.icon}
-                                    iconMimetype={item.mime}
-                                    url={item.url}
-                                    filename={item.name}
-                                />
-                                <p></p>
-                            </div>
-                        );
-                    })}
-                </ul>
             )
+            }
+            {
+                (props.attributes.datasource == "wordpress" && props.attributes.wpSelect == "files") && (
+
+                    <ul>
+                        {props.attributes.files && props.attributes.files.map(function (item, index) {
+                            return (
+                                <div>
+                                    <Listitem
+                                        index={index}
+                                        link={item.link}
+                                        title={item.title}
+                                        showDate={props.attributes.showDate}
+                                        showDescription={props.attributes.showDescription}
+                                        showDownloadLink={props.attributes.showDownloadLink}
+                                        showIcon={props.attributes.showIcon}
+                                        dateFormatted={item.dateFormatted}
+                                        description={item.description}
+                                        // rawHtmldescription = { item.caption.rendered }
+                                        iconImg={item.icon}
+                                        iconMimetype={item.mime}
+                                        url={item.url}
+                                        filename={item.name}
+                                    />
+                                    <p></p>
+                                </div>
+                            );
+                        })}
+                    </ul>
+                )
             }
 
             {
