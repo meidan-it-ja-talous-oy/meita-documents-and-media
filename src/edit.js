@@ -1,11 +1,13 @@
 import { __ } from '@wordpress/i18n';
 import { useEffect, useState, RawHTML } from '@wordpress/element';
-import { Icon, Button, PanelBody, SelectControl, CheckboxControl, TextControl, ToggleControl, Modal } from '@wordpress/components';
+import { Icon, Button, PanelBody, SelectControl, CheckboxControl, TextControl, ToggleControl, Modal, RangeControl } from '@wordpress/components';
 import { InspectorControls, useBlockProps, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
-import { more } from '@wordpress/icons';
+import { alignLeft, more } from '@wordpress/icons';
 import './editor.scss';
+import './style.scss';
 import apiFetch from '@wordpress/api-fetch';
 import Listitem from './components/Listitem';
+import Pagination from './components/Pagination';
 import { format } from 'date-fns';
 
 export default function Edit(props) {
@@ -32,15 +34,33 @@ export default function Edit(props) {
 	const [istrue, setTrue] = useState(false);
 	const [checked, setChecked] = useState(props.attributes.checked);
 	const [clicked, setClicked] = useState(false);
+	const [selectclicked, setSelectClicked] = useState(false);
+	const [range, setRange] = useState(props.attributes.range);
+	const [currentPage, setCurrentPage] = useState(props.attributes.currentPage);
+	const [totalPages, setTotalPages] = useState(props.attributes.totalPages);
+	const [loading, setLoading] = useState(true);
+
+
+	const page = 0
 
 	useEffect(() => {
-		if (datasourceURL != "" && datasource == "google") {
-			apiFetch({ url: datasourceURL }).then((files) => {
-				setAllFiles(files.items);
+		//console.log("listScreen", listScreen);
 
+		if (datasourceURL != "" && datasource == "google" && listScreen == false) {
+			console.log("ekassa!!");
+			setSelectedFiles([]);
+			apiFetch({ url: datasourceURL }).then((files) => {
+				console.log("f", files.items.length);
+				setAllFiles(files.items);
+				setTotalPages(files.length);
 			});
+		} else {
+			fetchItems(datasource, datasourceURL, page);
 		}
-	}, [datasourceURL, datasource, allFiles])
+
+	}, [datasource, datasourceURL, range, totalPages, filter, listScreen])
+
+
 
 	useEffect(() => {
 		if (wpSelect == "folder" && datasource == "wordpress" && filebirdApiKey) {
@@ -58,7 +78,7 @@ export default function Edit(props) {
 	}, [selectedFolder, filebirdApiKey])
 
 	useEffect(() => {
-		if (datasource == "google") {
+		if (datasource == "google" && listScreen == false) {
 			var tmpArr = selectedFiles;
 			if (orderBy == "title") {
 				if (order == "ascending") {
@@ -128,10 +148,16 @@ export default function Edit(props) {
 			checked: checked,
 			listScreen: listScreen,
 			filter: filter,
-			allFiles: allFiles
+			allFiles: allFiles,
+			range: range,
+			currentPage: currentPage,
+			totalPages: totalPages
 
 		});
-	}, [showIcon, showDate, showDescription, showDownloadLink, files, datasource, datasourceURL, wpSelect, selectedFolder, order, orderBy, filebirdApiKey, selectedAttachments, selectedFiles, checked, listScreen, filter, allFiles])
+
+
+
+	}, [showIcon, showDate, showDescription, allFiles, datasourceURL, listScreen, showDownloadLink, files, wpSelect, selectedFolder, order, orderBy, filebirdApiKey, selectedAttachments, checked, currentPage, totalPages, selectedFiles])
 
 	// INITIAL LOADS
 	useEffect(() => {
@@ -151,27 +177,65 @@ export default function Edit(props) {
 		}
 	}, [])
 
+
+	const fetchItems = (selection, datasourceURL, page) => {
+
+		const offset = currentPage;
+
+		//console.log("offsetti ", offset);
+		const url = `${datasourceURL}?offset=${offset}&limit=${range - 1}`;
+
+		if (datasourceURL != "" && selection == "google") {
+			apiFetch({ url: url })
+				.then((data) => {
+					setTotalPages(data.items.length);
+					setTimeout(function () {
+						setSelectedFiles(data.items);
+						setLoading(false);
+					}, 1000);
+				});
+		}
+	};
+
 	const openModal = () => {
-		setDatasourceURL(datasourceURL)
+		console.log("clicked", clicked);
+		setDatasourceURL(datasourceURL);
+		setAllFiles(allFiles);
 		setOpenModal(true);
 	}
 	const closeModal = () => {
+		if (clicked == false && selectedFiles.length == 0) {
+			setTrue(false);
+		}
 		setOpenModal(false)
 	}
 	const saveTheChoiches = () => {
+		if (clicked == false && selectedFiles.length == 0) {
+			setTrue(false);
+		}
 		closeModal()
 	}
 	const clicktoTest = () => {
 		if (clicked == false) {
-			setClicked(true)
+			setClicked(true);
+		}
+		else {
+			setClicked(false);
+		}
+
+	}
+	const clicktoChange = () => {
+
+		if (selectclicked == false) {
+			setSelectClicked(true)
+			setlistScreen(false);
 		} else {
-			setClicked(false)
+			setSelectClicked(false);
+			setlistScreen(true);
 		}
 	}
-	const listOnScreen = () => {
-		setDatasourceURL(datasourceURL);
-		setlistScreen(true);
-	}
+
+	// console.log("editin listOn Screen ", listScreen);
 
 	const fetchFolderContents = () => {
 		if (!filebirdApiKey) return;
@@ -211,8 +275,19 @@ export default function Edit(props) {
 		setSelectedFiles(tmpArr);
 		setChecked(tmpArr);
 		setChanged((changed ? false : true));
-		setTrue(true)
+		setTrue(true);
 	}
+
+
+	const filteredItems = selectedFiles
+		? selectedFiles.filter((item) => {
+			return filter === "" || item.name.toLowerCase().includes(filter.toLowerCase());
+		})
+		: [];
+
+	//const paginatedItems = filteredItems.slice((currentPage - 1) * range, currentPage * range);
+
+
 
 	const ClientId = `${props.clientId}`;
 
@@ -220,10 +295,14 @@ export default function Edit(props) {
 		<div {...useBlockProps({ className: 'bucket-browser-block-bucket-browser' })}>
 
 			<div>
-				{(files.length === 0 && selectedAttachments.length == 0 && istrue == false) &&
-					<label>{__('Select the information to display')}</label>
-				}
+				{(files.length === 0 && selectedAttachments.length == 0 && istrue == false && listScreen == false) &&
 
+					<div style={{ "border": "1px solid grey", "padding": 15 }}>
+						<h3 style={{ "color": "black" }}>{__('Bucket browser block')}</h3>
+						<label style={{ "font-weight": "bold" }}>{__('Select the information to display')}</label>
+						<p>{__('Start by selecting a data source, then you can adjust the display settings and change the order of the documents.')}</p>
+					</div>
+				}
 
 				<InspectorControls key="setting">
 					<PanelBody title={__('Data source settings')} icon={more} initialOpen={false}>
@@ -234,6 +313,8 @@ export default function Edit(props) {
 							onChange={(selection) => {
 								setDatasource(selection)
 								setSelectedFiles([]);
+								setlistScreen(true);
+								fetchItems(selection, datasourceURL, page);
 							}}
 							options={[
 								{ label: __("WordPress"), value: "wordpress", selected: true },
@@ -249,25 +330,32 @@ export default function Edit(props) {
 										value={datasourceURL}
 									/>
 
-									<Button
-										variant="primary"
-										className={`is-primary`}
-										onClick={() => {
-											setlistScreen(false);
-											openModal();
+									<ToggleControl
+										label={__("Select files to use")}
+										checked={selectclicked}
+										onChange={() => {
+											clicktoChange();
 										}}
-									>{__('Browse')}</Button>
+										help={selectclicked
+											? ""
+											: "Choosing 'Select files to use' you can choose which files you want to display."
+										}
 
+									/>
+									{(selectclicked == true) &&
 
-									<Button
-										variant="primary"
-										className={`is-primary`}
-										onClick={() => {
-											setShowIcon(false);
-											listOnScreen();
-										}}
-										style={{ "margin-left": 10 }}
-									>{__('List on screen')}</Button>
+										<div style={{ "margin-top": 15 }}>
+											<Button
+												variant="primary"
+												className={`is-primary`}
+												onClick={() => {
+													setlistScreen(false);
+													openModal();
+												}}
+											>{__('Select files')}</Button>
+
+										</div>
+									}
 								</div>)
 						}
 
@@ -365,6 +453,7 @@ export default function Edit(props) {
 										name="wpSelect"
 										onChange={(selection) => {
 											setWpSelect(selection)
+											setTrue(false);
 										}}
 										options={[
 											{ label: __("Files"), value: "files" },
@@ -412,10 +501,9 @@ export default function Edit(props) {
 								}
 							</div>
 							)
-
-
 						}
 					</PanelBody>
+
 					<PanelBody title={__("Display settings")} icon={more} initialOpen={false}>
 						<ToggleControl
 							label={__("Show icons")}
@@ -446,41 +534,60 @@ export default function Edit(props) {
 								setShowDownloadLink(value);
 							}}
 						/>
+						{(selectclicked == false) &&
+							<RangeControl
+								label={__("Amount")}
+								value={range}
+								onChange={(value) => {
+									setRange(value);
+									//console.log("range on: ", range);
+								}}
+								min={0}
+								max={50}
+							/>
+						}
 					</PanelBody>
-					<PanelBody title={__("Order")} icon={more} initialOpen={false}>
-						<SelectControl
-							id="orderBy"
-							label={__("Order by")}
-							name="orderBy"
-							onChange={(selection) => {
-								setOrderBy(selection)
-							}}
-							options={[
-								{ label: __("Title"), value: "title" },
-								{ label: __("Date"), value: "date" }
-							]}
-							value={orderBy}
-						/>
-						<SelectControl
-							id="order"
-							label={__("Order")}
-							name="order"
-							onChange={(selection) => {
-								setOrder(selection)
-							}}
-							options={[
-								{ label: __("Ascending"), value: "ascending" },
-								{ label: __("Descending"), value: "descending" }
-							]}
-							value={order}
-						/>
-					</PanelBody>
+
+					{(listScreen == false) && (
+						<PanelBody title={__("Order")} icon={more} initialOpen={false}>
+							<SelectControl
+								id="orderBy"
+								label={__("Order by")}
+								name="orderBy"
+								onChange={(selection) => {
+									setOrderBy(selection)
+								}}
+								options={[
+									{ label: __("Title"), value: "title" },
+									{ label: __("Date"), value: "date" }
+								]}
+								value={orderBy}
+							/>
+							<SelectControl
+								id="order"
+								label={__("Order")}
+								name="order"
+								onChange={(selection) => {
+									setOrder(selection)
+								}}
+								options={[
+									{ label: __("Ascending"), value: "ascending" },
+									{ label: __("Descending"), value: "descending" }
+								]}
+								value={order}
+							/>
+						</PanelBody>
+					)}
 				</InspectorControls>
+
 			</div>
+
 			<div class="filesPreview">
-				{(datasource == "google") && (
+
+				{datasource == "google" && selectedFiles.length > 0 && listScreen == false && (
 					<ul className='googlebucketlist'>
 						{selectedFiles && selectedFiles.map(function (item, index) {
+
 							return (
 								<div>
 
@@ -502,7 +609,6 @@ export default function Edit(props) {
 									/>
 								</div>
 							);
-
 						})}
 					</ul>)
 				}
@@ -510,52 +616,107 @@ export default function Edit(props) {
 				{(datasource == "google" && listScreen == true) && (
 
 					<div>
-						<div className='filterlist'>
-							<TextControl
-								label={__("Select files to display")}
-								style={{ "margin-top": 10, "margin-left": 60, "max-width": 229, "margin-right": 16 }}
-								placeholder={__('Filter')}
-								value={filter}
-								onChange={(value) => { setFilter(value) }}
-							></TextControl>
-							<Button
-								style={{ "right": 35 }}
-								variant="primary"
-								onClick={() => {
-									setlistScreen(false);
-								}}>{__('Close')}
-							</Button>
+						<div className='filterlist' style={{ "margin-top": 20 }}>
+
+							<form
+								id="bucket-browser-block"
+								role="search"
+								class="block-editor-block-list__block wp-block wp-block-search__button-outside wp-block-search__text-button wp-block-search"
+								style={{ "width": "60%" }}>
+
+								<div className="components-resizable-box__container wp-block-search__inside-wrapper">
+
+									<TextControl
+										className="wp-block-search__input components-base-control"
+										id="bucket-browser-block-input"
+										type='search'
+										value={filter}
+										placeholder={__("Search files..")}
+										onChange={(value) => {
+											setFilter(value.toLowerCase())
+										}}
+										style={{ "padding": 10, "margin-bottom": 0, "margin-top": 5, "border": 0, "padding-bottom": 8, "font-size": 18 }}
+									/>
+
+									<Button
+										id="bucket-browser-block-button"
+										className='block-editor-rich-text__editable wp-block-search__button wp-element-button rich-text'
+										value={filter}
+										onClick={() => {
+											setFilter(filter);
+										}}
+										style={{ "font-size": 18, "padding": "10px 20px" }}
+
+									>{__("Search")}</Button>
+
+								</div>
+							</form>
+
 						</div>
+						<br></br>
 
-						<ul className='googlebucketlist' style={{ "list-style": "none" }}>
-							<div>
-								{allFiles.map(function (item, index) {
 
-									if (item.size !== "0" && (filter === "" || filter !== "" && item.name.indexOf(filter) !== -1)) {
-										return <li key={index}><CheckboxControl checked={checked.findIndex(obj => obj.id == item.id) != -1} value={item.id} onChange={() => { onChangeElement(item.id); }}
-											label={item.name} /></li>
-									}
-									{
-										checked && clicked == true && checked.map(function (item, index) {
-											if (item.size !== "0" && (filter === "" || filter !== "" && item.name.indexOf(filter) !== -1)) {
-												return <li key={index}><CheckboxControl checked={checked.findIndex(obj => obj.id == item.id) != -1} value={item.id} onChange={() => { onChangeElement(item.id); }}
-													label={item.name} /></li>
+						{loading === true ?
+							(
+								<div className="spinnery"></div>
+							)
+							:
+							<div className='pagination'>
+								<ul className='googlebucketlist' style={{ "list-style": "none" }}>
+
+									{/* {selectedFiles && selectedFiles */}
+									{filteredItems && filteredItems
+
+										.slice(currentPage, range + 1 * currentPage)
+
+										.map(function (item, index) {
+
+											if (filter !== "" || filter === "") {
+												return (
+													<Listitem
+														key={index}
+														className={index}
+														index={index}
+														link={item.mediaLink}
+														title={item.metadata ? item.metadata.FileTitle : item.name}
+														showDate={showDate}
+														showDescription={false}
+														showDownloadLink={showDownloadLink}
+														showIcon={showIcon}
+														dateFormatted={format(new Date(item.updated), 'd.M.yy')}
+														iconMimetype={item.contentType}
+														url={"https://storage.googleapis.com/" + item.bucket + "/" + encodeURIComponent(item.name)}
+														filename={item.name}
+														range={range}
+													/>
+												);
 											}
+											return null;
 										})
+
 									}
 
-								})}
+									{range != 0 &&
+										<Pagination
+											currentPage={currentPage}
+											totalPages={totalPages}
+											selectedFiles={selectedFiles}
+											range={range}
+											setCurrentPage={setCurrentPage}
+										/>
+									}
+								</ul>
 							</div>
-						</ul>
-					</div>)
-				}
+						}
+
+					</div>
+				)}
 
 				{(datasource == "wordpress" && wpSelect == "files") && (
 					<ul>
 						{files && files.map(function (item, index) {
 							return (
 								<div>
-									{ }
 									<Listitem
 										index={index}
 										link={item.link}
@@ -577,6 +738,7 @@ export default function Edit(props) {
 						})}
 					</ul>
 				)}
+
 				{(datasource == "wordpress" && wpSelect == "folder") && (
 					<ul>
 						{selectedAttachments && selectedAttachments.map(function (item, index) {
@@ -602,10 +764,10 @@ export default function Edit(props) {
 								</div>
 							);
 						})}
-					</ul>)}
+					</ul>
+				)}
 			</div>
 
 		</div>
-
 	);
 }

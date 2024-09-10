@@ -4,7 +4,110 @@
  *
  * Replace them with your own styles or remove the file completely.
  */
+@use 'sass:math';
+@import "node_modules/@wordpress/base-styles/colors";
+@import "node_modules/@wordpress/base-styles/variables";
+@import "node_modules/@wordpress/base-styles/mixins";
+@import "node_modules/@wordpress/base-styles/breakpoints";
+@import "node_modules/@wordpress/base-styles/animations";
+@import "node_modules/@wordpress/base-styles/z-index";
 
- .wp-block-bucket-browser-block-bucket-browser-block {
+
+.wp-block-bucket-browser-block-bucket-browser-block{ 
 	padding: 2px;
+
+	.googlebucketlist {
+		list-style: none;
+		padding-left: 0px;
+	}
+	.googlebucketlist .bucket-browser-block-listitem{
+		margin-bottom: 10px;
+		display: flex;
+	}
+	.bucket-browser-block-listitem {
+		display: flex;
+		margin-bottom: 10px;
+	}
+	
+	.bucket-browser-block-listitem .bucket-browser-block-icon {
+		/* width: 50px; */
+		height: 65px;
+		margin-right: 15px;
+		border-radius: 5px;
+	}
+	
+	.bucket-browser-block-listitem .bucket-browser-block-icon span,
+	.bucket-browser-block-listitem .bucket-browser-block-icon svg {
+		font-size: 54px;
+		margin: 5px;
+		padding-top: 2px;
+	}
+	
+	.bucket-browser-block-listitem .bucket-browser-block-content .download-link {
+		margin: 0px;
+	}
+	
+	.bucket-browser-block-listitem .bucket-browser-block-content p {
+		margin: 0px;
+	}
+	#pagination button.num-button {
+		margin-left: 5px !important;
+	}
+	#pagination button.prev-page {
+		margin-right: 5px !important;
+	}
+	#pagination button.next-page {
+		margin-left: 10px !important;
+	}
+	#pagination button.active{
+		background-color: white;
+	}
+}
+
+
+/*!
+ * WordPress CSS Spinner
+ * @license GPL-2.0+
+ * @author kuus <kunderikuus@gmail.com> (https://kuus.github.io)
+ */
+
+$wp-spinner-bg: #808080;
+$wp-spinner-fg: #fff;
+$wp-spinner-size: 18px;
+$wp-spinner-size-inner: 4px;
+$wp-spinner-anim-duration: 1.08s;
+
+
+@keyframes infinite-spinning {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.spinnery {
+	//	.cssanimations & {
+	position: relative;
+	width: $wp-spinner-size;
+	height: $wp-spinner-size;
+	border-radius: $wp-spinner-size;
+	background: $wp-spinner-bg;
+	animation: infinite-spinning $wp-spinner-anim-duration linear infinite;
+
+	&:after {
+		content: "";
+		position: absolute;
+		top: 2px;
+		left: 50%;
+		width: $wp-spinner-size-inner;
+		height: $wp-spinner-size-inner;
+		border-radius: $wp-spinner-size-inner;
+		//		margin-left: -($wp-spinner-size-inner / 2);
+		margin-left: calc(0px - math.div($wp-spinner-size-inner, 2));
+		background: $wp-spinner-fg;
+	}
+
+	//	}
 }

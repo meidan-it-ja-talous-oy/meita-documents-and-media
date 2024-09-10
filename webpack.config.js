@@ -7,6 +7,7 @@ module.exports = {
     ...defaultConfig,
     entry: {
         ...defaultConfig.entry,
+        'index': './src/index.js',
         'filter-script': './src/js/filter-script.js',
     },
     output: {

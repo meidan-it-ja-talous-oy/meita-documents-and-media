@@ -9,7 +9,20 @@
 	"description": "bucket-browser plugin for gutenberg block",
 	"textdomain": "bucket-browser-block",
 	"supports": {
-		"html": false
+		"html": false,
+		"spacing": {
+			"margin": [
+				"top",
+				"bottom",
+				"left",
+				"right"
+			],
+			"padding": true
+		},
+		"color": {
+			"background": false,
+			"text": true
+		}
 	},
 	"editorScript": "file:./build/index.js",
 	"editorStyle": "file:./build/index.css",

@@ -14,7 +14,9 @@
 // Admin options page for setting defaults
 require plugin_dir_path(__DIR__) . basename(__DIR__) . '/admin.php';
 
-function bucket_browser_block_init()
+
+
+function bucket_browser_block_init() 
 {
 	$dir = dirname(__FILE__);
 
@@ -26,87 +28,100 @@ function bucket_browser_block_init()
 	}
 	$index_js = 'build/index.js';
 	$script_asset = require($script_asset_path);
+
 	wp_register_script(
 		'create-bucket-browser-block',
-		plugins_url($index_js, __FILE__),
+		plugins_url($index_js, __FILE__), 
 		$script_asset['dependencies'],
 		$script_asset['version']
+		
 	);
-	wp_set_script_translations('create-bucket-browser-block', 'bucket-browser-block');
+	//wp_set_script_translations('create-bucket-browser-block', 'bucket-browser-block');
+	$range_value = isset( $attributes['range'] ) ? esc_attr( $attributes['range'] ) : '';
 
 	wp_localize_script(
 		'create-bucket-browser-block',
 		'bucketbrowserBlockDefaults',
 		array(
-			'bucketbrowseroptions' => get_option('bucketbrowser_options')
+			'bucketbrowseroptions' => get_option('bucketbrowser_options'),
+			'per_page' => $range_value, // Default items per page
 		)
+	);
+
+	wp_enqueue_style(
+		'bucket-browser-block-styles',
+		plugins_url('build/style-index.css', __FILE__),
+		array(),
+		filemtime(plugin_dir_path(__FILE__) . 'build/style-index.css')
 	);
 
 	register_block_type(
 		'bucket-browser-block/bucketbrowser',
 		array(
 			'editor_script' => 'create-bucket-browser-block',
-		)
+			'style' => 'bucket-browser-block-styles'
+			// 'render_callback' => 'wp_filter_enqueue_scripts',
+		),
 
 	);
 
-
-
-	// wp_register_script(
-	// 	'filter-script',
-	// 	plugin_dir_url(__FILE__) . 'build/filter-script.js',
-	// 	array('jquery-core'), // Dependencies
-	// 	false,
-	// 	true // Load in footer
-
-	// );
-	// $allFiles = get_option('all_files_option');
-
-	// wp_localize_script(
-	// 	'filter-script',
-	// 	'filterScriptData',
-	// 	array(
-	// 		'allFiles' => $allFiles,
-	// 	)
-	// );
-
-	// wp_enqueue_script('filter-script');
-
-
-
+	
 }
 add_action('init', 'bucket_browser_block_init');
 
+if(!is_admin()) {
+    // Only make API calls when necessary
+    add_action('wp_enqueue_scripts', 'filter_script');
+}
 
-function wp_filter_enqueue_scripts($attributes)
-{
+
+function filter_script(){
+
+	wp_enqueue_script(
+        'filter-script',
+        plugins_url('build/filter-script.js', __FILE__),
+        array('jquery'),
+        null,
+        true // Load in footer
+    );
+
+	$options = get_option('bucketbrowser_options');
+	$field_value = isset($options['GCPBucketAPIurl']) ? $options['GCPBucketAPIurl'] : '';
+	$range_value = isset( $attributes['range'] ) ? esc_attr( $attributes['range'] ) : '';
 
 
-	$allFiles = isset($attributes['allFiles']) ? $attributes['allFiles'] : array();
-
-	wp_register_script(
-		'filter-script',
-		plugin_dir_url(__FILE__) . 'build/filter-script.js',
-		array('jquery'), // Dependencies
-		false,
-		true // Load in footer
-
-	);
 
 	wp_localize_script(
 		'filter-script',
-		'filterScriptData',
+		'bucketBrowserData',
 		array(
-			'allFiles' => $allFiles,
+			'allFiles' => $field_value,
+			'rangeValue'=>$range_value
 		)
 	);
 
 	wp_enqueue_script('filter-script');
-
 }
 
-add_action('wp_enqueue_scripts', 'wp_filter_enqueue_scripts');
+function get_paginated_results($page = 1, $per_page = 5) {
+    $offset = ($page - 1) * $per_page;
 
+	$options = get_option('bucketbrowser_options');
+	$field_value = isset($options['GCPBucketAPIurl']) ? $options['GCPBucketAPIurl'] : '';
+	$range_value = isset( $attributes['range'] ) ? esc_attr( $attributes['range'] ) : '';
+
+    // Fetch data from the source with pagination
+    $args = array(
+        'offset' => $offset,
+        'number' => $per_page,
+        // Add any other arguments needed
+    );
+
+    // Replace this with your actual data fetching logic
+   // $results = fetchItems("google",$field_value, $args);
+
+    //return $results;
+}
 
 
 if (file_exists(ABSPATH . 'wp-content/plugins/filebird') && is_admin()) {
@@ -150,14 +165,23 @@ function enqueue_iconify_admin_script()
 		wp_enqueue_script('iconify-admin-script', 'https://code.iconify.design/2/2.1.2/iconify.min.js', array('jquery'), '2.1.2', true);
 	}
 }
+
+
+
+
 add_action('admin_enqueue_scripts', 'enqueue_iconify_admin_script');
 
 function wpb_meita_document_block_hook_javascript()
 {
 	?>
-	<style>
+	<!-- <style>
+		.wp-block-bucket-browser-block-bucket-browser-block .googlebucketlist {
+			list-style: none;
+		}
+
 		.bucket-browser-block-listitem {
 			display: flex;
+			margin-bottom: 10px;
 		}
 
 		.bucket-browser-block-listitem .bucket-browser-block-icon {
@@ -186,10 +210,10 @@ function wpb_meita_document_block_hook_javascript()
 		.bucket-browser-block-listitem .bucket-browser-block-content p {
 			margin: 0px;
 		}
-	</style>
+	</style> -->
 
 
-	<script>
+	<!-- <script>
 
 		function fetchFolderContents(wordpressFoldersConfig, index) {
 			var selectedType = wordpressFoldersConfig.attributes["meta-type"].nodeValue;
@@ -210,23 +234,37 @@ function wpb_meita_document_block_hook_javascript()
 								let modifiedDate = "";
 								files.map((item, index) => {
 									modifiedDate = new Date(item.modified);
-									rawHtml += (`<li class='bucket-browser-block-listitem' key=${index}>
-								
-																																																												<div class='bucket-browser-block-icon ${item.mime_type}'>
-																																																													${showIcon && (item.mime_type.indexOf("application") != -1) ? `<span class="iconify" data-icon="fa-solid:file"></span>` : ""}
-																																																													${showIcon && (item.mime_type.indexOf("audio") != -1) ? `<span class="iconify" data-icon="fa-solid:file-audio"></span>` : ""}
-																																																													${showIcon && (item.mime_type.indexOf("image") != -1) ? `<span class="iconify" data-icon="fa-solid:file-image"></span>` : ""}
-																																																													${showIcon && (item.mime_type.indexOf("video") != -1) ? `<span class="iconify" data-icon="fa-solid:file-video"></span>` : ""}
-																																																													${showIcon && (item.mime_type.indexOf("text") != -1) ? `<span class="iconify" data-icon="fa-solid:file-alt"></span>` : ""}
-																																																												</div>
-																																																												<div class='bucket-browser-block-content'>
-																																																													<a rel="noopener" target="_blank" href=${item.link}>${item.title.rendered}</a>
-																																																													${showDate ? `<p class='date'>${modifiedDate.getDate() + "." + (modifiedDate.getMonth() + 1) + "." + modifiedDate.getFullYear()}</p>` : ""}
-																																																													${showDescription ? `<p class='description'>${item.caption.rendered}</p>` : ""}
-																																																													${showDownloadLink ? `<a class='download-link' href=${item.source_url}>Lataa</a>` : ""}
-																																																												</div>
-																																																											</li>
-																																																											`);
+									rawHtml += (
+										`<li class='bucket-browser-block-listitem' key=${index}?>">	
+										<div class='bucket-browser-block-icon ${item.mime_type}'>																																																													
+										${showIcon && (item.mime_type.indexOf("application") != -1) ? `<span class="iconify" data-icon="fa-solid:file"></span>` : ""}
+																																																																																						
+										${showIcon && (item.mime_type.indexOf("audio") != -1) ? `<span class="iconify" data-icon="fa-solid:file-audio"></span>` : ""}
+																																																																																						
+										${showIcon && (item.mime_type.indexOf("image") != -1) ? `<span class="iconify" data-icon="fa-solid:file-image"></span>` : ""}
+																																																																																						
+										${showIcon && (item.mime_type.indexOf("video") != -1) ? `<span class="iconify" data-icon="fa-solid:file-video"></span>` : ""}
+																																																																																						
+										${showIcon && (item.mime_type.indexOf("text") != -1) ? `<span class="iconify" data-icon="fa-solid:file-alt"></span>` : ""}
+																																																																																					
+										</div>
+																																																																																					
+										<div class='bucket-browser-block-content'>
+																																																																																						
+										<a rel="noopener" target="_blank" href=${item.link}>${item.title.rendered}</a>
+																																																																																						
+										${showDate ? `<p class='date'>${modifiedDate.getDate() + "." + (modifiedDate.getMonth() + 1) + "." + modifiedDate.getFullYear()}</p>` : ""}
+																																																																																						
+										${showDescription ? `<p class='description'>${item.caption.rendered}</p>` : ""}
+																																																																																						
+										${showDownloadLink ? `<a class='download-link' href=${item.source_url}>Lataa</a>` : ""}
+																																																																																					
+										</div>
+										<p>TESTI</p>																																																																									
+										</li>
+																																																																																				
+										`);
+						
 								})
 								return rawHtml;
 							})
@@ -248,21 +286,21 @@ function wpb_meita_document_block_hook_javascript()
 						orderedFiles.map((item, index) => {
 							modifiedDate = new Date(item.modified);
 							rawHtml += (`<li class='bucket-browser-block-listitem' key=${index}>
-																																																												<div class='bucket-browser-block-icon ${item.mime_type}'>
-																																																													${showIcon && (item.mime_type.indexOf("application") != -1) ? `<span class="iconify" data-icon="fa-solid:file"></span>` : ""}
-																																																													${showIcon && (item.mime_type.indexOf("audio") != -1) ? `<span class="iconify" data-icon="fa-solid:file-audio"></span>` : ""}
-																																																													${showIcon && (item.mime_type.indexOf("image") != -1) ? `<span class="iconify" data-icon="fa-solid:file-image"></span>` : ""}
-																																																													${showIcon && (item.mime_type.indexOf("video") != -1) ? `<span class="iconify" data-icon="fa-solid:file-video"></span>` : ""}
-																																																													${showIcon && (item.mime_type.indexOf("text") != -1) ? `<span class="iconify" data-icon="fa-solid:file-alt"></span>` : ""}
-																																																												</div>
-																																																												<div class='bucket-browser-block-content'>
-																																																													<a rel="noopener" target="_blank" href=${item.link}>${item.title.rendered}</a>
-																																																													${showDate ? `<p class='date'>${modifiedDate.getDate() + "." + (modifiedDate.getMonth() + 1) + "." + modifiedDate.getFullYear()}</p>` : ""}
-																																																													${showDescription ? `<p class='description'>${item.caption.rendered}</p>` : ""}
-																																																													${showDownloadLink ? `<a class='download-link' href=${item.source_url}>Lataa</a>` : ""}
-																																																												</div>
-																																																											</li>
-																																																											`);
+																																																																																					<div class='bucket-browser-block-icon ${item.mime_type}'>
+																																																																																						${showIcon && (item.mime_type.indexOf("application") != -1) ? `<span class="iconify" data-icon="fa-solid:file"></span>` : ""}
+																																																																																						${showIcon && (item.mime_type.indexOf("audio") != -1) ? `<span class="iconify" data-icon="fa-solid:file-audio"></span>` : ""}
+																																																																																						${showIcon && (item.mime_type.indexOf("image") != -1) ? `<span class="iconify" data-icon="fa-solid:file-image"></span>` : ""}
+																																																																																						${showIcon && (item.mime_type.indexOf("video") != -1) ? `<span class="iconify" data-icon="fa-solid:file-video"></span>` : ""}
+																																																																																						${showIcon && (item.mime_type.indexOf("text") != -1) ? `<span class="iconify" data-icon="fa-solid:file-alt"></span>` : ""}
+																																																																																					</div>
+																																																																																					<div class='bucket-browser-block-content'>
+																																																																																						<a rel="noopener" target="_blank" href=${item.link}>${item.title.rendered}</a>
+																																																																																						${showDate ? `<p class='date'>${modifiedDate.getDate() + "." + (modifiedDate.getMonth() + 1) + "." + modifiedDate.getFullYear()}</p>` : ""}
+																																																																																						${showDescription ? `<p class='description'>${item.caption.rendered}</p>` : ""}
+																																																																																						${showDownloadLink ? `<a class='download-link' href=${item.source_url}>Lataa</a>` : ""}
+																																																																																					</div>
+																																																																																				</li>
+																																																																																				`);
 						})
 						return rawHtml;
 					})
@@ -281,7 +319,7 @@ function wpb_meita_document_block_hook_javascript()
 			}
 		}
 		window.onload = meitaLoadDocuments;
-	</script>
+	</script> -->
 	<?php
 }
 add_action('wp_head', 'wpb_meita_document_block_hook_javascript');

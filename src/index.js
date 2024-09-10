@@ -84,6 +84,18 @@ registerBlockType(metadata.name,
 			listScreen: {
 				type: "boolean",
 				default: false
+			},
+			range: {
+				type: "number",
+				default: 5
+			},
+			currentPage: {
+				type: "number",
+				default: 0
+			},
+			totalPages: {
+				type: "number",
+				default: 0
 			}
 		},
 		edit: Edit,
