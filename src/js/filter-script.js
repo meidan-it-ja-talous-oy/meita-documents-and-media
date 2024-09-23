@@ -35,33 +35,35 @@ jQuery(document).ready(function ($) {
     }
 
 
-    function doSearch(newOffset) {
+    function doSearch(newOffset, block) {
 
         var dataurl = bucketBrowserData.allFiles;
-        var rangeValue = $(".googlebucketlist").data('range');
-        var totalItems = 0;
+        var rangeVal = parseInt(block.attr('data-range'), 10);
+        var blockId = block.attr('id');
 
+        if (isNaN(rangeVal)) {
+            console.error('Invalid number:', block.attr('data-range'));
+            rangeVal = 0;  // default value
+        }
+
+        var totalItems = 0;
         offset = newOffset;
 
-        console.log("offset on ", offset);
-
         if (dataurl) {
-            fetch(dataurl + '?offset=' + offset + '&limit=' + rangeValue, {
+            fetch(`${dataurl}?offset=${offset}&limit=${rangeVal}`, {
                 credentials: 'omit',
                 url: dataurl,
             })
                 .then((response) => {
                     return response.json();
-
                 })
                 .then((res) => {
-
                     totalItems = res.items.length;
-                    var totalPages = Math.ceil(totalItems / rangeValue);
-                    //console.log("res items length", totalItems);
+                    var totalPages = Math.ceil(totalItems / rangeVal);
+                    let el = block[0].querySelector('.googlebucketlist');
 
-                    if ($('.googlebucketlist')) {
-                        $('.googlebucketlist').empty();
+                    if ($(`#${blockId} .googlebucketlist`)) {
+                        $(`#${blockId} .googlebucketlist`).empty();
                     }
 
                     for (let i = 0; i <= res.items.length; i++) {
@@ -69,42 +71,41 @@ jQuery(document).ready(function ($) {
                         if (i == 1) {
                             break;
                         }
-
                         let rawHtml = "";
-                        let el = document.getElementsByClassName('googlebucketlist');
-                        el = el[i];
-                        let li = document.createElement("div"); // create a list item element
+
+                        let li = document.createElement("ul"); // create a list item element
+                        li.classList.add('googlebucketlist-ul');
+                        li.setAttribute('aria-label', 'bucket-browser-block list');
 
                         setNewFirst(res.items.map((item, index) => {
 
                             rawHtml += (
-                                `<li class='bucket-browser-block-listitem' data-search-term=${item.name.toLowerCase()} key=${index}>
+                                `<li class='bucket-browser-block-listitem' data-search-term=${item.name.toLowerCase().trim().replace(/\s+/g, '')} data-key=${index}>
                                 	<div class='bucket-browser-block-icon ${iconType(item.contentType)}'>
                                  	    <span class="iconify" data-icon=${iconType(item.contentType)} ></span>
                                  	</div>
 
                                  	<div class="bucket-browser-block-content">
-                                 		<a rel="noopener" target="_blank" href=${"https://storage.googleapis.com/" + item.bucket + "/" + encodeURIComponent(item.name)}>${item.name}</a>
-                                 		<p class='date'>${format(new Date(item.updated), 'd.M.yy')}</p>
-                                        <a class='download-link' href=${item.mediaLink}>Lataa</a>
+                                 		<a target="_blank" href=${"https://storage.googleapis.com/" + item.bucket + "/" + encodeURIComponent(item.name)} alt='${__('Open file ') + item.name.replace(/_/g, ' ').replace(/\..*$/, '')}' >${item.name}</a>
+                                 		<p class='date' title="Last modified at ${format(new Date(item.updated), 'd.M.yy')}">${__('Modified')}  ${format(new Date(item.updated), 'd.M.yy')}</p>
+                                        <a class='download-link' href=${item.mediaLink} alt='${__('Download file')} ${item.name.replace(/_/g, ' ').replace(/\..*$/, '')}'>${__('Download')}</a>
                                  	</div>
                                 </li>
                                 `);
                             li.innerHTML = rawHtml;
                             el.appendChild(li);
 
-                            // $('.googlebucketlist li').hide().slice(offset, rangeValue).show();
-                            //$('.googlebucketlist li').hide().slice(offset, rangeValue).show();
-
                         }));
 
+                        $(`#${blockId} .spinnery`).hide();
 
-                        $('#spinnery').hide();
+
                     };
-                    $('.googlebucketlist li').hide().slice(offset, offset + rangeValue).show();
 
-                    if (rangeValue > 0) {
-                        updatePagination(totalPages, offset, rangeValue);
+                    $(`#${blockId} .googlebucketlist li`).hide().slice(offset, offset + rangeVal).show();
+
+                    if (rangeVal > 0) {
+                        updatePagination(totalPages, offset, rangeVal, block);
                     }
 
                 })
@@ -117,50 +118,39 @@ jQuery(document).ready(function ($) {
 
     };
 
-    function updatePagination(totalPages, currentPage, rangeValue) {
-        const paginationContainer = document.getElementById('pagination');
-        paginationContainer.innerHTML = '';
+    function updatePagination(totalPages, currentPage, rangeValue, block) {
+
+        let googleBucketList = block.find('.googlebucketlist');
+
+        // If the pagination container already exists, remove it to avoid duplicates
+        googleBucketList.find('.pagination').remove();
+
+
+        let paginationContainer = document.createElement('div');
+        paginationContainer.classList.add('pagination');
+        paginationContainer.setAttribute('aria-label', 'bucket-browser-block pagination');
+        googleBucketList.append(paginationContainer);
+
 
         // Maximum number of page buttons to show at a time
         const maxVisibleButtons = 5;
 
-        const currentpage = Math.floor(currentPage / rangeValue);
-        //Current page
+        // Current page
         const currentPage2 = Math.floor(currentPage / rangeValue);
 
-        console.log("currentPage", currentPage2);
-        console.log("rangeValue", rangeValue);
-
-
-        let startPage = Math.max(0, currentPage2 + 1 - maxVisibleButtons);
+        let startPage = Math.max(0, currentPage2 + 1 - maxVisibleButtons + 1);
         let endPage = Math.min(totalPages, startPage + maxVisibleButtons - 1);
-
-        console.log("stratpage", startPage);
-        // If we are close to the end, adjust the start page so that the last pages are shown properly
-        if (currentPage2 - 1 >= maxVisibleButtons) {
-            console.log("kyllä!");
-            const middlePoint = Math.floor(maxVisibleButtons * 2) - 2;
-
-            console.log("midlepoint", middlePoint)
-
-            // Adjust startPage and endPage based on current page
-            startPage = Math.max(currentPage2 - 1, currentPage2 - 1 - middlePoint);
-            console.log("stratpage", startPage);
-
-            endPage = Math.min(totalPages, startPage + maxVisibleButtons - 1);
-            console.log("endPage", endPage);
-            //startPage = Math.max(1, endPage - maxVisibleButtons);
-        }
 
 
         // Previous button
         const prevButton = document.createElement('button');
         prevButton.textContent = 'Previous';
         prevButton.classList.add('prev-page');
+        prevButton.setAttribute('aria-label', __('Previous page'));
         prevButton.disabled = currentPage2 === 0 || currentPage === 0; // Disable if on the first page
         prevButton.onclick = () => {
             if (currentPage > 1) {
-                doSearch(currentPage - rangeValue);
+                doSearch(currentPage - rangeValue, block);
             }
         };
         paginationContainer.appendChild(prevButton);
@@ -170,25 +160,24 @@ jQuery(document).ready(function ($) {
             const button = document.createElement('button');
             button.textContent = i + 1;
             button.classList.add('num-button');
+            let pageNum = i + 1;
+            button.setAttribute('aria-label', 'page ' + pageNum + ' button');
 
             if (i === currentPage / rangeValue) {
                 button.classList.add('active');
+                button.setAttribute('aria-current', 'page');
+                button.setAttribute('aria-label', 'page ' + pageNum + ' button');
             }
             button.onclick = (event) => {
                 event.preventDefault();
-                if (i - 1 == 0) {
-                    doSearch(0);
+
+                if (i == 0) {
+                    doSearch(0, block);
+                    i++;
                 } else {
-                    console.log("i on ", i);
-                    doSearch(i * rangeValue); // Go to the correct page
+                    doSearch(i + 1 * rangeValue, block); // Go to the correct page
                 }
-
-
             };
-
-            // Highlight the current page
-
-
             paginationContainer.appendChild(button);
         }
 
@@ -196,22 +185,24 @@ jQuery(document).ready(function ($) {
         const nextButton = document.createElement('button');
         nextButton.textContent = 'Next';
         nextButton.classList.add('next-page');
+        nextButton.setAttribute('aria-label', __('Next page'));
         nextButton.disabled = currentPage + rangeValue >= totalPages * rangeValue; // Disable if on the last page
         nextButton.onclick = () => {
             if (currentPage2 <= totalPages || currentPage2 !== 0) {
-                doSearch(currentPage + rangeValue);
+                let tulos = currentPage + rangeValue
+                doSearch(tulos, block);
+
             }
-            // if (currentPage + rangeValue < totalPages * rangeValue) {
-            //     doSearch(currentPage + rangeValue);
-            // }
         };
         paginationContainer.appendChild(nextButton);
 
+
+        //Page of pages
         const pageAmount = document.createElement('div');
-        const begin = currentPage2 !== 0 ? currentPage2 : 1;
+        const begin = currentPage2 === 1 ? currentPage2 + 1 : currentPage2 + 1;
+        pageAmount.setAttribute('aria-label', 'page ' + begin + ' of ' + totalPages);
 
-
-        pageAmount.textContent = 'Page ' + begin + ' of ' + totalPages;
+        pageAmount.textContent = __('Page ') + begin + __(' of ') + totalPages;
         pageAmount.classList.add('page-of');
 
         paginationContainer.appendChild(pageAmount);
@@ -220,71 +211,44 @@ jQuery(document).ready(function ($) {
 
     setTimeout(function () {
 
-        $('.spinnery').show();
-        doSearch(offset);
+        const blocks = $('.wp-block-bucket-browser-block-bucket-browser-block'); // Get all blocks
+
+        $('.spinnery').show(); // Show spinner for all blocks
+
+        // Loop through each block and call doSearch separately
+        blocks.each(function (index, blockElement) {
+            const block = $(blockElement);
+            const offset = 0;
+
+            doSearch(offset, block);
+        });
+
+        $('.spinnery').hide(); // Hide spinner after all blocks have been processed
 
     }, 1000);
 
 
-
-
-    $('#filter').on('keyup', function (event) {
-
+    function doBucketSearch(event) {
         event.preventDefault();
 
-        console.log("kukkuu keyUP");
+        const blockId = $(event.target).closest('.wp-block-bucket-browser-block-bucket-browser-block').attr('id'); // Use closest to find the block
 
-        $('.spinnery').show();
-        $('#pagination').hide();
-        var rangeValue = $(".googlebucketlist").data('range');
-        var searchTerm = $(this).val().toLowerCase();
+        const block = $('#' + blockId);
 
-        setTimeout(function () {
-
-            $('.googlebucketlist li').hide();
-
-            if (searchTerm.length === 0) {
-                // If the input is cleared, show all items
-                $('.googlebucketlist li').show();
-                $('#pagination').show();
-                doSearch(offset);  // Optionally, re-run the full search if needed
-
-            } else {
-                // Filter and display only the matching items
-                $('.googlebucketlist li').each(function () {
-                    if ($(this).filter('[data-search-term*="' + searchTerm + '"]').length > 0) {
-                        $(this).show();
-                    } else {
-                        $(this).hide();
-                    }
-                });
-            }
-
-            $('#spinnery').hide();
-
-        }, 2000);
-    });
-
-
-    $("#bucket-browser-block-button").on('click', function (event) {
-        event.preventDefault();
-        //show spinner
-
-        $('.googlebucketlist').hide();
-        $('#pagination').hide();
-
-        $('.spinnery').show();
+        block.find('.googlebucketlist').hide();
+        block.find('.pagination').hide();
+        block.find('.spinnery').show();
 
         setTimeout(function () {
-            var searchTerm = $('#filter').val().toLowerCase();
-            $('.googlebucketlist').show();
+            var searchTerm = block.find('.filter').val().toLowerCase();  // Only search in the current block
+            block.find('.googlebucketlist').show();
 
-
-            $('.googlebucketlist li').each(function () {
+            block.find('.googlebucketlist li').each(function () {
                 // If no search term, reset the search
                 if (searchTerm.length == 0) {
-                    doSearch();
-                    $('#pagination').show();
+                    doSearch(offset, block);
+                    block.find('.pagination').show();
+
                 }
                 // Check if the `data-search-term` attribute matches the search term
                 if ($(this).attr('data-search-term').toLowerCase().includes(searchTerm) || searchTerm.length < 1) {
@@ -294,26 +258,35 @@ jQuery(document).ready(function ($) {
                 }
             });
 
-            $('.spinnery').hide();
+            block.find('.spinnery').hide();
 
-        }, 2000);  // Delay of 3000 milliseconds (2 seconds)
+        }, 2000);  // Delay of 2000 milliseconds (2 seconds)
 
-    });
+    }
+    $(".bucket-browser-block-button").click(doBucketSearch);
 
-    $('input[type="search"]').on('search', function () {
 
-        $('.googlebucketlist').empty();
+    function clearInput(event) {
+        event.preventDefault();
+        const blockId = $(event.target).closest('.wp-block-bucket-browser-block-bucket-browser-block').attr('id');  // Use closest to find the block
 
+        const block = $('#' + blockId);
+
+        block.find('.googlebucketlist').empty();
+        block.find('.pagination').hide();
+        block.find('.spinnery').show();
 
         setTimeout(function () {
-            $('.spinnery').show();
-            doSearch(offset);
+            doSearch(offset, block);
+            block.find('.spinnery').hide();
+            block.find('.pagination').show();
 
         }, 2000);
-        $('#pagination').show();
-        $('#spinnery').hide();
 
-    });
+    }
+    $('.wp-block-bucket-browser-block-bucket-browser-block').find('input[type="search"]').on('search', clearInput);
+
+
 });
 
 

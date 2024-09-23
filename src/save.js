@@ -9,6 +9,8 @@ import './style.scss';
 
 export default function save(props) {
 
+    const blockprops = useBlockProps.save();
+
     const { attributes } = props;
 
     const {
@@ -16,21 +18,25 @@ export default function save(props) {
         allFiles,
         filter,
         listScreen,
-        range
+        range,
+        blockId,
+        searchlabel
     } = attributes;
 
-    const blockprops = useBlockProps.save();
+
 
     return (
 
         <div
             {...blockprops}
-            range={range}
+            data-range={range}
+            id={blockId}
+        // data-blockId={props.attributes.blockId}
         >
 
             {(props.attributes.datasource == "google" && listScreen == false) && (
 
-                <ul className='googlebucketlist'>
+                <div className='googlebucketlist'>
                     {selectedFiles && selectedFiles.map(function (item, index) {
 
                         return (
@@ -54,7 +60,7 @@ export default function save(props) {
                             </div>
                         );
                     })}
-                </ul>
+                </div>
 
             )}
 
@@ -62,18 +68,16 @@ export default function save(props) {
                 <div>
 
                     <form
-                        id="bucket-browser-block-form"
                         role="search"
-                        className="block-editor-block-list__block wp-block wp-block-search__button-outside wp-block-search__text-button wp-block-search"
+                        className="bucket-browser-block-form block-editor-block-list__block wp-block wp-block-search__button-outside wp-block-search__text-button wp-block-search"
                         style={{ "width": "60%" }}>
-
+                        <label className='wp-block-search__label' for="bucket-browser-block-input">{searchlabel}</label>
                         <div className="components-resizable-box__container wp-block-search__inside-wrapper" style={{ "display": "flex" }}>
 
                             <input
                                 type="search"
-                                id="filter"
-                                className="wp-block-search__input components-base-control filterResults"
-                                name="filter"
+                                id="bucket-browser-block-input"
+                                className="filter wp-block-search__input components-base-control filterResults"
                                 placeholder={__('Search')}
                                 style={{ "padding": 10, "margin-bottom": 0, "border": 0, "padding-bottom": 8, "font-size": 18, "width": "100%" }}
                             >
@@ -81,22 +85,22 @@ export default function save(props) {
 
                             <button
                                 type="submit"
-                                id="bucket-browser-block-button"
-                                className='block-editor-rich-text__editable wp-block-search__button wp-element-button rich-text'
+                                className='bucket-browser-block-button block-editor-rich-text__editable wp-block-search__button wp-element-button rich-text'
                                 // value={__("Search")}
                                 style={{ "font-size": 18, "padding": "10px 20px", "display": "flex", "flex": 1 }}
+                                aria-label={__('Search')}
 
                             >{__("Search")}</button>
 
                         </div>
                     </form>
 
-                    <p id="spinnery" className="spinnery" style="display:none;"></p>
+                    <p className="spinnery" style="display:none;"></p>
 
-                    <ul className='googlebucketlist' style={{ "list-style": "none", "margin-top": 40 }} data-range={range}>
-                    </ul >
+                    <div className='googlebucketlist' data-range={range}>
+                    </div >
 
-                    <div id="pagination"></div>
+                    {/* <div className="pagination"></div> */}
 
 
                 </div>

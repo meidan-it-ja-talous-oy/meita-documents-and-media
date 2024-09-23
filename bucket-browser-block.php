@@ -38,6 +38,7 @@ function bucket_browser_block_init()
 	);
 	//wp_set_script_translations('create-bucket-browser-block', 'bucket-browser-block');
 	$range_value = isset( $attributes['range'] ) ? esc_attr( $attributes['range'] ) : '';
+	$blockId_value = isset( $attributes['blockId'] ) ? esc_attr( $attributes['blockId'] ) : '';
 
 	wp_localize_script(
 		'create-bucket-browser-block',
@@ -45,6 +46,7 @@ function bucket_browser_block_init()
 		array(
 			'bucketbrowseroptions' => get_option('bucketbrowser_options'),
 			'per_page' => $range_value, // Default items per page
+			'blockId'=> $blockId_value
 		)
 	);
 
@@ -117,10 +119,6 @@ function get_paginated_results($page = 1, $per_page = 5) {
         // Add any other arguments needed
     );
 
-    // Replace this with your actual data fetching logic
-   // $results = fetchItems("google",$field_value, $args);
-
-    //return $results;
 }
 
 
@@ -171,156 +169,4 @@ function enqueue_iconify_admin_script()
 
 add_action('admin_enqueue_scripts', 'enqueue_iconify_admin_script');
 
-function wpb_meita_document_block_hook_javascript()
-{
-	?>
-	<!-- <style>
-		.wp-block-bucket-browser-block-bucket-browser-block .googlebucketlist {
-			list-style: none;
-		}
-
-		.bucket-browser-block-listitem {
-			display: flex;
-			margin-bottom: 10px;
-		}
-
-		.bucket-browser-block-listitem .bucket-browser-block-icon {
-			/* width: 50px; */
-			height: 65px;
-			margin-right: 15px;
-			border-radius: 5px;
-		}
-
-		.bucket-browser-block-listitem .bucket-browser-block-icon span,
-		.bucket-browser-block-listitem .bucket-browser-block-icon svg {
-			font-size: 54px;
-			margin: 5px;
-			padding-top: 2px;
-		}
-
-		.bucket-browser-block-listitem .bucket-browser-block-icon svg {
-			font-size: 54px;
-			margin: 5px;
-		}
-
-		.bucket-browser-block-listitem .bucket-browser-block-content .download-link {
-			margin: 0px;
-		}
-
-		.bucket-browser-block-listitem .bucket-browser-block-content p {
-			margin: 0px;
-		}
-	</style> -->
-
-
-	<!-- <script>
-
-		function fetchFolderContents(wordpressFoldersConfig, index) {
-			var selectedType = wordpressFoldersConfig.attributes["meta-type"].nodeValue;
-			var showIcon = wordpressFoldersConfig.attributes["meta-showIcon"].nodeValue;
-			var showDescription = wordpressFoldersConfig.attributes["meta-showDescription"].nodeValue;
-			var showDate = wordpressFoldersConfig.attributes["meta-showDate"].nodeValue;
-			var showDownloadLink = wordpressFoldersConfig.attributes["meta-showDownloadLink"].nodeValue;
-			if (selectedType == "folder") {
-				var selectedFolder = wordpressFoldersConfig.attributes["meta-folders"].nodeValue;
-				var fbak = wordpressFoldersConfig.attributes["meta-fbak"].nodeValue;
-				fetch("/wp-json/filebird/public/v1/attachment-id/?folder_id=" + selectedFolder, { headers: { "Authorization": `Bearer ${fbak}` } })
-					.then(response => response.json())
-					.then(data => {
-						fetch("/wp-json/wp/v2/media?per_page=100&include=" + data.data.attachment_ids)
-							.then(rawFiles => rawFiles.json())
-							.then(files => {
-								let rawHtml = "";
-								let modifiedDate = "";
-								files.map((item, index) => {
-									modifiedDate = new Date(item.modified);
-									rawHtml += (
-										`<li class='bucket-browser-block-listitem' key=${index}?>">	
-										<div class='bucket-browser-block-icon ${item.mime_type}'>																																																													
-										${showIcon && (item.mime_type.indexOf("application") != -1) ? `<span class="iconify" data-icon="fa-solid:file"></span>` : ""}
-																																																																																						
-										${showIcon && (item.mime_type.indexOf("audio") != -1) ? `<span class="iconify" data-icon="fa-solid:file-audio"></span>` : ""}
-																																																																																						
-										${showIcon && (item.mime_type.indexOf("image") != -1) ? `<span class="iconify" data-icon="fa-solid:file-image"></span>` : ""}
-																																																																																						
-										${showIcon && (item.mime_type.indexOf("video") != -1) ? `<span class="iconify" data-icon="fa-solid:file-video"></span>` : ""}
-																																																																																						
-										${showIcon && (item.mime_type.indexOf("text") != -1) ? `<span class="iconify" data-icon="fa-solid:file-alt"></span>` : ""}
-																																																																																					
-										</div>
-																																																																																					
-										<div class='bucket-browser-block-content'>
-																																																																																						
-										<a rel="noopener" target="_blank" href=${item.link}>${item.title.rendered}</a>
-																																																																																						
-										${showDate ? `<p class='date'>${modifiedDate.getDate() + "." + (modifiedDate.getMonth() + 1) + "." + modifiedDate.getFullYear()}</p>` : ""}
-																																																																																						
-										${showDescription ? `<p class='description'>${item.caption.rendered}</p>` : ""}
-																																																																																						
-										${showDownloadLink ? `<a class='download-link' href=${item.source_url}>Lataa</a>` : ""}
-																																																																																					
-										</div>
-										<p>TESTI</p>																																																																									
-										</li>
-																																																																																				
-										`);
-						
-								})
-								return rawHtml;
-							})
-							.then(html => {
-								document.getElementsByClassName("wordpressFolders")[index].innerHTML = html;
-							})
-					})
-			} else {
-				var selectedFiles = wordpressFoldersConfig.attributes["meta-files"].nodeValue;
-				fetch("/wp-json/wp/v2/media?per_page=100&include=" + selectedFiles)
-					.then(rawFiles => rawFiles.json())
-					.then(files => {
-						let rawHtml = "";
-						let modifiedDate = "";
-						// The file order remains the same in the public view and editing view
-						var orderedFiles = files.sort(function (a, b) {
-							return selectedFiles.indexOf(a.id) - selectedFiles.indexOf(b.id);
-						});
-						orderedFiles.map((item, index) => {
-							modifiedDate = new Date(item.modified);
-							rawHtml += (`<li class='bucket-browser-block-listitem' key=${index}>
-																																																																																					<div class='bucket-browser-block-icon ${item.mime_type}'>
-																																																																																						${showIcon && (item.mime_type.indexOf("application") != -1) ? `<span class="iconify" data-icon="fa-solid:file"></span>` : ""}
-																																																																																						${showIcon && (item.mime_type.indexOf("audio") != -1) ? `<span class="iconify" data-icon="fa-solid:file-audio"></span>` : ""}
-																																																																																						${showIcon && (item.mime_type.indexOf("image") != -1) ? `<span class="iconify" data-icon="fa-solid:file-image"></span>` : ""}
-																																																																																						${showIcon && (item.mime_type.indexOf("video") != -1) ? `<span class="iconify" data-icon="fa-solid:file-video"></span>` : ""}
-																																																																																						${showIcon && (item.mime_type.indexOf("text") != -1) ? `<span class="iconify" data-icon="fa-solid:file-alt"></span>` : ""}
-																																																																																					</div>
-																																																																																					<div class='bucket-browser-block-content'>
-																																																																																						<a rel="noopener" target="_blank" href=${item.link}>${item.title.rendered}</a>
-																																																																																						${showDate ? `<p class='date'>${modifiedDate.getDate() + "." + (modifiedDate.getMonth() + 1) + "." + modifiedDate.getFullYear()}</p>` : ""}
-																																																																																						${showDescription ? `<p class='description'>${item.caption.rendered}</p>` : ""}
-																																																																																						${showDownloadLink ? `<a class='download-link' href=${item.source_url}>Lataa</a>` : ""}
-																																																																																					</div>
-																																																																																				</li>
-																																																																																				`);
-						})
-						return rawHtml;
-					})
-					.then(html => {
-						document.getElementsByClassName("wordpressFolders")[index].innerHTML = html;
-					})
-			}
-		}
-
-		function meitaLoadDocuments() {
-			if (document.getElementsByClassName("wordpressFolders").length > 0) {
-				var wordpressFoldersConfigs = document.getElementsByClassName("wordpressFolders");
-				for (var i = 0; i < wordpressFoldersConfigs.length; i++) {
-					fetchFolderContents(wordpressFoldersConfigs[i], i)
-				}
-			}
-		}
-		window.onload = meitaLoadDocuments;
-	</script> -->
-	<?php
-}
-add_action('wp_head', 'wpb_meita_document_block_hook_javascript');
 

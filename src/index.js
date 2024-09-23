@@ -96,6 +96,17 @@ registerBlockType(metadata.name,
 			totalPages: {
 				type: "number",
 				default: 0
+			},
+			blockId: {
+				type: "string",
+				selector: "div",
+				attribute: "id",
+				source: "attribute",
+				default: ""
+			},
+			searchlabel: {
+				type: "string",
+				default: ""
 			}
 		},
 		edit: Edit,

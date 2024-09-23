@@ -6,7 +6,7 @@
 	"title": "Dokumentit ja media",
 	"category": "widgets",
 	"icon": "media-document",
-	"description": "bucket-browser plugin for gutenberg block",
+	"description": "bucket-browser plugin is made for displaying files",
 	"textdomain": "bucket-browser-block",
 	"supports": {
 		"html": false,
@@ -20,7 +20,7 @@
 			"padding": true
 		},
 		"color": {
-			"background": false,
+			"background": true,
 			"text": true
 		}
 	},

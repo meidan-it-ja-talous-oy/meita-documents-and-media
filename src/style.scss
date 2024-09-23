@@ -16,19 +16,15 @@
 .wp-block-bucket-browser-block-bucket-browser-block{ 
 	padding: 2px;
 
-	.googlebucketlist {
-		list-style: none;
-		padding-left: 0px;
+	.googlebucketlist{
+		padding-left: inherit;
 	}
+
 	.googlebucketlist .bucket-browser-block-listitem{
-		margin-bottom: 10px;
+		margin-bottom: 15px;
 		display: flex;
-	}
-	.bucket-browser-block-listitem {
-		display: flex;
-		margin-bottom: 10px;
-	}
-	
+		
+	}	
 	.bucket-browser-block-listitem .bucket-browser-block-icon {
 		/* width: 50px; */
 		height: 65px;
@@ -50,17 +46,35 @@
 	.bucket-browser-block-listitem .bucket-browser-block-content p {
 		margin: 0px;
 	}
-	#pagination button.num-button {
+	.pagination button.num-button {
 		margin-left: 5px !important;
 	}
-	#pagination button.prev-page {
+	.pagination button.prev-page {
 		margin-right: 5px !important;
 	}
-	#pagination button.next-page {
+	.pagination button.next-page {
 		margin-left: 10px !important;
 	}
-	#pagination button.active{
+	.pagination button.active{
 		background-color: white;
+	}
+	.googlebucketlist, .googlebucketlist >ul{
+		list-style: none;
+		margin-top: 40px;
+		margin-bottom: 40px;
+		padding-left: inherit;
+	}
+	.pagination .page-of{
+		margin-top: 0.2rem;
+	}
+	.wp-block-search__label{
+		color: black;
+	}
+	.bucket-browser-block-form{
+		background-color: inherit;
+	}
+	.bucket-browser-block-button{
+		margin-left: 0px;
 	}
 }
 

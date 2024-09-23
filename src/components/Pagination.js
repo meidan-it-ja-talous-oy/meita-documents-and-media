@@ -14,6 +14,8 @@ export default function Pagination(props) {
 
     const total = Math.ceil(totalPages / range);
 
+    let pageNow = currentPage + 1;
+
     const handlePrevious = () => {
         if (currentPage > 1) {
             setCurrentPage(currentPage - 1);
@@ -32,15 +34,14 @@ export default function Pagination(props) {
             setCurrentPage(page);
         }
     };
-
-    // console.log("currentpage is  ", currentPage)
+    //console.log("currentpage p ", currentPage);
 
     return (
         <div>
             <div className="pagination" id="pagination" style={{ "display": "flex", "margin-top": 20 }}>
                 <button
                     onClick={() => handlePrevious()}
-                    disabled={currentPage === 1}
+                    disabled={currentPage === 1 || currentPage === 0}
                     style={{ "margin-right": 10, "background-color": "inherit", "border": 0 }}
                 >
                     {__("Previous")}
@@ -77,7 +78,7 @@ export default function Pagination(props) {
                 style={{ "padding": 10 }}
             >
                 <span
-                >Page {currentPage} of {total}</span>
+                >Page {currentPage == 0 ? pageNow : currentPage} of {total}</span>
             </div>
         </div>
     )

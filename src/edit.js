@@ -39,18 +39,22 @@ export default function Edit(props) {
 	const [currentPage, setCurrentPage] = useState(props.attributes.currentPage);
 	const [totalPages, setTotalPages] = useState(props.attributes.totalPages);
 	const [loading, setLoading] = useState(true);
+	const [blockId, setBlockId] = useState(props.clientId);
+	const [searchlabel, setSearchlabel] = useState(props.searchlabel);
 
+	const page = 1
 
-	const page = 0
 
 	useEffect(() => {
-		//console.log("listScreen", listScreen);
+
+		if (blockId == "") {
+			setBlockId({ blockId: blockId });
+			setSearchlabel({ searchlabel: searchlabel });
+		}
 
 		if (datasourceURL != "" && datasource == "google" && listScreen == false) {
-			console.log("ekassa!!");
 			setSelectedFiles([]);
 			apiFetch({ url: datasourceURL }).then((files) => {
-				console.log("f", files.items.length);
 				setAllFiles(files.items);
 				setTotalPages(files.length);
 			});
@@ -58,7 +62,7 @@ export default function Edit(props) {
 			fetchItems(datasource, datasourceURL, page);
 		}
 
-	}, [datasource, datasourceURL, range, totalPages, filter, listScreen])
+	}, [datasource, datasourceURL, range, totalPages, filter, listScreen, blockId])
 
 
 
@@ -151,13 +155,13 @@ export default function Edit(props) {
 			allFiles: allFiles,
 			range: range,
 			currentPage: currentPage,
-			totalPages: totalPages
+			totalPages: totalPages,
+			blockId: blockId,
+			searchlabel: searchlabel
 
 		});
 
-
-
-	}, [showIcon, showDate, showDescription, allFiles, datasourceURL, listScreen, showDownloadLink, files, wpSelect, selectedFolder, order, orderBy, filebirdApiKey, selectedAttachments, checked, currentPage, totalPages, selectedFiles])
+	}, [showIcon, showDate, showDescription, allFiles, datasourceURL, listScreen, showDownloadLink, files, wpSelect, selectedFolder, order, orderBy, filebirdApiKey, selectedAttachments, checked, currentPage, totalPages, selectedFiles, searchlabel])
 
 	// INITIAL LOADS
 	useEffect(() => {
@@ -180,10 +184,8 @@ export default function Edit(props) {
 
 	const fetchItems = (selection, datasourceURL, page) => {
 
-		const offset = currentPage;
-
-		//console.log("offsetti ", offset);
-		const url = `${datasourceURL}?offset=${offset}&limit=${range - 1}`;
+		page = currentPage;
+		const url = `${datasourceURL}?offset=${page}&limit=${range - 1}`;
 
 		if (datasourceURL != "" && selection == "google") {
 			apiFetch({ url: url })
@@ -198,7 +200,6 @@ export default function Edit(props) {
 	};
 
 	const openModal = () => {
-		console.log("clicked", clicked);
 		setDatasourceURL(datasourceURL);
 		setAllFiles(allFiles);
 		setOpenModal(true);
@@ -235,7 +236,6 @@ export default function Edit(props) {
 		}
 	}
 
-	// console.log("editin listOn Screen ", listScreen);
 
 	const fetchFolderContents = () => {
 		if (!filebirdApiKey) return;
@@ -279,20 +279,22 @@ export default function Edit(props) {
 	}
 
 
-	const filteredItems = selectedFiles
+	const filteredItems = filter !== ""
 		? selectedFiles.filter((item) => {
-			return filter === "" || item.name.toLowerCase().includes(filter.toLowerCase());
+			return filter === "" || item.name.toLowerCase().trim().replace(/\s+/g, '').includes(filter.toLowerCase());
 		})
-		: [];
-
-	//const paginatedItems = filteredItems.slice((currentPage - 1) * range, currentPage * range);
+		: selectedFiles;
 
 
 
 	const ClientId = `${props.clientId}`;
+	const blockIdtoBlock = `bucket-browser-block-${ClientId}`;
 
 	return (
-		<div {...useBlockProps({ className: 'bucket-browser-block-bucket-browser' })}>
+		<div {...useBlockProps({
+			className: 'bucket-browser-block-bucket-browser',
+			id: { blockIdtoBlock }
+		})}>
 
 			<div>
 				{(files.length === 0 && selectedAttachments.length == 0 && istrue == false && listScreen == false) &&
@@ -540,7 +542,6 @@ export default function Edit(props) {
 								value={range}
 								onChange={(value) => {
 									setRange(value);
-									//console.log("range on: ", range);
 								}}
 								min={0}
 								max={50}
@@ -624,6 +625,16 @@ export default function Edit(props) {
 								class="block-editor-block-list__block wp-block wp-block-search__button-outside wp-block-search__text-button wp-block-search"
 								style={{ "width": "60%" }}>
 
+								<label className="wp-block-search__label" for="bucket-browser-block-input" >
+									<TextControl
+										className="wp-block-search__label"
+										value={searchlabel}
+										placeholder="Text when there is no search results"
+										onChange={(value) => {
+											setSearchlabel(value);
+										}}
+									/>
+								</label>
 								<div className="components-resizable-box__container wp-block-search__inside-wrapper">
 
 									<TextControl
@@ -646,6 +657,7 @@ export default function Edit(props) {
 											setFilter(filter);
 										}}
 										style={{ "font-size": 18, "padding": "10px 20px" }}
+										aria-label={__('Search')}
 
 									>{__("Search")}</Button>
 
@@ -661,51 +673,84 @@ export default function Edit(props) {
 								<div className="spinnery"></div>
 							)
 							:
-							<div className='pagination'>
-								<ul className='googlebucketlist' style={{ "list-style": "none" }}>
+							<div className='googlebucketlist'>
+								<ul className='googlebucketlist-ul' aria-label='bucket-browser-block list' style={{ "list-style": "none" }}>
 
 									{/* {selectedFiles && selectedFiles */}
-									{filteredItems && filteredItems
+									{filteredItems && filter !== "" ?
 
-										.slice(currentPage, range + 1 * currentPage)
+										filteredItems
+											//.slice(currentPage, range + 1 * currentPage)
 
-										.map(function (item, index) {
+											.map(function (item, index) {
 
-											if (filter !== "" || filter === "") {
-												return (
-													<Listitem
-														key={index}
-														className={index}
-														index={index}
-														link={item.mediaLink}
-														title={item.metadata ? item.metadata.FileTitle : item.name}
-														showDate={showDate}
-														showDescription={false}
-														showDownloadLink={showDownloadLink}
-														showIcon={showIcon}
-														dateFormatted={format(new Date(item.updated), 'd.M.yy')}
-														iconMimetype={item.contentType}
-														url={"https://storage.googleapis.com/" + item.bucket + "/" + encodeURIComponent(item.name)}
-														filename={item.name}
-														range={range}
-													/>
-												);
-											}
-											return null;
-										})
+												if (filter !== "" || filter === "") {
+													return (
+														<Listitem
+															key={index}
+															className={index}
+															index={index}
+															link={item.mediaLink}
+															title={item.metadata ? item.metadata.FileTitle : item.name}
+															showDate={showDate}
+															showDescription={false}
+															showDownloadLink={showDownloadLink}
+															showIcon={showIcon}
+															dateFormatted={format(new Date(item.updated), 'd.M.yy')}
+															iconMimetype={item.contentType}
+															url={"https://storage.googleapis.com/" + item.bucket + "/" + encodeURIComponent(item.name)}
+															filename={item.name}
+															range={range}
+														/>
+													);
+												}
+												return null;
+											})
+
+										:
+										filteredItems
+											.slice(currentPage, range + 1 * currentPage)
+
+											.map(function (item, index) {
+
+												if (filter !== "" || filter === "") {
+													return (
+														<Listitem
+															key={index}
+															className={index}
+															index={index}
+															link={item.mediaLink}
+															title={item.metadata ? item.metadata.FileTitle : item.name}
+															showDate={showDate}
+															showDescription={false}
+															showDownloadLink={showDownloadLink}
+															showIcon={showIcon}
+															dateFormatted={format(new Date(item.updated), 'd.M.yy')}
+															iconMimetype={item.contentType}
+															url={"https://storage.googleapis.com/" + item.bucket + "/" + encodeURIComponent(item.name)}
+															filename={item.name}
+															range={range}
+														/>
+													);
+												}
+												return null;
+											})
 
 									}
+								</ul>
+								<div className='pagination' aria-label='bucket-browser-block pagination'>
 
-									{range != 0 &&
+									{range != 0 && filter == "" &&
 										<Pagination
 											currentPage={currentPage}
 											totalPages={totalPages}
-											selectedFiles={selectedFiles}
+											selectedFiles={filteredItems ? filteredItems : selectedFiles}
 											range={range}
 											setCurrentPage={setCurrentPage}
 										/>
 									}
-								</ul>
+								</div>
+
 							</div>
 						}
 

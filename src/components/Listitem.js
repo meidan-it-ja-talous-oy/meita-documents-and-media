@@ -49,7 +49,7 @@ export default function listitem(props) {
     }
 
     return (
-        <li className='bucket-browser-block-listitem' key={index}>
+        <li className='bucket-browser-block-listitem' id={index}>
             {showIcon
                 ? <div className={"bucket-browser-block-icon " + iconMimetype} >
                     {showIcon && iconMimetype && <div><span className="iconify" data-icon={iconType(iconMimetype)}></span></div>}
@@ -61,9 +61,9 @@ export default function listitem(props) {
                 </div>
             }
             <div className='bucket-browser-block-content'>
-                <a rel="noopener" target="_blank" href={url}>{title}</a>
-                {showDate && <p className='date'>{dateFormatted}</p>}
-                {showDownloadLink && <p><a className='download-link' href={link} download={filename}>{__('Download')}</a> </p>}
+                <a target="_blank" area-label={title.replace(/_/g, ' ').replace(/\..*$/, '')} href={url}>{title}</a>
+                {showDate && <p className='date' title={__('Modified ') + dateFormatted} >{__('Modified')} {dateFormatted}</p>}
+                {showDownloadLink && <a className='download-link' href={link} area-label={__('Download  ') + title.replace(/_/g, ' ').replace(/\..*$/, '')} download={filename}>{__('Download')}</a>}
                 {showDescription && rawHtmldescription && <RawHTML className='description' style={styles.noMargin}>{rawHtmldescription}</RawHTML>}
                 {showDescription && !rawHtmldescription && <p className='description' style={styles.noMargin}>{description}</p>}
                 <p></p>
