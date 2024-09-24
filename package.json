@@ -7,7 +7,7 @@
 	"main": "build/index.js",
 	"engines": {
 		"yarn": ">=1.22.19",
-		"node": ">=16.14.0",
+		"node": ">=18.20.4",
 		"npm": ">=6.14.15"
 	},
 	"scripts": {
