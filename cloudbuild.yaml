@@ -1,10 +1,10 @@
 steps:
 # meita-bucket-browser-block
 
-- name: node:18.20.4
+- name: node:16.14.0
   entrypoint: yarn
 
-- name: node:18.20.4
+- name: node:16.14.0
   entrypoint: yarn
   args: ['add', 'replace-in-files-cli', '-D']
 
