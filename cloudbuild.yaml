@@ -8,11 +8,11 @@ steps:
   entrypoint: yarn
   args: ['add', 'replace-in-files-cli', '-D']
 
-- name: node:18.20.4
+- name: node:16.14.0
   entrypoint: yarn
   args: ['run', 'replace-in-files', '--regex="Version:.*"', '--replacement="Version:         $TAG_NAME"', 'block.php']
 
-- name: node:18.20.4
+- name: node:16.14.0
   entrypoint: yarn
   args: ['run','cloudbuild']
 
