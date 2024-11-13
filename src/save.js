@@ -24,6 +24,7 @@ export default function save(props) {
     } = attributes;
 
 
+    //console.log("listscreen ", listScreen);
 
     return (
 
@@ -31,6 +32,7 @@ export default function save(props) {
             {...blockprops}
             data-range={range}
             id={blockId}
+            data-listScreen={listScreen}
         // data-blockId={props.attributes.blockId}
         >
 
@@ -64,7 +66,7 @@ export default function save(props) {
 
             )}
 
-            {(props.attributes.datasource == "google" && props.attributes.listScreen == true) && (
+            {(props.attributes.datasource == "google" && listScreen == true) && (
                 <div>
 
                     <form
@@ -164,9 +166,6 @@ export default function save(props) {
                     })}
                 </ul>
             )}
-
-
-
         </div >
     );
 }

@@ -53,7 +53,6 @@ export default function Edit(props) {
 		}
 
 		if (datasourceURL != "" && datasource == "google" && listScreen == false) {
-			setSelectedFiles([]);
 			apiFetch({ url: datasourceURL }).then((files) => {
 				setAllFiles(files.items);
 				setTotalPages(files.length);
@@ -75,11 +74,13 @@ export default function Edit(props) {
 		}
 	}, [wpSelect, filebirdApiKey])
 
+
 	useEffect(() => {
 		if (wpSelect == "folder" && datasource == "wordpress" && selectedFolder != "") {
 			fetchFolderContents();
 		}
 	}, [selectedFolder, filebirdApiKey])
+
 
 	useEffect(() => {
 		if (datasource == "google" && listScreen == false) {
@@ -118,6 +119,7 @@ export default function Edit(props) {
 			setChanged((changed ? false : true));
 		}
 	}, [order, orderBy])
+
 
 	useEffect(() => {
 		if (datasource == "wordpress" && wpSelect == "files") {
@@ -183,7 +185,6 @@ export default function Edit(props) {
 
 
 	const fetchItems = (selection, datasourceURL, page) => {
-
 		page = currentPage;
 		const url = `${datasourceURL}?offset=${page}&limit=${range - 1}`;
 
@@ -203,39 +204,46 @@ export default function Edit(props) {
 		setDatasourceURL(datasourceURL);
 		setAllFiles(allFiles);
 		setOpenModal(true);
+		setChecked([]);
 	}
+
 	const closeModal = () => {
 		if (clicked == false && selectedFiles.length == 0) {
 			setTrue(false);
 		}
-		setOpenModal(false)
+		setOpenModal(false);
 	}
+
 	const saveTheChoiches = () => {
-		if (clicked == false && selectedFiles.length == 0) {
+		setlistScreen(false);
+		if (clicked == false && selectedFiles.length <= 0) {
 			setTrue(false);
 		}
 		closeModal()
 	}
+
 	const clicktoTest = () => {
 		if (clicked == false) {
 			setClicked(true);
-		}
-		else {
+		} else {
 			setClicked(false);
 		}
-
 	}
-	const clicktoChange = () => {
 
+	const clicktoChange = () => {
+		//tämä määrittä toggle nappulan select files to use
 		if (selectclicked == false) {
-			setSelectClicked(true)
+			setSelectedFiles([]);
+			setSelectClicked(true);
 			setlistScreen(false);
+			setTrue(false);
 		} else {
 			setSelectClicked(false);
 			setlistScreen(true);
+			setSelectedFiles([]);
+			setTrue(true);
 		}
 	}
-
 
 	const fetchFolderContents = () => {
 		if (!filebirdApiKey) return;
@@ -263,32 +271,34 @@ export default function Edit(props) {
 	}
 
 	const onChangeElement = (id) => {
-		var tmpArr = selectedFiles;
-		const index = selectedFiles.findIndex(obj => obj.id === id);
+		let updatedChecked = [...checked];
+		const index = updatedChecked.findIndex(obj => obj.id === id);
+
 		if (index !== -1) {
-			tmpArr.splice(index, 1);
+			updatedChecked.splice(index, 1)
 		} else {
-			//const el = allFiles.find(obj => obj.id === id);
 			const el = allFiles.find(obj => obj.id === id);
-			tmpArr.push(el);
+			if (el) {
+				updatedChecked.push(el);
+			}
 		}
-		setSelectedFiles(tmpArr);
-		setChecked(tmpArr);
-		setChanged((changed ? false : true));
+		setSelectedFiles(updatedChecked);
+		setChecked(updatedChecked);
+		setChanged(!changed)
 		setTrue(true);
 	}
 
 
 	const filteredItems = filter !== ""
-		? selectedFiles.filter((item) => {
-			return filter === "" || item.name.toLowerCase().trim().replace(/\s+/g, '').includes(filter.toLowerCase());
-		})
+		? selectedFiles.filter((item) =>
+			item.name.toLowerCase().trim().replace(/\s+/g, '').includes(filter.toLowerCase())
+		)
 		: selectedFiles;
-
 
 
 	const ClientId = `${props.clientId}`;
 	const blockIdtoBlock = `bucket-browser-block-${ClientId}`;
+
 
 	return (
 		<div {...useBlockProps({
@@ -342,8 +352,8 @@ export default function Edit(props) {
 											? ""
 											: "Choosing 'Select files to use' you can choose which files you want to display."
 										}
-
 									/>
+
 									{(selectclicked == true) &&
 
 										<div style={{ "margin-top": 15 }}>
@@ -351,7 +361,8 @@ export default function Edit(props) {
 												variant="primary"
 												className={`is-primary`}
 												onClick={() => {
-													setlistScreen(false);
+													setlistScreen(true);
+													setSelectedFiles([]);
 													openModal();
 												}}
 											>{__('Select files')}</Button>
@@ -367,7 +378,6 @@ export default function Edit(props) {
 								title={__("Select files to display")}
 							>
 
-
 								<div className='components-modal__header'>
 									<TextControl
 										style={{ "margin-top": 10, "margin-left": 203, "max-width": 229, "margin-right": 36 }}
@@ -377,37 +387,50 @@ export default function Edit(props) {
 									/>
 									<Button
 										variant='primary'
-										onClick={() => { clicktoTest() }}
+										onClick={() => {
+											clicktoTest();
+										}}
 									>{__('Filter only selected')}</Button>
 
 									<Button
-										onClick={() => { closeModal() }}
+										onClick={() => {
+											closeModal();
+										}}
 									></Button>
 								</div>
 
-
 								<div></div>
-								<div>
 
+								<div>
 									<ul id={ClientId + "_dataList"} style={{ "listStyle": "none" }}>
 										{allFiles && clicked == false && allFiles.map(function (item, index) {
 
-											if (item.size !== "0" && (filter === "" || filter !== "" && item.name.indexOf(filter) !== -1)) {
-												return <li key={index}><CheckboxControl checked={checked.findIndex(obj => obj.id == item.id) != -1} value={item.id} onChange={() => { onChangeElement(item.id); }}
-													label={item.name} /></li>
+											if (item.size !== "0" && (filter === "" || filter !== "" && item.name.includes(filter)/*item.name.indexOf(filter) !== -1*/)) {
+												return <li key={index}>
+													<CheckboxControl
+														checked={checked.some(obj => obj.id === item.id)}
+														value={item.id}
+														onChange={() => { onChangeElement(item.id); }}
+														label={item.name}
+													/>
+												</li>
 											}
 
 										})}
 										{checked && clicked == true && checked.map(function (item, index) {
 
-											if (item.size !== "0" && (filter === "" || filter !== "" && item.name.indexOf(filter) !== -1)) {
-												return <li key={index}><CheckboxControl checked={checked.findIndex(obj => obj.id == item.id) != -1} value={item.id} onChange={() => { onChangeElement(item.id); }}
-													label={item.name} /></li>
+											if (item.size !== "0" && (filter === "" || filter !== "" && item.name.includes(filter)/*item.name.indexOf(filter) !== -1*/)) {
+												return <li key={index}>
+													<CheckboxControl
+														//checked={checked.findIndex(obj => obj.id == item.id) != -1}
+														checked={checked.some(obj => obj.id === item.id)}
+														value={item.id}
+														onChange={() => { onChangeElement(item.id); }}
+														label={item.name}
+													/>
+												</li>
 											}
-
-
 										})}
-
 									</ul>
 
 								</div>
@@ -436,14 +459,9 @@ export default function Edit(props) {
 											saveTheChoiches();
 										}}>{__('SAVE')}
 									</Button>
-
-
 								</div>
 
-
-
 							</Modal>
-
 						)}
 
 						{(datasource == "wordpress") &&
@@ -463,10 +481,10 @@ export default function Edit(props) {
 										]}
 										value={wpSelect}
 									/>
-
-								</div>)
-
+								</div>
+							)
 						}
+
 						{(datasource == "wordpress" && wpSelect == "files") && (
 
 							<MediaUploadCheck>
@@ -499,10 +517,8 @@ export default function Edit(props) {
 									/>
 									:
 									<label style={{ color: "red" }}>{__('You have to have Filebirds ApiKey, if you want to browse folders!')}</label>
-
 								}
-							</div>
-							)
+							</div>)
 						}
 					</PanelBody>
 
@@ -513,7 +529,6 @@ export default function Edit(props) {
 							onChange={(value) => {
 								setShowIcon(value);
 							}}
-
 						/>
 						<ToggleControl
 							label={__("Show date")}
@@ -580,18 +595,16 @@ export default function Edit(props) {
 						</PanelBody>
 					)}
 				</InspectorControls>
-
 			</div>
 
 			<div class="filesPreview">
 
-				{datasource == "google" && selectedFiles.length > 0 && listScreen == false && (
-					<ul className='googlebucketlist'>
-						{selectedFiles && selectedFiles.map(function (item, index) {
+				{datasource == "google" /*&& selectedFiles.length > 0 */ && listScreen == false && (
+					<div className='googlebucketlist'>
+						<ul className='googlebucketlist-ul'>
+							{selectedFiles && selectedFiles.map(function (item, index) {
 
-							return (
-								<div>
-
+								return (
 									<Listitem
 										index={index}
 										link={item.mediaLink}
@@ -608,13 +621,13 @@ export default function Edit(props) {
 										url={"https://storage.googleapis.com/" + item.bucket + "/" + encodeURIComponent(item.name)}
 										filename={item.name}
 									/>
-								</div>
-							);
-						})}
-					</ul>)
-				}
+								)
+							})}
+						</ul>
+					</div>
+				)}
 
-				{(datasource == "google" && listScreen == true) && (
+				{(datasource == "google") && listScreen == true && (
 
 					<div>
 						<div className='filterlist' style={{ "margin-top": 20 }}>
@@ -665,10 +678,12 @@ export default function Edit(props) {
 							</form>
 
 						</div>
+
 						<br></br>
 
 
-						{loading === true ?
+						{loading === true
+							?
 							(
 								<div className="spinnery"></div>
 							)
@@ -676,11 +691,9 @@ export default function Edit(props) {
 							<div className='googlebucketlist'>
 								<ul className='googlebucketlist-ul' aria-label='bucket-browser-block list' style={{ "list-style": "none" }}>
 
-									{/* {selectedFiles && selectedFiles */}
 									{filteredItems && filter !== "" ?
 
 										filteredItems
-											//.slice(currentPage, range + 1 * currentPage)
 
 											.map(function (item, index) {
 
@@ -709,6 +722,7 @@ export default function Edit(props) {
 
 										:
 										filteredItems
+
 											.slice(currentPage, range + 1 * currentPage)
 
 											.map(function (item, index) {
@@ -735,12 +749,11 @@ export default function Edit(props) {
 												}
 												return null;
 											})
-
 									}
 								</ul>
 								<div className='pagination' aria-label='bucket-browser-block pagination'>
 
-									{range != 0 && filter == "" &&
+									{range != 0 && filter == "" && listScreen == true &&
 										<Pagination
 											currentPage={currentPage}
 											totalPages={totalPages}
@@ -750,10 +763,8 @@ export default function Edit(props) {
 										/>
 									}
 								</div>
-
 							</div>
 						}
-
 					</div>
 				)}
 
@@ -811,6 +822,7 @@ export default function Edit(props) {
 						})}
 					</ul>
 				)}
+
 			</div>
 
 		</div>

@@ -88,7 +88,7 @@ jQuery(document).ready(function ($) {
                                  	<div class="bucket-browser-block-content">
                                  		<a target="_blank" href=${"https://storage.googleapis.com/" + item.bucket + "/" + encodeURIComponent(item.name)} alt='${__('Open file ') + item.name.replace(/_/g, ' ').replace(/\..*$/, '')}' >${item.name}</a>
                                  		<p class='date' title="Last modified at ${format(new Date(item.updated), 'd.M.yy')}">${__('Modified')}  ${format(new Date(item.updated), 'd.M.yy')}</p>
-                                        <a class='download-link' href=${item.mediaLink} alt='${__('Download file')} ${item.name.replace(/_/g, ' ').replace(/\..*$/, '')}'>${__('Download')}</a>
+                                        <a class='download-link' rel='noopener' href=${item.mediaLink} alt='${__('Download file')} ${item.name.replace(/_/g, ' ').replace(/\..*$/, '')}'>${__('Download')}</a>
                                  	</div>
                                 </li>
                                 `);
@@ -219,8 +219,15 @@ jQuery(document).ready(function ($) {
         blocks.each(function (index, blockElement) {
             const block = $(blockElement);
             const offset = 0;
+            const listScreen = block[0].attributes[3].value;
+            console.log("element ", listScreen);
 
-            doSearch(offset, block);
+            if (listScreen == "true") {
+                doSearch(offset, block);
+            } else {
+                console.log("element on false");
+
+            }
         });
 
         $('.spinnery').hide(); // Hide spinner after all blocks have been processed
@@ -232,7 +239,6 @@ jQuery(document).ready(function ($) {
         event.preventDefault();
 
         const blockId = $(event.target).closest('.wp-block-bucket-browser-block-bucket-browser-block').attr('id'); // Use closest to find the block
-
         const block = $('#' + blockId);
 
         block.find('.googlebucketlist').hide();

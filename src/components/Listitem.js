@@ -61,9 +61,9 @@ export default function listitem(props) {
                 </div>
             }
             <div className='bucket-browser-block-content'>
-                <a target="_blank" area-label={title.replace(/_/g, ' ').replace(/\..*$/, '')} href={url}>{title}</a>
+                <a target="_blank" area-label={title.replace(/_/g, ' ').replace(/\..*$/, '')} href={url} rel="noopener">{title}</a>
                 {showDate && <p className='date' title={__('Modified ') + dateFormatted} >{__('Modified')} {dateFormatted}</p>}
-                {showDownloadLink && <a className='download-link' href={link} area-label={__('Download  ') + title.replace(/_/g, ' ').replace(/\..*$/, '')} download={filename}>{__('Download')}</a>}
+                {showDownloadLink && <a className='download-link' rel="noopener" href={link} area-label={__('Download  ') + title.replace(/_/g, ' ').replace(/\..*$/, '')} download={filename}>{__('Download')}</a>}
                 {showDescription && rawHtmldescription && <RawHTML className='description' style={styles.noMargin}>{rawHtmldescription}</RawHTML>}
                 {showDescription && !rawHtmldescription && <p className='description' style={styles.noMargin}>{description}</p>}
                 <p></p>
