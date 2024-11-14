@@ -10,7 +10,7 @@ steps:
 
 - name: node:18.20.4
   entrypoint: yarn
-  args: ['run', 'replace-in-files', '--regex="Version:.*"', '--replacement="Version:         $TAG_NAME"', 'block.php']
+  args: ['run', 'replace-in-files', '--regex="Version:.*"', '--replacement="Version:         $TAG_NAME"', 'bucket-browser-block.php']
 
 - name: node:18.20.4
   entrypoint: yarn
