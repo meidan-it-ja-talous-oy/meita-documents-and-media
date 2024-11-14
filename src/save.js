@@ -38,31 +38,28 @@ export default function save(props) {
 
             {(props.attributes.datasource == "google" && listScreen == false) && (
 
-                <div className='googlebucketlist'>
+                <ul className='googlebucketlist'>
                     {selectedFiles && selectedFiles.map(function (item, index) {
 
                         return (
-                            <div>
-                                <Listitem
-                                    className={'bucket-browser-block-listitem'}
-                                    index={index}
-                                    link={item.mediaLink}
-                                    title={item.metadata ? item.metadata.FileTitle : item.name}
-                                    showDate={props.attributes.showDate}
-                                    showDescription={false}
-                                    showDownloadLink={props.attributes.showDownloadLink}
-                                    showIcon={props.attributes.showIcon}
-                                    dateFormatted={format(new Date(item.updated), 'd.M.yy')}
-                                    iconMimetype={item.contentType}
-                                    url={"https://storage.googleapis.com/" + item.bucket + "/" + encodeURIComponent(item.name)}
-                                    filename={item.name}
 
-                                />
-                                <p></p>
-                            </div>
+                            <Listitem
+                                className={'bucket-browser-block-listitem'}
+                                index={index}
+                                link={item.mediaLink}
+                                title={item.metadata ? item.metadata.FileTitle : item.name}
+                                showDate={props.attributes.showDate}
+                                showDescription={false}
+                                showDownloadLink={props.attributes.showDownloadLink}
+                                showIcon={props.attributes.showIcon}
+                                dateFormatted={format(new Date(item.updated), 'd.M.yy')}
+                                iconMimetype={item.contentType}
+                                url={"https://storage.googleapis.com/" + item.bucket + "/" + encodeURIComponent(item.name)}
+                                filename={item.name}
+                            />
                         );
                     })}
-                </div>
+                </ul>
 
             )}
 
@@ -115,25 +112,22 @@ export default function save(props) {
                 <ul>
                     {props.attributes.files && props.attributes.files.map(function (item, index) {
                         return (
-                            <div>
-                                <Listitem
-                                    index={index}
-                                    link={item.link}
-                                    title={item.title}
-                                    showDate={props.attributes.showDate}
-                                    showDescription={props.attributes.showDescription}
-                                    showDownloadLink={props.attributes.showDownloadLink}
-                                    showIcon={props.attributes.showIcon}
-                                    dateFormatted={item.dateFormatted}
-                                    description={item.description}
-                                    // rawHtmldescription = { item.caption.rendered }
-                                    iconImg={item.icon}
-                                    iconMimetype={item.mime}
-                                    url={item.url}
-                                    filename={item.name}
-                                />
-                                <p></p>
-                            </div>
+                            <Listitem
+                                index={index}
+                                link={item.link}
+                                title={item.title}
+                                showDate={props.attributes.showDate}
+                                showDescription={props.attributes.showDescription}
+                                showDownloadLink={props.attributes.showDownloadLink}
+                                showIcon={props.attributes.showIcon}
+                                dateFormatted={item.dateFormatted}
+                                description={item.description}
+                                // rawHtmldescription = { item.caption.rendered }
+                                iconImg={item.icon}
+                                iconMimetype={item.mime}
+                                url={item.url}
+                                filename={item.name}
+                            />
                         );
                     })}
                 </ul>
@@ -143,25 +137,22 @@ export default function save(props) {
                 <ul>
                     {props.attributes.selectedAttachments && props.attributes.selectedAttachments.map(function (item, index) {
                         return (
-                            <div>
-                                <Listitem
-                                    index={index}
-                                    link={item.link}
-                                    title={item.title.rendered}
-                                    showDate={props.attributes.showDate}
-                                    showDescription={props.attributes.showDescription}
-                                    showDownloadLink={props.attributes.showDownloadLink}
-                                    showIcon={props.attributes.showIcon}
-                                    dateFormatted={format(new Date(item.modified), 'd.M.yy')}
-                                    // description = { item.caption.rendered }
-                                    rawHtmldescription={item.caption.rendered}
-                                    // iconImg
-                                    iconMimetype={item.mime_type}
-                                    url={item.source_url}
-                                    filename={item.slug}
-                                />
-                                <p></p>
-                            </div>
+                            <Listitem
+                                index={index}
+                                link={item.link}
+                                title={item.title.rendered}
+                                showDate={props.attributes.showDate}
+                                showDescription={props.attributes.showDescription}
+                                showDownloadLink={props.attributes.showDownloadLink}
+                                showIcon={props.attributes.showIcon}
+                                dateFormatted={format(new Date(item.modified), 'd.M.yy')}
+                                // description = { item.caption.rendered }
+                                rawHtmldescription={item.caption.rendered}
+                                // iconImg
+                                iconMimetype={item.mime_type}
+                                url={item.source_url}
+                                filename={item.slug}
+                            />
                         );
                     })}
                 </ul>

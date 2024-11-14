@@ -603,7 +603,6 @@ export default function Edit(props) {
 					<div className='googlebucketlist'>
 						<ul className='googlebucketlist-ul'>
 							{selectedFiles && selectedFiles.map(function (item, index) {
-
 								return (
 									<Listitem
 										index={index}
@@ -772,24 +771,22 @@ export default function Edit(props) {
 					<ul>
 						{files && files.map(function (item, index) {
 							return (
-								<div>
-									<Listitem
-										index={index}
-										link={item.link}
-										title={item.title}
-										showDate={showDate}
-										showDescription={showDescription}
-										showDownloadLink={showDownloadLink}
-										showIcon={showIcon}
-										dateFormatted={item.dateFormatted}
-										description={item.description}
-										// rawHtmldescription = { item.caption.rendered }
-										iconImg={item.icon}
-										iconMimetype={item.mime}
-										url={item.url}
-										filename={item.name}
-									/>
-								</div>
+								<Listitem
+									index={index}
+									link={item.link}
+									title={item.title}
+									showDate={showDate}
+									showDescription={showDescription}
+									showDownloadLink={showDownloadLink}
+									showIcon={showIcon}
+									dateFormatted={item.dateFormatted}
+									description={item.description}
+									// rawHtmldescription = { item.caption.rendered }
+									iconImg={item.icon}
+									iconMimetype={item.mime}
+									url={item.url}
+									filename={item.name}
+								/>
 							);
 						})}
 					</ul>
@@ -799,30 +796,26 @@ export default function Edit(props) {
 					<ul>
 						{selectedAttachments && selectedAttachments.map(function (item, index) {
 							return (
-								<div>
-
-									<Listitem
-										index={index}
-										link={item.link}
-										title={item.title.rendered}
-										showDate={showDate}
-										showDescription={showDescription}
-										showDownloadLink={showDownloadLink}
-										showIcon={showIcon}
-										dateFormatted={format(new Date(item.modified), 'd.M.yy')}
-										// description = { item.caption.rendered }
-										rawHtmldescription={item.caption.rendered}
-										// iconImg
-										iconMimetype={item.mime_type}
-										url={item.source_url}
-										filename={item.slug}
-									/>
-								</div>
+								<Listitem
+									index={index}
+									link={item.link}
+									title={item.title.rendered}
+									showDate={showDate}
+									showDescription={showDescription}
+									showDownloadLink={showDownloadLink}
+									showIcon={showIcon}
+									dateFormatted={format(new Date(item.modified), 'd.M.yy')}
+									// description = { item.caption.rendered }
+									rawHtmldescription={item.caption.rendered}
+									// iconImg
+									iconMimetype={item.mime_type}
+									url={item.source_url}
+									filename={item.slug}
+								/>
 							);
 						})}
 					</ul>
 				)}
-
 			</div>
 
 		</div>
