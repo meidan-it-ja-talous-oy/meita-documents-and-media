@@ -36,6 +36,7 @@ function bucket_browser_block_init()
 		$script_asset['version']
 		
 	);
+
 	//wp_set_script_translations('create-bucket-browser-block', 'bucket-browser-block');
 	$range_value = isset( $attributes['range'] ) ? esc_attr( $attributes['range'] ) : '';
 	$blockId_value = isset( $attributes['blockId'] ) ? esc_attr( $attributes['blockId'] ) : '';
@@ -65,6 +66,17 @@ function bucket_browser_block_init()
 			// 'render_callback' => 'wp_filter_enqueue_scripts',
 		),
 
+	);
+	
+	$plugin_data = get_file_data(__FILE__, array('Version' => 'Version'), 'plugin');
+	$plugin_version = $plugin_data['Version'] ?? null;
+ 
+	wp_enqueue_script(
+    	'filter-script',
+    	plugins_url('build/filter-script.js', __FILE__),
+   		array('jquery'),
+    	$plugin_version, // Dynamically set version
+    	true // Load in footer
 	);
 
 	
