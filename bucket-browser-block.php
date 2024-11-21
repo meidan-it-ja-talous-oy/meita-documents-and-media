@@ -88,8 +88,20 @@ if(!is_admin()) {
     add_action('wp_enqueue_scripts', 'filter_script');
 }
 
+function bucket_browser_enqueue_assets($attributes) {
+    // Check if the block is being rendered and enqueue assets
+    if (has_block('bucket-browser-block/bucket-browser-block')) {
+        filter_script($attributes);
+    }
+}
+add_action('enqueue_block_assets', 'bucket_browser_enqueue_assets');
 
-function filter_script(){
+
+
+
+function filter_script($attributes){
+
+	//$attributes=  $attributes = get_transient('bucket_browser_attributes') ?: array();
 
 	wp_enqueue_script(
         'filter-script',
@@ -103,14 +115,12 @@ function filter_script(){
 	$field_value = isset($options['GCPBucketAPIurl']) ? $options['GCPBucketAPIurl'] : '';
 	$range_value = isset( $attributes['range'] ) ? esc_attr( $attributes['range'] ) : '';
 
-
-
 	wp_localize_script(
 		'filter-script',
 		'bucketBrowserData',
 		array(
 			'allFiles' => $field_value,
-			'rangeValue'=>$range_value
+			'rangeValue'=> $range_value,
 		)
 	);
 

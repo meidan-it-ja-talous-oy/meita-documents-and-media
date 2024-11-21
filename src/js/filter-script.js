@@ -40,6 +40,9 @@ jQuery(document).ready(function ($) {
         var dataurl = bucketBrowserData.allFiles;
         var rangeVal = parseInt(block.attr('data-range'), 10);
         var blockId = block.attr('id');
+        let downloadLink = block.attr('data-showDownloadlink');
+        let showDate = block.attr('data-showdate');
+        let showIcon = block.attr('data-showicon');
 
         if (isNaN(rangeVal)) {
             console.error('Invalid number:', block.attr('data-range'));
@@ -81,15 +84,26 @@ jQuery(document).ready(function ($) {
 
                             rawHtml += (
                                 `<li class='bucket-browser-block-listitem' data-search-term=${item.name.toLowerCase().trim().replace(/\s+/g, '')} data-key=${index}>
-                                	<div class='bucket-browser-block-icon ${iconType(item.contentType)}'>
+                                `)
+                            if (showIcon == "true") {
+                                rawHtml += (
+                                    `<div class='bucket-browser-block-icon ${iconType(item.contentType)}'>
                                  	    <span class="iconify" data-icon=${iconType(item.contentType)} ></span>
-                                 	</div>
-
-                                 	<div class="bucket-browser-block-content">
-                                 		<a target="_blank" href=${"https://storage.googleapis.com/" + item.bucket + "/" + encodeURIComponent(item.name)} alt='${__('Open file ') + item.name.replace(/_/g, ' ').replace(/\..*$/, '')}' >${item.name}</a>
-                                 		<p class='date' title="Last modified at ${format(new Date(item.updated), 'd.M.yy')}">${__('Modified')}  ${format(new Date(item.updated), 'd.M.yy')}</p>
-                                        <a class='download-link' rel='noopener' href=${item.mediaLink} alt='${__('Download file')} ${item.name.replace(/_/g, ' ').replace(/\..*$/, '')}'>${__('Download')}</a>
-                                 	</div>
+                                    </div>`)
+                            }
+                            rawHtml += (
+                                `<div class="bucket-browser-block-content">
+                                    <a target="_blank" href=${"https://storage.googleapis.com/" + item.bucket + "/" + encodeURIComponent(item.name)} alt='${__(' Open file ') + item.name.replace(/_/g, ' ').replace(/\..*$/, '')}' >${item.name}</a>`)
+                            if (showDate == "true") {
+                                rawHtml += (
+                                    `<p class='date' title="Last modified at ${format(new Date(item.updated), 'd.M.yy')}">${__('Modified')}  ${format(new Date(item.updated), 'd.M.yy')}</p>`)
+                            }
+                            if (downloadLink == "true") {
+                                rawHtml += (
+                                    `<p><a class='download-link' rel='noopener' href=${item.mediaLink} alt='${__('Download file')} ${item.name.replace(/_/g, ' ').replace(/\..*$/, '')}'>${__('Download')}</a></p> `)
+                            }
+                            rawHtml += (
+                                `</div>
                                 </li>
                                 `);
                             li.innerHTML = rawHtml;
@@ -220,7 +234,6 @@ jQuery(document).ready(function ($) {
             const block = $(blockElement);
             const offset = 0;
             const listScreen = block[0].attributes[3].value;
-            console.log("element ", listScreen);
 
             if (listScreen == "true") {
                 doSearch(offset, block);

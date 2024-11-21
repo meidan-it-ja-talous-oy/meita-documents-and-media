@@ -20,11 +20,13 @@ export default function save(props) {
         listScreen,
         range,
         blockId,
-        searchlabel
+        searchlabel,
+        showDownloadLink,
+        showDate,
+        showIcon
     } = attributes;
 
 
-    //console.log("listscreen ", listScreen);
 
     return (
 
@@ -33,7 +35,9 @@ export default function save(props) {
             data-range={range}
             id={blockId}
             data-listScreen={listScreen}
-        // data-blockId={props.attributes.blockId}
+            data-showDownloadlink={showDownloadLink}
+            data-showdate={showDate}
+            data-showicon={showIcon}
         >
 
             {(props.attributes.datasource == "google" && listScreen == false) && (
@@ -50,7 +54,7 @@ export default function save(props) {
                                 title={item.metadata ? item.metadata.FileTitle : item.name}
                                 showDate={props.attributes.showDate}
                                 showDescription={false}
-                                showDownloadLink={props.attributes.showDownloadLink}
+                                showDownloadLink={showDownloadLink}
                                 showIcon={props.attributes.showIcon}
                                 dateFormatted={format(new Date(item.updated), 'd.M.yy')}
                                 iconMimetype={item.contentType}

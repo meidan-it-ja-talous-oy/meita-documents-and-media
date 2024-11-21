@@ -56,10 +56,12 @@ export default function Edit(props) {
 			apiFetch({ url: datasourceURL }).then((files) => {
 				setAllFiles(files.items);
 				setTotalPages(files.length);
+
 			});
 		} else {
 			fetchItems(datasource, datasourceURL, page);
 		}
+
 
 	}, [datasource, datasourceURL, range, totalPages, filter, listScreen, blockId])
 
@@ -303,7 +305,8 @@ export default function Edit(props) {
 	return (
 		<div {...useBlockProps({
 			className: 'bucket-browser-block-bucket-browser',
-			id: { blockIdtoBlock }
+			id: { blockIdtoBlock },
+			showDownloadLink: { showDownloadLink }
 		})}>
 
 			<div>
