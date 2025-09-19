@@ -10,7 +10,7 @@ steps:
 
 - name: node:18.20.4
   entrypoint: yarn
-  args: ['run', 'replace-in-files', '--regex="Version:.*"', '--replacement="Version:         $TAG_NAME"', 'bucket-browser-block.php']
+  args: ['run', 'replace-in-files', '--regex="Version:.*"', '--replacement="Version:           $TAG_NAME"', 'meita-documents-and-media.php']
 
 - name: node:18.20.4
   entrypoint: yarn
@@ -18,17 +18,17 @@ steps:
 
 - name: gcr.io/cloud-builders/gcloud
   entrypoint: 'mv'
-  args: [ 'dist', 'bucket-browser-block' ]
+  args: [ 'dist', 'meita-documents-and-media' ]
 
 # Taged
 - name: europe-north1-docker.pkg.dev/rauni-0/tools/zip
-  args: ['-r9T', 'bucket-browser-block-$TAG_NAME.zip', './bucket-browser-block']
+  args: ['-r9T', 'meita-documents-and-media-$TAG_NAME.zip', './meita-documents-and-media']
 
 # Overwrite latest
 - name: europe-north1-docker.pkg.dev/rauni-0/tools/zip
-  args: ['-r9T', 'bucket-browser-block-latest.zip', './bucket-browser-block']
+  args: ['-r9T', 'meita-documents-and-media-latest.zip', './meita-documents-and-media']
 
 artifacts:
   objects:
     location: 'gs://wp-repository/plugins'
-    paths: ['bucket-browser-block-$TAG_NAME.zip', 'bucket-browser-block-latest.zip']
+    paths: ['meita-documents-and-media-$TAG_NAME.zip', 'meita-documents-and-media-latest.zip']

@@ -1,0 +1,93 @@
+{
+    "translation-revision-date": "2025-09-19 11:53+0300",
+    "generator": "WP-CLI\/2.10.0",
+    "source": "blocks\/show-media\/index.js",
+    "domain": "messages",
+    "locale_data": {
+        "messages": {
+            "": {
+                "domain": "messages",
+                "lang": "fi",
+                "plural-forms": "nplurals=2; plural=(n != 1);"
+            },
+            "Modified ": [
+                "Muokattu "
+            ],
+            "Modified": [
+                "Muokattu"
+            ],
+            "Download  ": [
+                "Lataa "
+            ],
+            "Download": [
+                "Lataa"
+            ],
+            "Data source settings": [
+                "Asetukset"
+            ],
+            "Information to display": [
+                "N\u00e4ytett\u00e4v\u00e4t tiedot"
+            ],
+            "Files": [
+                "Tiedosto"
+            ],
+            "Folder": [
+                "Kansio"
+            ],
+            "Open Media Library": [
+                "Avaa mediakirjasto"
+            ],
+            "You have to have Filebirds ApiKey, if you want to browse folders!": [
+                "Sinulla tarvitsee olla Filebirdin Apiavain jotta voit selata kansioita!"
+            ],
+            "Display settings": [
+                "N\u00e4ytt\u00f6asetukset"
+            ],
+            "Show icons": [
+                "Ikoni"
+            ],
+            "Show date": [
+                "P\u00e4iv\u00e4ys"
+            ],
+            "Show description": [
+                "Kuvaus"
+            ],
+            "Show download link": [
+                "Lataa painike"
+            ],
+            "Order": [
+                "J\u00e4rjestys"
+            ],
+            "Order by": [
+                "J\u00e4rjest\u00e4"
+            ],
+            "Title": [
+                "Nimen mukaan"
+            ],
+            "Date": [
+                "P\u00e4iv\u00e4yksen mukaan"
+            ],
+            "Ascending": [
+                "Uusin ensin"
+            ],
+            "Descending": [
+                "Vanhin ensin"
+            ],
+            "Choose the ones you want to show": [
+                "Valitse n\u00e4ytett\u00e4v\u00e4t tiedot"
+            ],
+            "Documents and media - Media files": [
+                "Dokumentit ja media - Mediatiedostot"
+            ],
+            "Start by selecting a file or folder": [
+                "Valitse haluatko n\u00e4ytt\u00e4\u00e4 tietyt tiedostot vai koko kansion"
+            ],
+            "Then you can adjust the display settings and change the order of the documents.": [
+                "Voit s\u00e4\u00e4t\u00e4\u00e4 mit\u00e4 tietoja tiedostosta haluat n\u00e4ytt\u00e4\u00e4 ja muuttaa niiden j\u00e4rjestyst\u00e4."
+            ],
+            "Choose folder": [
+                "Valitse kansio"
+            ]
+        }
+    }
+}

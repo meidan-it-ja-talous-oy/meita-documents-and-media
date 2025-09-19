@@ -1,8 +1,7 @@
-import { RawHTML } from '@wordpress/element';
-
 import { __ } from '@wordpress/i18n';
+import RawHTML from '@wordpress/element';
 
-export default function listitem(props) {
+export default function Listitem(props) {
 
 
     const {
@@ -31,6 +30,7 @@ export default function listitem(props) {
         },
     }
 
+
     const iconType = (mime_type) => {
         switch (true) {
             case mime_type.indexOf("application") != -1:
@@ -48,6 +48,8 @@ export default function listitem(props) {
         }
     }
 
+
+
     return (
         <li className='bucket-browser-block-listitem' id={index}>
             {showIcon
@@ -61,12 +63,11 @@ export default function listitem(props) {
                 </div>
             }
             <div className='bucket-browser-block-content'>
-                <a target="_blank" area-label={title.replace(/_/g, ' ').replace(/\..*$/, '')} href={url} rel="noopener">{title}</a>
-                {showDate && <div className='date' title={__('Modified ') + dateFormatted} >{__('Modified')} {dateFormatted}</div>}
-                {showDownloadLink && <div> <a className='download-link' rel="noopener" href={link} area-label={__('Download  ') + title.replace(/_/g, ' ').replace(/\..*$/, '')} download={filename}>{__('Download')}</a></div>}
-                {showDescription && rawHtmldescription && <RawHTML className='description' style={styles.noMargin}>{rawHtmldescription}</RawHTML>}
-                {showDescription && !rawHtmldescription && <p className='description' style={styles.noMargin}>{description}</p>}
-                <p></p>
+                <p className='document-name'><a target="_blank" area-label={title.replace(/_/g, ' ').replace(/\..*$/, '')} href={url} rel="noopener">{title}</a></p>
+                {showDate && <div className='date' title={__('Modified ', 'meita-documents-and-media') + dateFormatted} >{__('Modified', 'meita-documents-and-media')} {dateFormatted}</div>}
+                {showDescription && rawHtmldescription && <span className='description' style={styles.noMargin}>{rawHtmldescription.replace(/<[^>]*>/g, '').trim()}</span>}
+                {showDescription && !rawHtmldescription && <span className='description' style={styles.noMargin}>{description}</span>}
+                {showDownloadLink && <p className='download-button'> <a className='download-link' rel="noopener" href={link} area-label={__('Download  ', 'meita-documents-and-media') + title.replace(/_/g, ' ').replace(/\..*$/, '')} download={filename}>{__('Download', 'meita-documents-and-media')}</a></p>}
             </div>
         </li>
     )

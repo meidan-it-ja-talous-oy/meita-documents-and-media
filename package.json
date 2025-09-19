@@ -1,30 +1,55 @@
 {
-	"name": "bucket-browser-block",
-	"version": "1.0.14",
-	"description": "Meita gutenberg bucket-browser block",
+	"name": "meita-documents-and-media",
+	"version": "1.0.1",
+	"description": "Meita documents and media block",
 	"author": "Meidän IT ja Talous Oy",
 	"license": "GPL-2.0-or-later",
 	"main": "build/index.js",
 	"engines": {
 		"yarn": ">=1.22.19",
-		"node": ">=18.20.4",
+		"node": ">=16.18.0",
 		"npm": ">=6.14.15"
 	},
 	"scripts": {
-		"build": "rm -rf dist/* && wp-scripts build && cp -r build dist/ && cp bucket-browser-block.php dist/ &&  cp ./src/admin/admin.php dist/ && cp block.json dist/",
-		"cloudbuild": "wp-scripts build && mkdir dist && cp -r build dist && head bucket-browser-block.php &&  cp ./src/admin/admin.php dist/ && cp bucket-browser-block.php dist/",
-		"format:js": "wp-scripts format-js",
+		"build": "wp-scripts build",
+		"cloudbuild": "NODE_ENV=production wp-scripts build",
+		"format:": "wp-scripts format",
 		"lint:css": "wp-scripts lint-style",
 		"lint:js": "wp-scripts lint-js",
-		"start": "rm -rf dist && mkdir dist && cp bucket-browser-block.php dist/ && cp block.json dist/ &&  cp ./src/admin/admin.php dist/ && wp-scripts start --output-path=dist/build",
-		"packages-update": "wp-scripts packages-update"
-	},
-	"devDependencies": {
-		"@iconify/react": "^3.1.4",
-		"@wordpress/icons": "^6.3.0",
-		"@wordpress/scripts": "^30.0.2"
+		"postversion": "git push && git push --tags && echo \"Successfully released new version $npm_package_version\"",
+		"start": "NODE_ENV=development wp-scripts start",
+		"watch": "NODE_ENV=development wp-scripts start",
+		"packages-update": "wp-scripts packages-update",
+		"do-before-poedit": "yarn build && yarn makepot && yarn updatepo && yarn copylang && yarn build",
+		"do-after-poedit": " yarn build && yarn makejson && yarn copylang && yarn build",
+		"makepot": "docker exec -u 33 wp-cli-dev wp i18n make-pot /var/www/html/wp-content/plugins/meita-documents-and-media/ /var/www/html/wp-content/plugins/meita-documents-and-media/languages/meita-documents-and-media.pot --domain=meita-documents-and-media --slug=meita-documents-and-media --debug --allow-root",
+		"updatepo": "docker exec -u 33 wp-cli-dev wp i18n update-po /var/www/html/wp-content/plugins/meita-documents-and-media/languages/meita-documents-and-media.pot --allow-root",
+		"makejson": "docker exec -u 33 wp-cli-dev wp i18n make-json /var/www/html/wp-content/plugins/meita-documents-and-media/languages --pretty-print --no-purge --allow-root",
+		"copylang": "docker cp wp-cli-dev:/var/www/html/wp-content/plugins/meita-documents-and-media/languages ./src/"
 	},
 	"dependencies": {
-		"date-fns": "^2.28.0"
+		"@wordpress/api-fetch": "^7.25.0",
+		"@wordpress/base-styles": "^6.2.0",
+		"@wordpress/block-editor": "^14.21.0",
+		"@wordpress/blocks": "^14.15.0",
+		"@wordpress/components": "^29.12.0",
+		"@wordpress/element": "^6.26.0",
+		"@wordpress/i18n": "^5.26.0",
+		"@wordpress/icons": "^10.26.0",
+		"@wordpress/is-shallow-equal": "^5.26.0",
+		"date-fns": "^2.28.0",
+		"update-browserslist-db": "^1.1.3"
+	},
+	"devDependencies": {
+		"@babel/preset-react": "^7.27.1",
+		"@iconify/react": "^3.1.4",
+		"@wordpress/scripts": "^30.0.2",
+		"clean-webpack-plugin": "^4.0.0",
+		"copy-webpack-plugin": "^13.0.0",
+		"mini-css-extract-plugin": "^2.9.2",
+		"reakit-utils": "^0.15.2",
+		"redux": "^5.0.1",
+		"replace-in-file-webpack-plugin": "^1.0.6",
+		"webpack-fix-style-only-entries": "^0.6.1"
 	}
 }
