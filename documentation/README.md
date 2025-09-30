@@ -52,7 +52,7 @@ See `package.json` for other commands.
 
 ### **Connecting to Docker-Compose**
 
-Connect the `/dist` folder of this project to the `wp-content/plugins` folder of the Docker container.
+Connect the `/dist` or `/build` folder of this project to the `wp-content/plugins` folder of the Docker container.
 
 In the `docker-compose.yml` file, you can do this by adding the local location of Wordpress under `volumes` and the location of the plugin inside the container, separated by `:`.
 
@@ -62,7 +62,7 @@ Example:
 
       wordpress:
         volumes:
-            - ../wp-block-bucket-browser/dist:/var/www/html/wp-content/plugins/block-bucket-browser
+            - ../meita-documents-and-media/dist:/var/www/html/wp-content/plugins/meita-documents-and-media
 
 ## Vikatilanteessa
 

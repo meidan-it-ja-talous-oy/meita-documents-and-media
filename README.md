@@ -2,16 +2,16 @@
 
 | Selite            | Arvo                    |
 | ----------------- | ----------------------- |
-| Asennussijainti   |                         |
+| Asennussijainti   | WordPress               |
 | Vastuuhenkilöt    | Heidi Rautasalo         |
 | Tuotantoympäristö | WordPress               |
 | Luotu             | 09/25                   |
 | Päivitystapa      | Lohko päivitetään käsin |
-| Riippuvuudet      | -                       |
+| Riippuvuudet      | Googlen bucket URL      |
 
 ## Meita documents and media lohko
 
-Meita dokumentit ja media lohko tiedostojen näyttämiseen suunniteltu lisäosa. Se sisältää kaksi eri lohkoa, Googlen tiedostopalvelu lohkon sekä Mediatiedostot -lohkon.
+Meita dokumentit ja media lohko tiedostojen näyttämiseen suunniteltu lisäosa. Se sisältää kaksi eri lohkoa, Googlen tiedostopalvelu -lohkon sekä Mediatiedostot -lohkon.
 
 Mediatiedosto lohkon avulla voidaan näyttää yksittäisiä tiedostoja tai kokonainen kansion kaikki tiedostot.
 
