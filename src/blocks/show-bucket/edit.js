@@ -585,7 +585,7 @@ export default function Edit(props) {
         </InspectorControls >
     )
     const ClientId = `${props.clientId}`;
-    const blockIdtoBlock = `bucket-browser-block-${ClientId}`;
+    const blockIdtoBlock = `meita-documents-and-media-${ClientId}`;
 
 
     return (
@@ -702,8 +702,8 @@ export default function Edit(props) {
                             <div className='googlebucketlist'>
                                 <ul
                                     className='googlebucketlist-ul'
-                                    aria-label='documents-and-media-show-bucket list'
-                                    style={{ "list-style": "none" }}>
+                                    aria-label='meita-documents-and-media google-bucket list'
+                                >
 
                                     {(() => {
                                         const displayedItems = filteredItems
@@ -740,18 +740,18 @@ export default function Edit(props) {
                                         ));
                                     })()}
                                 </ul>
-                                <div className='pagination' aria-label='bucket-browser-block pagination'>
 
-                                    {range != 0 && filter == "" &&
-                                        <Pagination
-                                            currentPage={currentPage}
-                                            totalPages={totalPages}
-                                            selectedFiles={filteredItems ? filteredItems : selectedFiles}
-                                            range={range}
-                                            setCurrentPage={setCurrentPage}
-                                        />
-                                    }
-                                </div>
+
+                                {range != 0 && filter == "" &&
+                                    <Pagination
+                                        currentPage={currentPage}
+                                        totalPages={totalPages}
+                                        selectedFiles={filteredItems ? filteredItems : selectedFiles}
+                                        range={range}
+                                        setCurrentPage={setCurrentPage}
+                                    />
+                                }
+
                             </div>
                         )}
                     </div>

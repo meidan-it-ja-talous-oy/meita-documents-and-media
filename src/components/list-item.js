@@ -51,18 +51,18 @@ export default function Listitem(props) {
 
 
     return (
-        <li className='bucket-browser-block-listitem' id={index}>
+        <li className='meita-documents-and-media-listitem' id={index}>
             {showIcon
-                ? <div className={"bucket-browser-block-icon " + iconMimetype} >
+                ? <div className={"meita-documents-and-media-icon " + iconMimetype} >
                     {showIcon && iconMimetype && <div><span className="iconify" data-icon={iconType(iconMimetype)}></span></div>}
 
                 </div>
-                : <div className={"bucket-browser-block-icon " + iconMimetype} >
+                : <div className={"meita-documents-and-media-icon " + iconMimetype} >
                     {!showIcon && !iconMimetype && <div><span className="iconify" ></span></div>}
 
                 </div>
             }
-            <div className='bucket-browser-block-content'>
+            <div className='meita-documents-and-media-content'>
                 <p className='document-name'><a target="_blank" area-label={title.replace(/_/g, ' ').replace(/\..*$/, '')} href={url} rel="noopener">{title}</a></p>
                 {showDate && <p className='updated-date' title={__('Modified ', 'meita-documents-and-media') + dateFormatted} >{__('Modified', 'meita-documents-and-media')} {dateFormatted}</p>}
                 {showDescription && rawHtmldescription && <span className='description' style={styles.noMargin}>{rawHtmldescription.replace(/<[^>]*>/g, '').trim()}</span>}

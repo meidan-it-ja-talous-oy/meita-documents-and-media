@@ -28,87 +28,83 @@ export default function Pagination(props) {
     const handleClick = (page) => setCurrentPage(page - 1);
 
     return (
-        <div>
-            <div
-                className="pagination"
-                id="pagination"
-                aria-label="meita-documents-and-media pagination"
-                style={{ "display": "flex", "margin-top": 20 }}
+
+        <div
+            className="pagination"
+            aria-label="meita-documents-and-media pagination"
+        >
+            {/* First page */}
+            <button
+                onClick={() => handleFirst()}
+                disabled={pageNow === 1}
+                aria-disabled={pageNow === 1}
+                aria-label="First page"
+                className='first-page'
             >
-                {/* First page */}
-                <button
-                    onClick={() => handleFirst()}
-                    disabled={pageNow === 1}
-                    aria-disabled={pageNow === 1}
-                    aria-label="First page"
-                    style={{ "margin-right": 10, "background-color": "inherit", "border": 0 }}
-                >
-                    «
-                </button>
+                «
+            </button>
 
-                {/* Previous page */}
-                <button
-                    onClick={() => handlePrevious()}
-                    disabled={pageNow === 1}
-                    aria-disabled={pageNow === 1}
-                    aria-label="Previous page"
-                    style={{ "margin-right": 10, "background-color": "inherit", "border": 0 }}
-                >
-                    {__('Previous', 'meita-documents-and-media')}
-                </button>
+            {/* Previous page */}
+            <button
+                onClick={() => handlePrevious()}
+                disabled={pageNow === 1}
+                aria-disabled={pageNow === 1}
+                aria-label="Previous page"
+                className='prev-page'
+            >
+                {__('Previous', 'meita-documents-and-media')}
+            </button>
 
-                {/* Number buttons */}
-                {Array.from({ length: endPage - startPage + 1 }, (_, i) => {
-                    const page = startPage + i;
+            {/* Number buttons */}
+            {Array.from({ length: endPage - startPage + 1 }, (_, i) => {
+                const page = startPage + i;
 
-                    return (
-                        <button
-                            key={page}
-                            onClick={() => handleClick(page)}
-                            className={pageNow === page ? 'active' : ''}
-                            aria-current={pageNow === page ? 'page' : undefined}
-                            aria-label={sprintf(__('Page %d', 'meita-documents-and-media'), Number(page))}
-                            style={{ "margin-left": 5 }}
-                        >
-                            {page}
-                        </button>
-                    );
-                })}
+                return (
+                    <button
+                        key={page}
+                        onClick={() => handleClick(page)}
+                        className={pageNow === page ? 'num-button active' : 'num-button'}
+                        aria-current={pageNow === page ? 'page' : undefined}
+                        aria-label={sprintf(__('Page %d', 'meita-documents-and-media'), Number(page))}
+                    >
+                        {page}
+                    </button>
+                );
+            })}
 
-                {/* Next page */}
-                <button
-                    onClick={() => handleNext()}
-                    disabled={pageNow === total}
-                    aria-disabled={pageNow === total}
-                    aria-label="Next page"
-                    style={{ "margin-left": 10, "background-color": "inherit", "border": 0 }}
-                >
-                    {__('Next', 'meita-documents-and-media')}
-                </button>
+            {/* Next page */}
+            <button
+                onClick={() => handleNext()}
+                disabled={pageNow === total}
+                aria-disabled={pageNow === total}
+                aria-label="Next page"
+                className='next-page'
+            >
+                {__('Next', 'meita-documents-and-media')}
+            </button>
 
-                {/* Last page */}
-                <button
-                    onClick={() => handleLast()}
-                    disabled={pageNow === total}
-                    aria-disabled={pageNow === total}
-                    aria-label="Last page"
-                    style={{ "margin-left": 10, "background-color": "inherit", "border": 0 }}
-                >
-                    »
-                </button>
-            </div>
+            {/* Last page */}
+            <button
+                onClick={() => handleLast()}
+                disabled={pageNow === total}
+                aria-disabled={pageNow === total}
+                aria-label="Last page"
+                className='last-page'
+            >
+                »
+            </button>
+
 
             {/* Page X of Y */}
-            <div
-                style={{ "padding": 10 }}>
-                <span>
-                    {sprintf(
-                        __('Page %d of %d', 'meita-documents-and-media'),
-                        Number(pageNow),
-                        Number(total)
-                    )}
-                </span>
-            </div>
+
+            <p className='page-of'>
+                {sprintf(
+                    __('Page %d of %d', 'meita-documents-and-media'),
+                    Number(pageNow),
+                    Number(total)
+                )}
+            </p>
+
         </div>
     )
 }

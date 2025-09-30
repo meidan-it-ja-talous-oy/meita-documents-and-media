@@ -100,7 +100,7 @@ export default function save(props) {
                                             return (
                                                 <Listitem
                                                     key={index}
-                                                    className={"bucket-browser-block-listitem"}
+                                                    className={"meita-documents-and-media-listitem"}
                                                     index={index}
                                                     link={item.mediaLink}
                                                     title={item.metadata ? item.metadata.FileTitle : item.name}

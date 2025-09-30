@@ -393,7 +393,7 @@ export default function Edit(props) {
 
 
     const ClientId = `${props.clientId}`;
-    const blockIdtoBlock = `bucket-browser-block-${ClientId}`;
+    const blockIdtoBlock = `meita-documents-and-media-${ClientId}`;
 
     return (
         <div {...useBlockProps({

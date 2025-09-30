@@ -108,23 +108,23 @@ jQuery(document).ready(function ($) {
 
                     let li = document.createElement("ul"); // create a list item element
                     li.classList.add('googlebucketlist-ul');
-                    li.setAttribute('aria-label', 'bucket-browser-block list');
+                    li.setAttribute('aria-label', 'meita-documents-and-media google-bucket list');
 
                     let sortedItems = setNewFirst(res.items, order, orderBy);
 
                     sortedItems.map((item, index) => {
 
                         rawHtml += (
-                            `<li class='bucket-browser-block-listitem' data-search-term=${item.name.toLowerCase().trim().replace(/\s+/g, '')} data-key=${index}>
+                            `<li class='meita-documents-and-media-listitem' data-search-term=${item.name.toLowerCase().trim().replace(/\s+/g, '')} data-key=${index}>
                                 `)
                         if (showIcon == "true") {
                             rawHtml += (
-                                `<div class='bucket-browser-block-icon ${iconType(item.contentType)}'>
+                                `<div class='meita-documents-and-media-icon ${iconType(item.contentType)}'>
                                  	    <span class="iconify" data-icon=${iconType(item.contentType)} ></span>
                                     </div>`)
                         }
                         rawHtml += (
-                            `<div class="bucket-browser-block-content">
+                            `<div class="meita-documents-and-media-content">
                                     <p class='document-name'><a target="_blank" href=${"https://storage.googleapis.com/" + item.bucket + "/" + encodeURIComponent(item.name)} alt='${(meita_translations.open) + item.name.replace(/_/g, ' ').replace(/\..*$/, '')}' >${item.name}</a></p>`)
                         if (showDate == "true") {
                             rawHtml += (
@@ -266,7 +266,7 @@ jQuery(document).ready(function ($) {
 
 
         //------Page X of Y-------
-        const pageAmount = document.createElement('div');
+        const pageAmount = document.createElement('p');
         pageAmount.setAttribute(
             'aria-label',
             meita_translations.page + ' ' + currentPageNumber + meita_translations.of + totalPages
