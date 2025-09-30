@@ -1,13 +1,9 @@
-import { __ } from '@wordpress/i18n';
-import { blockTable } from '@wordpress/icons';
-import { format } from 'date-fns';
-
 jQuery(document).ready(function ($) {
 
     $('.spinnery').show();
     let offset = 0; // Initial page number
 
-    //const { format } = require('date-fns');
+
 
 
     const iconType = (mime_type) => {
@@ -48,6 +44,14 @@ jQuery(document).ready(function ($) {
         return tmpArr;
     }
 
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        // d.M.yy → päivä.kuukausi.vuosi lyhyt
+        const day = date.getDate();
+        const month = date.getMonth() + 1; // 0-11 → +1
+        const year = date.getFullYear() % 100; // viimeiset kaksi numeroa vuodesta
+        return `${day}.${month}.${year}`;
+    }
 
     function doSearch(newOffset, block) {
 
@@ -121,10 +125,10 @@ jQuery(document).ready(function ($) {
                         }
                         rawHtml += (
                             `<div class="bucket-browser-block-content">
-                                    <p class='document-name'><a target="_blank" href=${"https://storage.googleapis.com/" + item.bucket + "/" + encodeURIComponent(item.name)} alt='${__('Open file', 'meita-documents-and-media') + item.name.replace(/_/g, ' ').replace(/\..*$/, '')}' >${item.name}</a></p>`)
+                                    <p class='document-name'><a target="_blank" href=${"https://storage.googleapis.com/" + item.bucket + "/" + encodeURIComponent(item.name)} alt='${(meita_translations.open) + item.name.replace(/_/g, ' ').replace(/\..*$/, '')}' >${item.name}</a></p>`)
                         if (showDate == "true") {
                             rawHtml += (
-                                `<p class='date' title="Last modified at ${format(new Date(item.updated), 'd.M.yy')}">${meita_translations.modified}  ${format(new Date(item.updated), 'd.M.yy')}</p>`)
+                                `<p class='updated-date' title="Last modified at ${formatDate(item.updated)}">${meita_translations.modified}  ${formatDate(item.updated)}</p>`)
                         }
                         if (downloadLink == "true") {
                             rawHtml += (

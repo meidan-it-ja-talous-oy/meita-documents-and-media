@@ -21,6 +21,10 @@
     margin-bottom: 15px;
     display: flex;
 }
+form#documents-and-media-form {
+    background-color: transparent;
+    border: 1px solid black;
+}
 
 .wp-block-meita-documents-and-media-show-bucket .filesPreview {
 
@@ -68,7 +72,4 @@
     }
 
 }
-
-
-
 

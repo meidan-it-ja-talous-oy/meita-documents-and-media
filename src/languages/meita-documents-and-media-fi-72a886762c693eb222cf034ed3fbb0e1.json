@@ -1,5 +1,5 @@
 {
-    "translation-revision-date": "2025-09-19 11:53+0300",
+    "translation-revision-date": "2025-09-30 10:31+0300",
     "generator": "WP-CLI\/2.10.0",
     "source": "blocks\/show-media\/index.js",
     "domain": "messages",
@@ -68,10 +68,10 @@
                 "P\u00e4iv\u00e4yksen mukaan"
             ],
             "Ascending": [
-                "Uusin ensin"
+                "Vanhin ensin"
             ],
             "Descending": [
-                "Vanhin ensin"
+                "Uusin ensin"
             ],
             "Choose the ones you want to show": [
                 "Valitse n\u00e4ytett\u00e4v\u00e4t tiedot"

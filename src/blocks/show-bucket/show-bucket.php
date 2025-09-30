@@ -12,11 +12,9 @@
 {
 	$dir = dirname(__FILE__);
 
-	$script_asset_path = plugin_dir_path(__FILE__) . 'index.asset.php';
-	$asset_file = file_exists($script_asset_path) ? include($script_asset_path) : array('dependencies' => array(), 'version' => '1.0' );
-	$plugin_data = get_file_data(__FILE__, array('Version' => 'Version'), 'plugin');
-	//$plugin_version = $plugin_data['Version'] ?? null;
-
+	$editor_script_asset_path = plugin_dir_path(__FILE__) . 'index.asset.php';
+	$asset_file = file_exists($editor_script_asset_path) ? include($editor_script_asset_path) : array('dependencies' => array(), 'version' => '1.0' );
+	
 	//ladataan index.asset.php
 	wp_register_script(
 		'meita-documents-and-media-show-bucket-editor-script',
@@ -31,20 +29,38 @@
 		WP_PLUGIN_DIR . '/meita-documents-and-media/languages'
 	);
 
+	//ladataan tyylitiedostot
+	wp_register_style(
+    	'meita-documents-and-media-show-bucket-style',
+    	plugins_url('style-index.css', __FILE__),
+    	array(),
+    	'1.0'
+	);
+
+	//rekisteröidään filter-script
+	wp_register_script(
+        'meita-documents-and-media-filter-script',
+		plugins_url( '../../js/filter-script.js', __FILE__ ),
+        array('jquery-core'),
+        $asset_file['version'],
+        true
+    );
+	wp_enqueue_script('meita-documents-and-media-filter-script');
+
+
 	$options = get_option('documents_options');
 	$editor_data = array(
-    'GCPBucketAPIurl' => $options['GCPBucketAPIurl'] ?? '',
-    // lisää vain mitä editorissa oikeasti tarvitaan
+    	'GCPBucketAPIurl' => $options['GCPBucketAPIurl'] ?? '',
 	);
-
 
 	wp_localize_script(
-    	'meita-documents-and-media-show-bucket-editor-script',
+    	'meita-documents-and-media-filter-script',
     	'documentsBlockDefaults',
     	array(
-        	'bucketbrowseroptions' => $editor_data,
+        	'bucketbrowseroptions' => get_option('documents_options')
     	)
 	);
+
 
 	// Register block
 	register_block_type_from_metadata(
@@ -52,7 +68,6 @@
 		array(
 			'title' => __('Show bucket documents', 'meita-documents-and-media'),
 			'description' => __('Wordpress plugin which collects documents from Google Bucket', 'meita-documents-and-media'),
-			//'render_callback' => 'meita_documents_and_media_show_bucket_render'
 		)
 	);		
 }
@@ -69,6 +84,7 @@ function meita_documents_and_media_show_bucket_enqueue_assets() {
         $options     = get_option('documents_options');
         $bucket_url  = $options['GCPBucketAPIurl'] ?? '';
 
+
         wp_localize_script(
             'meita-documents-and-media-filter-script',
             'bucketBrowserData',
@@ -77,7 +93,6 @@ function meita_documents_and_media_show_bucket_enqueue_assets() {
             ]
         );
 
-        // Lokalisoidaan käännökset
         wp_localize_script(
             'meita-documents-and-media-filter-script',
             'meita_translations',
@@ -91,18 +106,7 @@ function meita_documents_and_media_show_bucket_enqueue_assets() {
                 'of'       => __( ' of ','meita-documents-and-media' ),
             ]
         );
-    }else{
-		wp_localize_script(
-        'meita-documents-and-media-show-bucket-editor-script',
-        'documentsBlockDefaults',
-        array(
-            'bucketbrowseroptions' => array()
-        )
-    );
-	}
-
-	// Palautetaan div frontille ja editorille
-  
+    }  
 }
 add_action('wp_enqueue_scripts', 'meita_documents_and_media_show_bucket_enqueue_assets');
 
@@ -173,4 +177,3 @@ function show_bucket_get_paginated_results($page = 1, $per_page = 5) {
 /**
  * logitus
  */
-meita_documents_log_debug("testi");

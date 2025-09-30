@@ -11,6 +11,7 @@
  *
  * @version           Development
  * @author:           Meidän IT ja Talous Oy
+ * @package           meita-documents-and-media
  */
 
 

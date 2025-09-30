@@ -2,7 +2,6 @@ import { __ } from '@wordpress/i18n';
 import { useBlockProps } from '@wordpress/block-editor';
 import Listitem from '../../components/list-item';
 import { format } from 'date-fns';
-import { list } from '@wordpress/icons';
 import './style.scss';
 
 
@@ -14,14 +13,9 @@ export default function save(props) {
     const { attributes } = props;
 
     const {
-        selectedFiles,
-        allFiles,
-        filter,
         listScreen,
-        iconMimetype,
         range,
         blockId,
-        searchlabel,
         showDownloadLink,
         showDate,
         showIcon

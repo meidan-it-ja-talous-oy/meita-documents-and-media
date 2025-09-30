@@ -1,5 +1,5 @@
 {
-    "translation-revision-date": "2025-09-19 11:53+0300",
+    "translation-revision-date": "2025-09-30 10:31+0300",
     "generator": "WP-CLI\/2.10.0",
     "source": "blocks\/show-bucket\/index.js",
     "domain": "messages",
@@ -83,10 +83,10 @@
                 "P\u00e4iv\u00e4yksen mukaan"
             ],
             "Ascending": [
-                "Uusin ensin"
+                "Vanhin ensin"
             ],
             "Descending": [
-                "Vanhin ensin"
+                "Uusin ensin"
             ],
             "Search files..": [
                 "Etsi tiedosto.."
@@ -113,7 +113,7 @@
                 "N\u00e4ytt\u00e4\u00e4 hakupalkin ja kaikki tiedostot, voit s\u00e4\u00e4t\u00e4\u00e4 n\u00e4ytett\u00e4vien tiedostojen m\u00e4\u00e4r\u00e4\u00e4"
             ],
             "Seach bar label text here": [
-                "Kirjoita t\u00e4h\u00e4n hakupalkin otsake teksti"
+                "Kirjoita hakuselite"
             ],
             "Page %d": [
                 "Sivu %d"
@@ -129,6 +129,18 @@
             ],
             "Search files": [
                 "Etsi tiedostot"
+            ],
+            "Search button": [
+                "Haku painike"
+            ],
+            "Search label text": [
+                "Haku painikkeen teksti"
+            ],
+            "Hide label": [
+                "PIilota hakuselite"
+            ],
+            "Show label": [
+                "N\u00e4yt\u00e4 hakuselite"
             ]
         }
     }

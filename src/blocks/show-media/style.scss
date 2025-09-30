@@ -29,6 +29,23 @@
 	display: flex;
 }
 
+.wp-block-meita-documents-and-media-show-media .document-name .date {
+	font-size: 0.938rem;
+}
+
+.bucket-browser-block-content p{
+	margin: 0px;
+}
+.bucket-browser-block-content .updated-date{
+	font-size: 0.938rem;
+}
+.bucket-browser-block-content .download-link{
+	font-weight: 500;
+}
+.bucket-browser-block-content .download-button a{
+	text-decoration: auto;
+}
+
 .wp-block-meita-documents-and-media-show-media .filesPreview {
 
 	.bucket-browser-block-icon {
@@ -47,7 +64,7 @@
 		margin: 5px;
 		padding-top: 2px;
 	}
-
+  
 	.bucket-browser-block-listitem .bucket-browser-block-content a {
 		text-decoration: none;
 	}
@@ -94,6 +111,9 @@
 
 	.document-name a:hover {
 		text-decoration: underline;
+	}
+	.document-name .date {
+		font-size: 0.938rem;
 	}
 
 	ul {

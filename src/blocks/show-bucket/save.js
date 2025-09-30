@@ -18,6 +18,8 @@ export default function save(props) {
         allFiles,
         currentPage,
         totalPages,
+        showButtonIcon,
+        searchbuttonlabel,
         order,
         orderBy,
         filter,
@@ -25,6 +27,7 @@ export default function save(props) {
         range,
         blockId,
         searchlabel,
+        showLabel,
         showDownloadLink,
         showDate,
         showIcon,
@@ -39,8 +42,6 @@ export default function save(props) {
     const getSortedItems = (items) => {
 
         let filtered = [...items]
-        console.log("orderBy", orderBy);
-        console.log("order", order);
 
         filtered.sort((a, b) => {
             if (orderBy === "title") {
@@ -133,8 +134,17 @@ export default function save(props) {
                         style={{ "width": "60%" }}
                         id="documents-and-media-form"
                     >
-                        <label className='wp-block-search__label' for="documents-and-media-input">{searchlabel}</label>
-                        <div className="components-resizable-box__container wp-block-search__inside-wrapper" style={{ "display": "flex" }}>
+                        <label
+                            htmlFor="wp-block-search__input-1"
+                            className={showLabel ? "wp-block-search__label" : "screen-reader-text"}
+                        >
+                            {searchlabel === "Search"
+                                ? __('Search', 'meita-contacts-integration')
+                                : searchlabel}
+                        </label>
+
+                        <div className="components-resizable-box__container wp-block-search__inside-wrapper"
+                            style={{ "display": "flex" }}>
 
                             <input
                                 type="search"
@@ -148,11 +158,30 @@ export default function save(props) {
                             <button
                                 type="submit"
                                 className='documents-and-media-button block-editor-rich-text__editable wp-block-search__button wp-element-button rich-text'
-                                // value={__("Search")}
                                 style={{ "font-size": 18, "padding": "10px 20px", "display": "flex", "flex": 1 }}
-                                aria-label={__('Search', 'meita-documents-and-media')}
+                                aria-label={showButtonIcon
+                                    ? (searchbuttonlabel || __('Search', 'meita-documents-and-media'))
+                                    : undefined}
 
-                            >{__("Search")}</button>
+                            >
+                                {showButtonIcon ? (
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 24 24"
+                                        width="24"
+                                        height="24"
+                                        aria-hidden="true"
+                                        focusable="false"
+                                        fill="currentColor"
+                                    >
+                                        <path d="M13 5c-3.3 0-6 2.7-6 6 0 1.4.5 2.7 1.3 3.7l-3.8 3.8 1.1 1.1 3.8-3.8c1 .8 2.3 1.3 3.7 1.3 3.3 0 6-2.7 6-6S16.3 5 13 5zm0 10.5c-2.5 0-4.5-2-4.5-4.5s2-4.5 4.5-4.5 4.5 2 4.5 4.5-2 4.5-4.5 4.5z"></path>
+                                    </svg>
+                                ) : (
+                                    searchbuttonlabel === "Search"
+                                        ? __('Search', 'meita-contacts-integration')
+                                        : searchbuttonlabel
+                                )}
+                            </button>
 
                         </div>
                     </form>

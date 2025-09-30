@@ -12,22 +12,22 @@ const packageVersion = JSON.stringify(require('./package.json').version).replace
 const buildpath = path.resolve(process.cwd(), 'build');
 const pluginVersion = (process.env.NODE_ENV == 'development') ? 'Development' + Math.floor(Math.random() * 100000000000) : packageVersion;
 
-if (process.env.NODE_ENV == 'development') {
-    defaultConfig.plugins.push(new ReplaceInFileWebpackPlugin([
-        {
-            dir: 'build',
-            files: ['meita-documents-and-media.php'],
-            rules: [{
-                search: /Version:           Development.*/gi, // See that the spaces between are exactly the same as in target file
-                replace: function (match) {
-                    return 'Version:           ' + pluginVersion;
-                }
-            }]
-        },
-        { dir: 'build/blocks/show-bucket', files: ['block.json'], rules: [{ search: /"version": "development",/gi, replace: function (match) { return '"version": "' + pluginVersion + '",'; } }] },
-        { dir: 'build/blocks/show-media', files: ['block.json'], rules: [{ search: /"version": "development",/gi, replace: function (match) { return '"version": "' + pluginVersion + '",'; } }] }
-    ]));
-}
+
+defaultConfig.plugins.push(new ReplaceInFileWebpackPlugin([
+    {
+        dir: 'build',
+        files: ['meita-documents-and-media.php'],
+        rules: [{
+            search: /Version:           Development.*/gi, // See that the spaces between are exactly the same as in target file
+            replace: function (match) {
+                return 'Version:           ' + pluginVersion;
+            }
+        }]
+    },
+    { dir: 'build/blocks/show-bucket', files: ['block.json'], rules: [{ search: /"version": "development",/gi, replace: function (match) { return '"version": "' + pluginVersion + '",'; } }] },
+    { dir: 'build/blocks/show-media', files: ['block.json'], rules: [{ search: /"version": "development",/gi, replace: function (match) { return '"version": "' + pluginVersion + '",'; } }] }
+]));
+
 
 module.exports = {
     ...defaultConfig,
@@ -41,8 +41,6 @@ module.exports = {
                 { from: '**/*.php', to: buildpath, context: path.resolve(__dirname, 'src') },
                 { from: 'admin/*.php', to: buildpath, context: path.resolve(__dirname, 'src') },
                 { from: 'languages', to: buildpath + '/languages', context: path.resolve(__dirname, 'src') },
-                //{ from: 'js', to: buildpath + '/js', context: path.resolve(__dirname, 'src') },
-
             ],
         }),
 

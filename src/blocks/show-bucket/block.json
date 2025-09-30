@@ -131,6 +131,20 @@
         "searchlabel": {
             "type": "string",
             "default": ""
+        },
+        "searchbuttonlabel": {
+            "type": "string",
+            "selector": "button",
+            "source": "text",
+            "default": "Search"
+        },
+        "showButtonIcon": {
+            "type": "boolean",
+            "default": false
+        },
+        "showLabel": {
+            "type": "boolean",
+            "default": true
         }
     }
 }

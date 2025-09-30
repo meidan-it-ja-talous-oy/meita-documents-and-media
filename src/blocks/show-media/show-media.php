@@ -15,8 +15,6 @@
 
 	$script_asset_path = plugin_dir_path(__FILE__) . 'index.asset.php';
 	$asset_file = file_exists($script_asset_path) ? include($script_asset_path) : array('dependencies' => array(), 'version' => '1.0' );
-	$plugin_data = get_file_data(__FILE__, array('Version' => 'Version'), 'plugin');
-	//$plugin_version = $plugin_data['Version'] ?? null;
 
 	//ladataan index.asset.php
 	wp_register_script(
@@ -32,8 +30,7 @@
 		WP_PLUGIN_DIR . '/meita-documents-and-media/languages'
 	);
 
- 	
-	//editor CSS lataus
+	//ladataan tyylitiedostot
 	wp_register_style(
 		'meita-documents-and-media-show-media-style',
 		plugins_url('style-index.css', __FILE__),
@@ -49,12 +46,12 @@
 	);
 
 	// testataan löytyykö filter-script
-	$path = plugin_dir_path(__FILE__) . '../../js/filter-script.js';
-	if (!file_exists($path)) {
-		error_log("🔥 filter-script.js EI löydy polusta: " . realpath($path));
-	} else {
-		error_log("✅ filter-script.js löytyi: " . realpath($path));
-	}
+	// $path = plugin_dir_path(__FILE__) . '../../js/filter-script.js';
+	// if (!file_exists($path)) {
+	// 	error_log("🔥 filter-script.js EI löydy polusta: " . realpath($path));
+	// } else {
+	// 	error_log("✅ filter-script.js löytyi: " . realpath($path));
+	// }
 
 	//rekisteröidään filter-script
 	wp_register_script(
@@ -64,7 +61,6 @@
         $asset_file['version'],
         true
     );
-
 	wp_enqueue_script('meita-documents-and-media-filter-script');
 
 	$options = get_option('documents_options');
@@ -92,7 +88,7 @@
 		'page'     => __( 'Page','meita-documents-and-media' ),
 		'of'       => __( ' of ','meita-documents-and-media' ),
     )
-);
+	);
 
 	wp_localize_script(
     	'meita-documents-and-media-filter-script',
@@ -110,7 +106,6 @@
     	)
 	);
 
-	//wp_set_script_translations('create-bucket-browser-block', 'bucket-browser-block');
 	$range_value = isset( $attributes['range'] ) ? esc_attr( $attributes['range'] ) : '';
 	$blockId_value = isset( $attributes['blockId'] ) ? esc_attr( $attributes['blockId'] ) : '';
 
@@ -249,19 +244,7 @@ function get_paginated_results_media_block($page = 1, $per_page = 5) {
 
 }
 
-/*
-function meita_documents_and_media_show_bucket_enqueue_assets($attributes) {
-    // Check if the block is being rendered and enqueue assets
-    if (has_block('meita-documents-and-media-show')) {
-        filter_script($attributes);
-    }
-}
-add_action('enqueue_block_assets', 'meita_documents_and_media_show_bucket_enqueue_assets');*/
-
-
-
 
 /**
  * logitus
  */
-meita_documents_log_debug("testi");

@@ -79,7 +79,7 @@ export default function Edit(props) {
                 const parsedFolders = folderParser(response.data.folders);
                 setFolders(parsedFolders);
             }).catch((err) => {
-                console.error("Virhe folder pyynnössä:", err);
+                console.error("Virhe kansion haku pyynnössä:", err);
             });
         }
     }, [wpSelect, filebirdApiKey])
@@ -194,7 +194,141 @@ export default function Edit(props) {
     }, [])
 
 
+    const inspectorControls = (
+        <InspectorControls key="setting">
+            <Panel>
+                <PanelBody title={__('Data source settings', 'meita-documents-and-media')} icon={box} initialOpen={true}>
 
+                    {(datasource == "wordpress") && (
+                        <SelectControl
+                            id="wpSelect"
+                            label={__('Information to display', 'meita-documents-and-media')}
+                            name="wpSelect"
+                            onChange={(selection) => {
+                                setWpSelect(selection)
+                                setTrue(false);
+                            }}
+                            options={[
+                                { label: __('Files', 'meita-documents-and-media'), value: "files" },
+                                { label: __('Folder', 'meita-documents-and-media'), value: "folder" }
+                            ]}
+                            value={wpSelect}
+                            __nextHasNoMarginBottom
+                            __next40pxDefaultSize
+                        />
+                    )}
+
+                    {(datasource == "wordpress" && wpSelect == "files") && (
+                        <MediaUploadCheck>
+                            <MediaUpload
+                                multiple={true}
+                                onSelect={(media) => { setFiles(media) }}
+                                value={files.map(item => item.id)}
+                                render={({ open }) => (
+                                    <Button onClick={open} isPrimary >{__('Open Media Library', 'meita-documents-and-media')}</Button>
+                                )}
+                            />
+                        </MediaUploadCheck>
+                    )}
+
+                    {(datasource == "wordpress" && wpSelect == "folder") &&
+                        (<div>
+                            {!(folders.length === 0) ?
+                                <SelectControl
+                                    id="selectedFolder"
+                                    label={__('Folder', 'meita-documents-and-media')}
+                                    name="selectedFolder"
+                                    onChange={(selection) => {
+                                        setSelectedFolder(selection);
+                                    }}
+                                    value={selectedFolder}
+                                    options={[
+                                        { label: __('Choose folder', 'meita-documents-and-media'), value: '' }, // 👈 eka vaihtoehto
+                                        ...folders,
+                                    ]}
+                                    __nextHasNoMarginBottom
+                                    __next40pxDefaultSize
+                                />
+                                :
+                                <p style={{ color: "red" }}>{__('You have to have Filebirds ApiKey, if you want to browse folders!', 'meita-documents-and-media')}</p>
+                            }
+                        </div>)
+                    }
+                </PanelBody>
+
+                <PanelBody title={__('Display settings', 'meita-documents-and-media')} icon={file} initialOpen={true}>
+                    <p>{__('Choose the ones you want to show', 'meita-documents-and-media')}</p>
+                    <ToggleControl
+                        label={__('Show icons', 'meita-documents-and-media')}
+                        checked={showIcon}
+                        onChange={(value) => {
+                            setShowIcon(value);
+                        }}
+                        __nextHasNoMarginBottom
+                    />
+                    <ToggleControl
+                        label={__('Show date', 'meita-documents-and-media')}
+                        checked={showDate}
+                        onChange={(value) => {
+                            setShowDate(value);
+                        }}
+                        __nextHasNoMarginBottom
+                    />
+                    <ToggleControl
+                        label={__('Show description', 'meita-documents-and-media')}
+                        checked={showDescription}
+                        onChange={(value) => {
+                            setShowDescription(value);
+                        }}
+                        __nextHasNoMarginBottom
+                    />
+                    <ToggleControl
+                        label={__('Show download link', 'meita-documents-and-media')}
+                        checked={showDownloadLink}
+                        onChange={(value) => {
+                            setShowDownloadLink(value);
+                        }}
+                        __nextHasNoMarginBottom
+                    />
+                </PanelBody>
+
+                {(listScreen == false) && (
+                    <PanelBody title={__('Order', 'meita-documents-and-media')} icon={formatListNumbered} initialOpen={false}>
+                        <SelectControl
+                            id="orderBy"
+                            label={__('Order by', 'meita-documents-and-media')}
+                            name="orderBy"
+                            onChange={(selection) => {
+                                setOrderBy(selection)
+                            }}
+                            options={[
+                                { label: __('Title', 'meita-documents-and-media'), value: "title" },
+                                { label: __('Date', 'meita-documents-and-media'), value: "date" }
+                            ]}
+                            value={orderBy}
+                            __next40pxDefaultSize
+                            __nextHasNoMarginBottom
+                        />
+                        <SelectControl
+                            id="order"
+                            label={__('Order', 'meita-documents-and-media')}
+                            name="order"
+                            onChange={(selection) => {
+                                setOrder(selection)
+                            }}
+                            options={[
+                                { label: __('Ascending', 'meita-documents-and-media'), value: "ascending" },
+                                { label: __('Descending', 'meita-documents-and-media'), value: "descending" }
+                            ]}
+                            value={order}
+                            __next40pxDefaultSize
+                            __nextHasNoMarginBottom
+                        />
+                    </PanelBody>
+                )}
+            </Panel>
+        </InspectorControls>
+    );
 
     const fetchItems = (selection, datasourceURL, page) => {
         page = currentPage;
@@ -268,6 +402,8 @@ export default function Edit(props) {
             showDownloadLink: { showDownloadLink }
         })}>
 
+            {inspectorControls}
+
             <div>
                 {(files.length === 0 && selectedAttachments.length == 0 && istrue == false && listScreen == false) &&
 
@@ -277,140 +413,6 @@ export default function Edit(props) {
                         <p>{__('Then you can adjust the display settings and change the order of the documents.', 'meita-documents-and-media')}</p>
                     </div>
                 }
-
-                <InspectorControls key="setting">
-                    <Panel>
-                        <PanelBody title={__('Data source settings', 'meita-documents-and-media')} icon={box} initialOpen={false}>
-
-                            {(datasource == "wordpress") && (
-                                <SelectControl
-                                    id="wpSelect"
-                                    label={__('Information to display', 'meita-documents-and-media')}
-                                    name="wpSelect"
-                                    onChange={(selection) => {
-                                        setWpSelect(selection)
-                                        setTrue(false);
-                                    }}
-                                    options={[
-                                        { label: __('Files', 'meita-documents-and-media'), value: "files" },
-                                        { label: __('Folder', 'meita-documents-and-media'), value: "folder" }
-                                    ]}
-                                    value={wpSelect}
-                                    __nextHasNoMarginBottom
-                                    __next40pxDefaultSize
-                                />
-                            )}
-
-                            {(datasource == "wordpress" && wpSelect == "files") && (
-                                <MediaUploadCheck>
-                                    <MediaUpload
-                                        multiple={true}
-                                        onSelect={(media) => { setFiles(media) }}
-                                        value={files.map(item => item.id)}
-                                        render={({ open }) => (
-                                            <Button onClick={open} isPrimary >{__('Open Media Library', 'meita-documents-and-media')}</Button>
-                                        )}
-                                    />
-                                </MediaUploadCheck>
-                            )}
-
-                            {(datasource == "wordpress" && wpSelect == "folder") &&
-                                (<div>
-                                    {!(folders.length === 0) ?
-                                        <SelectControl
-                                            id="selectedFolder"
-                                            label={__('Folder', 'meita-documents-and-media')}
-                                            name="selectedFolder"
-                                            onChange={(selection) => {
-                                                setSelectedFolder(selection);
-                                            }}
-                                            value={selectedFolder}
-                                            options={[
-                                                { label: __('Choose folder', 'meita-documents-and-media'), value: '' }, // 👈 eka vaihtoehto
-                                                ...folders,
-                                            ]}
-                                            __nextHasNoMarginBottom
-                                            __next40pxDefaultSize
-                                        />
-                                        :
-                                        <p style={{ color: "red" }}>{__('You have to have Filebirds ApiKey, if you want to browse folders!', 'meita-documents-and-media')}</p>
-                                    }
-                                </div>)
-                            }
-                        </PanelBody>
-
-                        <PanelBody title={__('Display settings', 'meita-documents-and-media')} icon={file} initialOpen={false}>
-                            <p>{__('Choose the ones you want to show', 'meita-documents-and-media')}</p>
-                            <ToggleControl
-                                label={__('Show icons', 'meita-documents-and-media')}
-                                checked={showIcon}
-                                onChange={(value) => {
-                                    setShowIcon(value);
-                                }}
-                                __nextHasNoMarginBottom
-                            />
-                            <ToggleControl
-                                label={__('Show date', 'meita-documents-and-media')}
-                                checked={showDate}
-                                onChange={(value) => {
-                                    setShowDate(value);
-                                }}
-                                __nextHasNoMarginBottom
-                            />
-                            <ToggleControl
-                                label={__('Show description', 'meita-documents-and-media')}
-                                checked={showDescription}
-                                onChange={(value) => {
-                                    setShowDescription(value);
-                                }}
-                                __nextHasNoMarginBottom
-                            />
-                            <ToggleControl
-                                label={__('Show download link', 'meita-documents-and-media')}
-                                checked={showDownloadLink}
-                                onChange={(value) => {
-                                    setShowDownloadLink(value);
-                                }}
-                                __nextHasNoMarginBottom
-                            />
-                        </PanelBody>
-
-                        {(listScreen == false) && (
-                            <PanelBody title={__('Order', 'meita-documents-and-media')} icon={formatListNumbered} initialOpen={false}>
-                                <SelectControl
-                                    id="orderBy"
-                                    label={__('Order by', 'meita-documents-and-media')}
-                                    name="orderBy"
-                                    onChange={(selection) => {
-                                        setOrderBy(selection)
-                                    }}
-                                    options={[
-                                        { label: __('Title', 'meita-documents-and-media'), value: "title" },
-                                        { label: __('Date', 'meita-documents-and-media'), value: "date" }
-                                    ]}
-                                    value={orderBy}
-                                    __next40pxDefaultSize
-                                    __nextHasNoMarginBottom
-                                />
-                                <SelectControl
-                                    id="order"
-                                    label={__('Order', 'meita-documents-and-media')}
-                                    name="order"
-                                    onChange={(selection) => {
-                                        setOrder(selection)
-                                    }}
-                                    options={[
-                                        { label: __('Ascending', 'meita-documents-and-media'), value: "ascending" },
-                                        { label: __('Descending', 'meita-documents-and-media'), value: "descending" }
-                                    ]}
-                                    value={order}
-                                    __next40pxDefaultSize
-                                    __nextHasNoMarginBottom
-                                />
-                            </PanelBody>
-                        )}
-                    </Panel>
-                </InspectorControls>
             </div>
 
             <div class="filesPreview">
