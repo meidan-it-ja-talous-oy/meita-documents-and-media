@@ -149,6 +149,12 @@ form#documents-and-media-form {
     .pagination button.next-page {
         margin-left: 10px !important;
     }
+    .pagination .last-page{
+        margin-left: 10px;
+    }
+    .pagination .first-page{
+        margin-right: 10px;
+    }
     .pagination button.active {
         background-color: white;
     }
