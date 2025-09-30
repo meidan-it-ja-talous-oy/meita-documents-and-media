@@ -18,7 +18,7 @@ defaultConfig.plugins.push(new ReplaceInFileWebpackPlugin([
         dir: 'build',
         files: ['meita-documents-and-media.php'],
         rules: [{
-            search: /Version:           Development.*/gi, // See that the spaces between are exactly the same as in target file
+            search: /Version:            Development.*/gi, // See that the spaces between are exactly the same as in target file
             replace: function (match) {
                 return 'Version:           ' + pluginVersion;
             }
