@@ -36,25 +36,30 @@ export default function save(props) {
 
 
 
-
+    function getSortKey(item) {
+        return item.metadata?.FileTitle || item.title || item.name || "";
+    }
 
 
     const getSortedItems = (items) => {
 
         let filtered = [...items]
 
-        filtered.sort((a, b) => {
-            if (orderBy === "title") {
+        if (orderBy === "title") {
+            filtered.sort((a, b) => {
+                const aKey = getSortKey(a);
+                const bKey = getSortKey(b);
                 return order === "ascending"
-                    ? a.name.localeCompare(b.name, 'fi', { sensitivity: 'base' })
-                    : b.name.localeCompare(a.name, 'fi', { sensitivity: 'base' });
-            } else { // date
+                    ? aKey.localeCompare(bKey, "fi", { sensitivity: "base" })
+                    : bKey.localeCompare(aKey, "fi", { sensitivity: "base" });
+            });
+        } else if (orderBy === "date") { // date
+            filtered.sort((a, b) => {
                 return order === "ascending"
                     ? new Date(a.updated) - new Date(b.updated)
                     : new Date(b.updated) - new Date(a.updated);
-            }
-        });
-
+            });
+        }
         return filtered;
     }
 

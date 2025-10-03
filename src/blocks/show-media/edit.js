@@ -93,43 +93,46 @@ export default function Edit(props) {
 
 
     useEffect(() => {
-        if (datasource == "google" && listScreen == false) {
-            var tmpArr = selectedFiles;
-            if (orderBy == "title") {
-                if (order == "ascending") {
-                    tmpArr.sort((a, b) => a.name.toUpperCase() > b.name.toUpperCase() ? 1 : -1);
-                } else {
-                    tmpArr.sort((a, b) => a.name.toUpperCase() < b.name.toUpperCase() ? 1 : -1);
-                }
+        // Sortataan tiedostot
+        if (files && files.length > 0) {
+            let tmpFiles = [...files];
+            if (orderBy === "title") {
+                tmpFiles.sort((a, b) =>
+                    order === "ascending"
+                        ? a.title.localeCompare(b.title, 'fi', { sensitivity: 'base' })
+                        : b.title.localeCompare(a.title, 'fi', { sensitivity: 'base' })
+                );
             } else {
-                if (order == "ascending") {
-                    tmpArr.sort((a, b) => new Date(a.timeCreated).getTime() - new Date(b.timeCreated).getTime());
-                } else {
-                    tmpArr.sort((a, b) => new Date(b.timeCreated).getTime() - new Date(a.timeCreated).getTime());
-                }
+                tmpFiles.sort((a, b) =>
+                    order === "ascending"
+                        ? new Date(a.date).getTime() - new Date(b.date).getTime()
+                        : new Date(b.date).getTime() - new Date(a.date).getTime()
+                );
             }
-            setSelectedFiles(tmpArr);
-            setChanged((changed ? false : true));
-        } else {
-            var tmpArr = files;
-            if (orderBy == "title") {
-                if (order == "ascending") {
-                    tmpArr.sort((a, b) => a.title.toUpperCase() > b.title.toUpperCase() ? 1 : -1);
-                } else {
-                    tmpArr.sort((a, b) => a.title.toUpperCase() < b.title.toUpperCase() ? 1 : -1);
-                }
-            } else {
-                if (order == "ascending") {
-                    tmpArr.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-                } else {
-                    tmpArr.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-                }
-            }
-            setFiles(tmpArr);
-            setChanged((changed ? false : true));
+            setFiles(tmpFiles);
         }
-    }, [order, orderBy])
 
+        // Sortataan kansion tiedostot
+        if (selectedAttachments && selectedAttachments.length > 0) {
+            let tmpAttachments = [...selectedAttachments];
+            if (orderBy === "title") {
+                tmpAttachments.sort((a, b) =>
+                    order === "ascending"
+                        ? a.title.rendered.localeCompare(b.title.rendered, 'fi', { sensitivity: 'base' })
+                        : b.title.rendered.localeCompare(a.title.rendered, 'fi', { sensitivity: 'base' })
+                );
+            } else {
+                tmpAttachments.sort((a, b) =>
+                    order === "ascending"
+                        ? new Date(a.modified).getTime() - new Date(b.modified).getTime()
+                        : new Date(b.modified).getTime() - new Date(a.modified).getTime()
+                );
+            }
+            setSelectedAttachments(tmpAttachments);
+        }
+
+        setChanged(changed ? false : true);
+    }, [order, orderBy, files, selectedAttachments]);
 
     useEffect(() => {
         if (datasource == "wordpress" && wpSelect == "files") {
@@ -193,6 +196,15 @@ export default function Edit(props) {
         }
     }, [])
 
+    const orderOptions = orderBy === "title"
+        ? [
+            { label: __('A → Ö', 'meita-documents-and-media'), value: "ascending" },
+            { label: __('Ö → A', 'meita-documents-and-media'), value: "descending" }
+        ]
+        : [
+            { label: __('Ascending', 'meita-documents-and-media'), value: "ascending" },
+            { label: __('Descending', 'meita-documents-and-media'), value: "descending" }
+        ];
 
     const inspectorControls = (
         <InspectorControls key="setting">
@@ -316,10 +328,7 @@ export default function Edit(props) {
                             onChange={(selection) => {
                                 setOrder(selection)
                             }}
-                            options={[
-                                { label: __('Ascending', 'meita-documents-and-media'), value: "ascending" },
-                                { label: __('Descending', 'meita-documents-and-media'), value: "descending" }
-                            ]}
+                            options={orderOptions}
                             value={order}
                             __next40pxDefaultSize
                             __nextHasNoMarginBottom

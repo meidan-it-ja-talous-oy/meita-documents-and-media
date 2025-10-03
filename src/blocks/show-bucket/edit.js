@@ -303,6 +303,16 @@ export default function Edit(props) {
         </BlockControls>
     )
 
+    const orderOptions = orderBy === "title"
+        ? [
+            { label: __('A → Ö', 'meita-documents-and-media'), value: "ascending" },
+            { label: __('Ö → A', 'meita-documents-and-media'), value: "descending" }
+        ]
+        : [
+            { label: __('Ascending', 'meita-documents-and-media'), value: "ascending" },
+            { label: __('Descending', 'meita-documents-and-media'), value: "descending" }
+        ];
+
     const inspectorControls = (
         < InspectorControls key="setting" >
             <PanelBody title={__('Data source settings', 'meita-documents-and-media')} icon={box} initialOpen={true}>
@@ -550,11 +560,7 @@ export default function Edit(props) {
                         onChange={(selection) => {
                             setOrder(selection)
                         }}
-                        options={[
-                            { label: __('Descending', 'meita-documents-and-media'), value: "descending" },
-                            { label: __('Ascending', 'meita-documents-and-media'), value: "ascending" }
-
-                        ]}
+                        options={orderOptions}
                         value={order}
                         __nextHasNoMarginBottom
                         __next40pxDefaultSize
@@ -706,12 +712,16 @@ export default function Edit(props) {
                                 >
 
                                     {(() => {
+                                        const getSortKey = (item) => item.metadata?.FileTitle || item.name || "";
+
                                         const displayedItems = filteredItems
                                             .sort((a, b) => {
                                                 if (orderBy === "title") {
+                                                    const aKey = getSortKey(a);
+                                                    const bKey = getSortKey(b);
                                                     return order === "ascending"
-                                                        ? a.name.localeCompare(b.name, "fi", { sensitivity: "base" })
-                                                        : b.name.localeCompare(a.name, "fi", { sensitivity: "base" });
+                                                        ? aKey.localeCompare(bKey, "fi", { sensitivity: "base" })
+                                                        : bKey.localeCompare(aKey, "fi", { sensitivity: "base" });
                                                 } else {
                                                     return order === "ascending"
                                                         ? new Date(a.updated) - new Date(b.updated)

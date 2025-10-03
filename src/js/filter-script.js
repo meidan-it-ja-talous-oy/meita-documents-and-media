@@ -23,17 +23,22 @@ jQuery(document).ready(function ($) {
         }
     }
 
-    function setNewFirst(res, order, orderBy) {
+    function getSortKey(item) {
+        return item.metadata?.FileTitle || item.title || item.name || "";
+    }
 
-        let tmpArr = res;
-        //console.log(tmpArr);
+    function setNewFirst(arr, order, orderBy) {
+
+        let tmpArr = [...arr];
 
         if (orderBy === "title") {
-            tmpArr.sort((a, b) =>
-                order === "ascending"
-                    ? a.name.localeCompare(b.name, 'fi', { sensitivity: 'base' })
-                    : b.name.localeCompare(a.name, 'fi', { sensitivity: 'base' })
-            );
+            tmpArr.sort((a, b) => {
+                const aKey = getSortKey(a);
+                const bKey = getSortKey(b);
+                return order === "ascending"
+                    ? aKey.localeCompare(bKey, "fi", { sensitivity: "base" })
+                    : bKey.localeCompare(aKey, "fi", { sensitivity: "base" });
+            });
         } else if (orderBy === "date") {
             tmpArr.sort((a, b) =>
                 order === "ascending"
