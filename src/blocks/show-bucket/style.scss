@@ -94,7 +94,7 @@
 
 form#documents-and-media-form {
     background-color: transparent;
-    border: 1px solid black;
+    //border: 1px solid black;
 }
 
 .wp-block-meita-documents-and-media-show-bucket .filesPreview{
@@ -162,7 +162,7 @@ form#documents-and-media-form {
         hyphens: auto;
         word-wrap: break-word;
         overflow-wrap: break-word;
-        word-break: break-word;
+        word-break:break-word;
 
     }
     .document-name a:hover {

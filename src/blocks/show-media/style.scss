@@ -107,6 +107,9 @@
 	.document-name a {
 		font-weight: 600;
 		text-decoration: none;
+		overflow-wrap: break-word;
+		word-break: break-word;
+		hyphens: auto;
 	}
 
 	.document-name a:hover {

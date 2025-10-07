@@ -144,7 +144,7 @@ export default function save(props) {
                             className={showLabel ? "wp-block-search__label" : "screen-reader-text"}
                         >
                             {searchlabel === "Search"
-                                ? __('Search', 'meita-contacts-integration')
+                                ? __('Search', 'meita-documents-and-media')
                                 : searchlabel}
                         </label>
 
@@ -183,7 +183,7 @@ export default function save(props) {
                                     </svg>
                                 ) : (
                                     searchbuttonlabel === "Search"
-                                        ? __('Search', 'meita-contacts-integration')
+                                        ? __('Search', 'meita-documents-and-media')
                                         : searchbuttonlabel
                                 )}
                             </button>
