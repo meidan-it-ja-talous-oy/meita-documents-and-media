@@ -1,5 +1,5 @@
 {
-    "translation-revision-date": "2025-09-30 10:31+0300",
+    "translation-revision-date": "2025-10-07 15:11+0300",
     "generator": "WP-CLI\/2.10.0",
     "source": "blocks\/show-bucket\/index.js",
     "domain": "messages",
@@ -141,6 +141,12 @@
             ],
             "Show label": [
                 "N\u00e4yt\u00e4 hakuselite"
+            ],
+            "A \u2192 \u00d6": [
+                ""
+            ],
+            "\u00d6 \u2192 A": [
+                ""
             ]
         }
     }

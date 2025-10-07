@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Meita documents and media\n"
 "Report-Msgid-Bugs-To: Meidän IT ja Talous Oy\n"
 "POT-Creation-Date: 2025-08-05 10:00+0300\n"
-"PO-Revision-Date: 2025-09-30 10:31+0300\n"
+"PO-Revision-Date: 2025-10-07 15:11+0300\n"
 "Last-Translator: Heidi Rautasalo <heidi.rautasalo@meita.fi>\n"
 "Language-Team: \n"
 "Language: fi\n"
@@ -53,23 +53,23 @@ msgstr "Googlen tiedostopalvelun URL osoite"
 msgid "Save Pattern"
 msgstr "Tallenna"
 
-#: blocks/show-bucket/show-bucket.php:52
+#: blocks/show-bucket/show-bucket.php:69
 msgid "Show bucket documents"
 msgstr "Googlen tiedostopalvelu"
 
-#: blocks/show-bucket/show-bucket.php:53
+#: blocks/show-bucket/show-bucket.php:70
 msgid "Wordpress plugin which collects documents from Google Bucket"
 msgstr "Lohko joka näyttää Googlen tiedostopalvelun (”Bucketin”) tiedostot"
 
-#: blocks/show-bucket/show-bucket.php:109 blocks/show-media/show-media.php:192
+#: blocks/show-bucket/show-bucket.php:118 blocks/show-media/show-media.php:187
 msgid "Settings"
 msgstr "Asetukset"
 
-#: blocks/show-media/show-media.php:131
+#: blocks/show-media/show-media.php:126
 msgid "Show media documents"
 msgstr "Mediatiedostot"
 
-#: blocks/show-media/show-media.php:132
+#: blocks/show-media/show-media.php:127
 msgid "Wordpress plugin which collects documents from Medialibrary"
 msgstr "Lohko, joka näyttää mediakirjaston mediatiedostoja"
 
@@ -77,7 +77,7 @@ msgstr "Lohko, joka näyttää mediakirjaston mediatiedostoja"
 msgid "Modified "
 msgstr "Muokattu "
 
-#: blocks/show-bucket/show-bucket.php:93 blocks/show-media/show-media.php:89
+#: blocks/show-bucket/show-bucket.php:102 blocks/show-media/show-media.php:85
 #: blocks/show-bucket/index.js:1 blocks/show-media/index.js:1
 msgid "Modified"
 msgstr "Muokattu"
@@ -210,19 +210,19 @@ msgstr "Etsi tiedosto.."
 msgid "Search"
 msgstr "Etsi"
 
-#: blocks/show-bucket/show-bucket.php:91 blocks/show-media/show-media.php:87
+#: blocks/show-bucket/show-bucket.php:100 blocks/show-media/show-media.php:83
 msgid "Download file"
 msgstr "Lataa"
 
-#: blocks/show-bucket/show-bucket.php:94 blocks/show-media/show-media.php:90
+#: blocks/show-bucket/show-bucket.php:103 blocks/show-media/show-media.php:86
 msgid "Previous page"
 msgstr "Edellinen"
 
-#: blocks/show-bucket/show-bucket.php:95 blocks/show-media/show-media.php:91
+#: blocks/show-bucket/show-bucket.php:104 blocks/show-media/show-media.php:87
 msgid "Next page"
 msgstr "Seuraava"
 
-#: blocks/show-bucket/show-bucket.php:97 blocks/show-media/show-media.php:93
+#: blocks/show-bucket/show-bucket.php:106 blocks/show-media/show-media.php:89
 msgid " of "
 msgstr " / "
 
@@ -270,7 +270,7 @@ msgstr "Documentit ja media - Googlen tiedostopalvelu"
 msgid "Open files and choose the ones you want"
 msgstr "Avaa tiedostot ja valitse haluamasi. Kun painat tallenna painiketta tiedostot tulevat ruudulle"
 
-#: blocks/show-bucket/show-bucket.php:92 blocks/show-media/show-media.php:88
+#: blocks/show-bucket/show-bucket.php:101 blocks/show-media/show-media.php:84
 msgid "Open file"
 msgstr "Avaa tiedosto"
 
@@ -282,7 +282,7 @@ msgstr "Poista valinnat"
 msgid "Shows search bar and all files, you can change how many files you want to show"
 msgstr "Näyttää hakupalkin ja kaikki tiedostot, voit säätää näytettävien tiedostojen määrää"
 
-#: blocks/show-bucket/show-bucket.php:96 blocks/show-media/show-media.php:92
+#: blocks/show-bucket/show-bucket.php:105 blocks/show-media/show-media.php:88
 msgid "Page"
 msgstr "Sivu"
 
@@ -329,3 +329,11 @@ msgstr "PIilota hakuselite"
 #: blocks/show-bucket/index.js:1
 msgid "Show label"
 msgstr "Näytä hakuselite"
+
+#: blocks/show-bucket/index.js:1 blocks/show-media/index.js:1
+msgid "A → Ö"
+msgstr ""
+
+#: blocks/show-bucket/index.js:1 blocks/show-media/index.js:1
+msgid "Ö → A"
+msgstr ""
