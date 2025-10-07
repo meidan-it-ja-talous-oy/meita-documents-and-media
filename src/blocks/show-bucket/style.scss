@@ -139,9 +139,10 @@ form#documents-and-media-form {
     }
 }
 
-.documents-and-media-form{
+form.documents-and-media-form{
     background-color: transparent;
     border: 1px solid black;
+    width: 60%;
 }
 
 //JUlkipuolen CSS
@@ -243,6 +244,13 @@ form#documents-and-media-form {
          color: black;
     }
 }
+
+@media only screen and (max-width: 600px){
+    form.documents-and-media-form{
+        width: 100%;
+    }
+}
+
 
 /*!
   * WordPress CSS Spinner

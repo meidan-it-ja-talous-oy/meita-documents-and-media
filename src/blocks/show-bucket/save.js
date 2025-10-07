@@ -136,7 +136,6 @@ export default function save(props) {
                     <form
                         role="search"
                         className="documents-and-media-form block-editor-block-list__block wp-block wp-block-search__button-outside wp-block-search__text-button wp-block-search"
-                        style={{ "width": "60%" }}
                         id="documents-and-media-form"
                     >
                         <label
