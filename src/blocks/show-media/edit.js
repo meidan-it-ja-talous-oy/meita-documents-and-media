@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { useEffect, useState, RawHTML } from '@wordpress/element';
+import { useEffect, useState, RawHTML, useRef } from '@wordpress/element';
 import { Button, Panel, Placeholder, PanelBody, SelectControl, CheckboxControl, TextControl, ToggleControl, Modal, RangeControl } from '@wordpress/components';
 import { InspectorControls, useBlockProps, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import { alignLeft, more, box, file, formatListNumbered } from '@wordpress/icons';
@@ -43,6 +43,7 @@ export default function Edit(props) {
     const [searchlabel, setSearchlabel] = useState(props.searchlabel);
 
     const page = 1
+    const blockRootRef = useRef(null);
 
 
     useEffect(() => {
@@ -65,6 +66,15 @@ export default function Edit(props) {
 
     }, [datasource, datasourceURL, range, totalPages, filter, listScreen, blockId])
 
+    useEffect(() => {
+        if (window.Iconify) {
+            if (typeof window.Iconify.scan === 'function') {
+                window.Iconify.scan(blockRootRef.current);
+            } else if (typeof window.Iconify.scanDOM === 'function') {
+                window.Iconify.scanDOM(blockRootRef.current);
+            }
+        }
+    }, [files, selectedAttachments, showIcon, showDate, showDescription, showDownloadLink]);
 
 
     useEffect(() => {
@@ -356,7 +366,6 @@ export default function Edit(props) {
     };
 
 
-
     const fetchFolderContents = () => {
 
         if (!filebirdApiKey) return;
@@ -380,8 +389,6 @@ export default function Edit(props) {
                 console.error("Virhe kansiota haettaessa:", err);
             });
         });
-
-
     }
 
 
@@ -400,7 +407,6 @@ export default function Edit(props) {
         }
     }
 
-
     const ClientId = `${props.clientId}`;
     const blockIdtoBlock = `meita-documents-and-media-${ClientId}`;
 
@@ -409,7 +415,7 @@ export default function Edit(props) {
             className: 'meita-documents-and-media',
             id: { blockIdtoBlock },
             showDownloadLink: { showDownloadLink }
-        })}>
+        })} ref={blockRootRef}>
 
             {inspectorControls}
 
@@ -441,7 +447,7 @@ export default function Edit(props) {
                                     showIcon={showIcon}
                                     dateFormatted={item.dateFormatted}
                                     description={item.description}
-                                    // rawHtmldescription = { item.caption.rendered }
+                                    rawHtmldescription={item.caption.rendered}
                                     iconImg={item.icon}
                                     iconMimetype={item.mime}
                                     url={item.url}

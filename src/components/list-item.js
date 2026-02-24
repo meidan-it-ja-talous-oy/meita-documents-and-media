@@ -18,9 +18,7 @@ export default function Listitem(props) {
         iconMimetype,
         url,
         filename,
-        rawHtmldescription,
-        range
-
+        rawHtmldescription
 
     } = props;
 
@@ -35,7 +33,7 @@ export default function Listitem(props) {
         switch (true) {
             case mime_type.indexOf("application") != -1:
                 return "fa-solid:file";
-            case mime_type.indexOf("media-document") != -1:
+            case mime_type.indexOf("audio") != -1:
                 return "fa-solid:file-audio";
             case mime_type.indexOf("image") != -1:
                 return "fa-solid:file-image";
@@ -54,7 +52,7 @@ export default function Listitem(props) {
         <li className='meita-documents-and-media-listitem' id={index}>
             {showIcon
                 ? <div className={"meita-documents-and-media-icon " + iconMimetype} >
-                    {showIcon && iconMimetype && <div><span className="iconify" data-icon={iconType(iconMimetype)}></span></div>}
+                    {showIcon && iconMimetype && <div><span className="iconify" data-icon={iconMimetype ? iconType(iconMimetype) : "fa-solid:file"}></span></div>}
 
                 </div>
                 : <div className={"meita-documents-and-media-icon " + iconMimetype} >

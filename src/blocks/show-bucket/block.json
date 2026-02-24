@@ -1,6 +1,6 @@
 {
     "$schema": "https://json.schemastore.org/block.json",
-    "apiVersion": 2,
+    "apiVersion": 3,
     "version": "development",
     "name": "meita-documents-and-media/show-bucket",
     "title": "Dokumentit ja media - Google Bucket",

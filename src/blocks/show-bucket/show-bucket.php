@@ -15,11 +15,19 @@
 	$editor_script_asset_path = plugin_dir_path(__FILE__) . 'index.asset.php';
 	$asset_file = file_exists($editor_script_asset_path) ? include($editor_script_asset_path) : array('dependencies' => array(), 'version' => '1.0' );
 	
+	wp_register_script(
+			'iconify-editor',
+			'https://code.iconify.design/3/3.1.1/iconify.min.js',
+			[],
+			null,
+			true
+		);
+
 	//ladataan index.asset.php
 	wp_register_script(
 		'meita-documents-and-media-show-bucket-editor-script',
 		plugins_url('index.js', __FILE__), 
-		$asset_file['dependencies'],
+		array_merge( $asset_file['dependencies'], [ 'iconify-editor' ] ),
 		$asset_file['version']
 		
 	);
@@ -37,21 +45,34 @@
     	'1.0'
 	);
 
+	wp_register_style(
+		'meita-documents-and-media-show-bucket-index-style',
+		plugins_url('index.css', __FILE__),
+		array(),
+		'1.0'
+	);
+
 	//rekisteröidään filter-script
-	wp_register_script(
-        'meita-documents-and-media-filter-script',
-		plugins_url( '../../js/filter-script.js', __FILE__ ),
-        array('jquery-core'),
-        $asset_file['version'],
-        true
-    );
-	wp_enqueue_script('meita-documents-and-media-filter-script');
+	// wp_register_script(
+    //     'meita-documents-and-media-filter-script',
+	// 	plugins_url( '../../js/filter-script.js', __FILE__ ),
+    //     array('jquery-core'),
+    //     $asset_file['version'],
+    //     true
+    // );
+	// wp_enqueue_script('meita-documents-and-media-filter-script');
 
 
 	$options = get_option('documents_options');
-	$editor_data = array(
-    	'GCPBucketAPIurl' => $options['GCPBucketAPIurl'] ?? '',
+	
+	wp_localize_script(
+		'meita-documents-and-media-show-bucket-editor-script',
+		'documentsBlockDefaults',
+		[ 
+			'bucketbrowseroptions' => $options, 
+			'defaults'=> [ 'range' => 5 ]]
 	);
+
 
 	wp_localize_script(
     	'meita-documents-and-media-filter-script',
@@ -61,15 +82,23 @@
     	)
 	);
 
-
-	// Register block
 	register_block_type_from_metadata(
-		__DIR__,
-		array(
-			'title' => __('Show bucket documents', 'meita-documents-and-media'),
-			'description' => __('Wordpress plugin which collects documents from Google Bucket', 'meita-documents-and-media'),
-		)
-	);		
+			__DIR__,
+			[
+				'editor_script' => 'meita-documents-and-media-show-bucket-editor-script',
+				'script'        => 'meita-documents-and-media-filter-script',
+				'editor_style'  => 'meita-documents-and-media-show-bucket-index-style',
+				'style'         => 'meita-documents-and-media-show-bucket-style',
+			]
+	);
+	// Register block
+	// register_block_type_from_metadata(
+	// 	__DIR__,
+	// 	array(
+	// 		'title' => __('Show bucket documents', 'meita-documents-and-media'),
+	// 		'description' => __('Wordpress plugin which collects documents from Google Bucket', 'meita-documents-and-media'),
+	// 	)
+	// );		
 }
 add_action('init', 'meita_documents_and_media_show_bucket_init');
 
@@ -82,7 +111,8 @@ function meita_documents_and_media_show_bucket_enqueue_assets() {
 
         // Hae vain tarvittavat arvot
         $options     = get_option('documents_options');
-        $bucket_url  = $options['GCPBucketAPIurl'] ?? '';
+        $bucket_url  = isset($options['GCPBucketAPIurl']) ? $options['GCPBucketAPIurl'] : '';
+		$range_value = isset($attributes['range']) ? esc_attr($attributes['range']) : '';
 
 
         wp_localize_script(
@@ -90,6 +120,7 @@ function meita_documents_and_media_show_bucket_enqueue_assets() {
             'bucketBrowserData',
             [
                 'allFiles' => $bucket_url,
+				'rangeValue' => $range_value,
             ]
         );
 
@@ -126,30 +157,28 @@ add_action('plugin_action_links_' . plugin_basename(__FILE__), 'documents_show_b
 /**
  * Ikonien lataus
  */
-function show_bucket_enqueue_iconify_admin_script() {
-	if (is_admin()) {
-		wp_enqueue_script(
-			'iconify-admin-script', 
-			'https://code.iconify.design/2/2.1.2/iconify.min.js', 
-			array(), 
-			'2.1.2', 
-			true
-		);
-	}
-}
-add_action('enqueue_block_editor_assets', 'show_bucket_enqueue_iconify_admin_script');
 
-function show_bucket_load_iconify_script()
-{
-	wp_enqueue_script(
-		'iconify-script', 
-		'https://code.iconify.design/2/2.1.2/iconify.min.js', 
-		array(), 
-		'2.1.2', 
-		true
-	);
-}
-add_action('wp_enqueue_scripts', 'show_bucket_load_iconify_script');
+add_action('wp_enqueue_scripts', function() {
+    wp_enqueue_script(
+        'iconify',
+        'https://code.iconify.design/3/3.1.1/iconify.min.js',
+        array(),
+        null,
+        true
+    );
+});
+
+
+add_action('enqueue_block_editor_assets', function() {
+    wp_enqueue_script(
+        'iconify-editor',
+        'https://code.iconify.design/3/3.1.1/iconify.min.js',
+        array(),
+        null,
+        true
+    );
+});
+
 
 
 

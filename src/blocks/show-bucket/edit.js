@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { useEffect, useState, Fragment, RawHTML } from '@wordpress/element';
+import { useEffect, useState, Fragment, RawHTML, useRef, useLayoutEffect } from '@wordpress/element';
 import { Button, PanelBody, SelectControl, CheckboxControl, TextControl, ToggleControl, Modal, RangeControl, ToolbarGroup, ToolbarButton } from '@wordpress/components';
 import { InspectorControls, BlockControls, useBlockProps } from '@wordpress/block-editor';
 import './editor.scss';
@@ -44,6 +44,7 @@ export default function Edit(props) {
     const [searchlabel, setSearchlabel] = useState(props.searchlabel);
 
     const page = 1
+    const blockRootRef = useRef(null);
 
     const { attributes, setAttributes } = props;
 
@@ -93,9 +94,37 @@ export default function Edit(props) {
         }
 
         if (documentsBlockDefaults.bucketbrowseroptions) {
-            if (documentsBlockDefaults.bucketbrowseroptions.GCPBucketAPIurl) setDatasourceURL(documentsBlockDefaults.bucketbrowseroptions.GCPBucketAPIurl);
+            if (documentsBlockDefaults.bucketbrowseroptions.GCPBucketAPIurl) {
+                setDatasourceURL(documentsBlockDefaults.bucketbrowseroptions.GCPBucketAPIurl);
+            }
+            // if (documentsBlockDefaults.bucketbrowseroptions.range) {
+            //     setRange(documentsBlockDefaults.bucketbrowseroptions.range);
+            // }
         }
     }, [blockId])
+
+
+
+    useLayoutEffect(() => {
+        if (!blockRootRef.current) return;
+
+        const el = blockRootRef.current;
+        const doScan = () => {
+            if (window.Iconify?.scan) window.Iconify.scan(el);
+            else if (window.Iconify?.scanDOM) window.Iconify.scanDOM(el);
+        };
+
+        // odota Iconify-oliota
+        const tick = () => (window.Iconify ? doScan() : setTimeout(tick, 50));
+        tick();
+
+        const mo = new MutationObserver(doScan);
+        mo.observe(el, { childList: true, subtree: true });
+
+        return () => mo.disconnect();
+    }, []);
+
+
 
     useEffect(() => {
 
@@ -369,11 +398,12 @@ export default function Edit(props) {
                                     </Button>
                                 </div>
                             )}
-                            {(selectclicked == false) &&
+                            {(selectclicked === false) &&
                                 <RangeControl
                                     label={__('Amount', 'meita-documents-and-media')}
                                     value={range}
                                     onChange={(value) => {
+                                        props.setAttributes({ range: value })
                                         setRange(value);
                                     }}
                                     min={0}
@@ -598,7 +628,7 @@ export default function Edit(props) {
         <div {...useBlockProps({
             id: blockIdtoBlock,
 
-        })}>
+        })} ref={blockRootRef}>
             {inspectorControls}
             {blockControls}
 

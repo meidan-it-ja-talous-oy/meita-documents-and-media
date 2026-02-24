@@ -35,7 +35,6 @@ export default function save(props) {
     } = attributes;
 
 
-
     function getSortKey(item) {
         return item.metadata?.FileTitle || item.title || item.name || "";
     }

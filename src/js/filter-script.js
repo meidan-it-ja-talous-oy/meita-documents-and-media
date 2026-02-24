@@ -4,13 +4,20 @@ jQuery(document).ready(function ($) {
     let offset = 0; // Initial page number
 
 
+    // EDITORI: älä aja fronttilogiikkaa Gutenberg-editorissa
 
+    if (document.body.classList.contains('wp-admin')
+        || document.body.classList.contains('block-editor-page')
+        || (typeof wp !== 'undefined' && wp.data && wp.data.select('core/editor'))) {
+        // ollaan editorissa → poistutaan
+        return;
+    }
 
     const iconType = (mime_type) => {
         switch (true) {
             case mime_type.indexOf("application") != -1:
                 return "fa-solid:file";
-            case mime_type.indexOf("media-document") != -1:
+            case mime_type.indexOf("audio") != -1:
                 return "fa-solid:file-audio";
             case mime_type.indexOf("image") != -1:
                 return "fa-solid:file-image";
@@ -71,14 +78,11 @@ jQuery(document).ready(function ($) {
             let orderBy = block.attr('data-orderby');
             let order = block.attr('data-order');
 
-            //console.log(block);
-
             if (isNaN(rangeVal)) {
                 if (typeof wp !== 'undefined' && wp.data && wp.data.select('core/editor')) {
                     rangeVal = 0;
                 } else {
-                    console.error('Invalid number:', block.attr('data-range'));
-                    rangeVal = 0;
+                    return
                 }
             }
 
@@ -86,11 +90,10 @@ jQuery(document).ready(function ($) {
             offset = newOffset;
 
 
-            if (!dataurl || istrue !== 'true') {
+            if (!dataurl) {
                 resolve();
                 return;
             }
-
 
             let url = `${dataurl}?offset=${offset}&limit=${rangeVal}`;
 
@@ -103,29 +106,30 @@ jQuery(document).ready(function ($) {
                 .then((res) => {
                     totalItems = res.items.length;
                     var totalPages = Math.ceil(totalItems / rangeVal);
-                    let el = block[0].querySelector('.googlebucketlist');
+                    //let el = block[0].querySelector('.googlebucketlist');
 
-                    if ($(`#${blockId} .googlebucketlist`)) {
-                        $(`#${blockId} .googlebucketlist`).empty();
-                    }
+                    const $container = block.find('.googlebucketlist');
+                    $container.empty();
+
+
+                    const ul = document.createElement('ul');
+                    ul.classList.add('googlebucketlist-ul');
+                    ul.setAttribute('aria-label', 'meita-documents-and-media google-bucket list');
+
 
                     let rawHtml = "";
-
-                    let li = document.createElement("ul"); // create a list item element
-                    li.classList.add('googlebucketlist-ul');
-                    li.setAttribute('aria-label', 'meita-documents-and-media google-bucket list');
 
                     let sortedItems = setNewFirst(res.items, order, orderBy);
 
                     sortedItems.map((item, index) => {
 
                         rawHtml += (
-                            `<li class='meita-documents-and-media-listitem' data-search-term=${item.name.toLowerCase().trim().replace(/\s+/g, '')} data-key=${index}>
+                            `<li class='meita-documents-and-media-listitem' data-search-term="${item.name.toLowerCase().trim().replace(/\s+/g, '')}" data-key="${index}">
                                 `)
                         if (showIcon == "true") {
                             rawHtml += (
                                 `<div class='meita-documents-and-media-icon ${iconType(item.contentType)}'>
-                                 	    <span class="iconify" data-icon=${iconType(item.contentType)} ></span>
+                                 	    <span class="iconify" data-icon="${iconType(item.contentType)}" ></span>
                                     </div>`)
                         }
                         rawHtml += (
@@ -140,8 +144,9 @@ jQuery(document).ready(function ($) {
                                 `<p class='download-button'><a class='download-link' rel='noopener' href=${item.mediaLink} alt='${meita_translations.download} ${item.name.replace(/_/g, ' ').replace(/\..*$/, '')}'>${meita_translations.download}</a></p> `)
                         }
                         rawHtml += (`</div></li>`);
-                        li.innerHTML = rawHtml;
-                        el.appendChild(li);
+                        ul.innerHTML = rawHtml;
+                        $container.append(ul);
+                        //el.appendChild(ul);
 
                     });
 
@@ -154,6 +159,15 @@ jQuery(document).ready(function ($) {
                     if (rangeVal > 0) {
                         updatePagination(totalPages, offset, rangeVal, block);
                     }
+
+                    if (window.Iconify) {
+                        if (typeof window.Iconify.scan === 'function') {
+                            window.Iconify.scan($container[0]);
+                        } else if (typeof window.Iconify.scanDOM === 'function') {
+                            window.Iconify.scanDOM($container[0]);
+                        }
+                    }
+
                     resolve(); // lista valmis, callback voidaan ajaa
                 })
                 .catch((error) => {
