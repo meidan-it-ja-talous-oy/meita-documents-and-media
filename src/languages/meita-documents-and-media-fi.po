@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: Meita documents and media\n"
 "Report-Msgid-Bugs-To: Meidän IT ja Talous Oy\n"
 "POT-Creation-Date: 2025-08-05 10:00+0300\n"
-"PO-Revision-Date: 2025-10-07 15:11+0300\n"
+"PO-Revision-Date: 2026-02-24 13:27+0200\n"
 "Last-Translator: Heidi Rautasalo <heidi.rautasalo@meita.fi>\n"
 "Language-Team: \n"
 "Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.7\n"
+"X-Generator: Poedit 3.8\n"
 "X-Domain: meita-documents-and-media\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-SearchPath-0: admin/admin.php\n"
@@ -53,31 +53,15 @@ msgstr "Googlen tiedostopalvelun URL osoite"
 msgid "Save Pattern"
 msgstr "Tallenna"
 
-#: blocks/show-bucket/show-bucket.php:69
-msgid "Show bucket documents"
-msgstr "Googlen tiedostopalvelu"
-
-#: blocks/show-bucket/show-bucket.php:70
-msgid "Wordpress plugin which collects documents from Google Bucket"
-msgstr "Lohko joka näyttää Googlen tiedostopalvelun (”Bucketin”) tiedostot"
-
-#: blocks/show-bucket/show-bucket.php:118 blocks/show-media/show-media.php:187
+#: blocks/show-bucket/show-bucket.php:149 blocks/show-media/show-media.php:191
 msgid "Settings"
 msgstr "Asetukset"
-
-#: blocks/show-media/show-media.php:126
-msgid "Show media documents"
-msgstr "Mediatiedostot"
-
-#: blocks/show-media/show-media.php:127
-msgid "Wordpress plugin which collects documents from Medialibrary"
-msgstr "Lohko, joka näyttää mediakirjaston mediatiedostoja"
 
 #: blocks/show-bucket/index.js:1 blocks/show-media/index.js:1
 msgid "Modified "
 msgstr "Muokattu "
 
-#: blocks/show-bucket/show-bucket.php:102 blocks/show-media/show-media.php:85
+#: blocks/show-bucket/show-bucket.php:133 blocks/show-media/show-media.php:98
 #: blocks/show-bucket/index.js:1 blocks/show-media/index.js:1
 msgid "Modified"
 msgstr "Muokattu"
@@ -210,26 +194,26 @@ msgstr "Etsi tiedosto.."
 msgid "Search"
 msgstr "Etsi"
 
-#: blocks/show-bucket/show-bucket.php:100 blocks/show-media/show-media.php:83
+#: blocks/show-bucket/show-bucket.php:131 blocks/show-media/show-media.php:96
 msgid "Download file"
 msgstr "Lataa"
 
-#: blocks/show-bucket/show-bucket.php:103 blocks/show-media/show-media.php:86
+#: blocks/show-bucket/show-bucket.php:134 blocks/show-media/show-media.php:99
 msgid "Previous page"
 msgstr "Edellinen"
 
-#: blocks/show-bucket/show-bucket.php:104 blocks/show-media/show-media.php:87
+#: blocks/show-bucket/show-bucket.php:135 blocks/show-media/show-media.php:100
 msgid "Next page"
 msgstr "Seuraava"
 
-#: blocks/show-bucket/show-bucket.php:106 blocks/show-media/show-media.php:89
+#: blocks/show-bucket/show-bucket.php:137 blocks/show-media/show-media.php:102
 msgid " of "
 msgstr " / "
 
 #: blocks/show-bucket/block.json
 msgctxt "block title"
 msgid "Dokumentit ja media - Google Bucket"
-msgstr "Dokumentit ja media -Dokumentit Googlen tiedostopalvelusta"
+msgstr "Googlen tiedostopalvelu"
 
 #: blocks/show-bucket/block.json
 msgctxt "block description"
@@ -239,7 +223,7 @@ msgstr "Lohko joka näyttää Googlen ”bucketin” tiedostot"
 #: blocks/show-media/block.json
 msgctxt "block title"
 msgid "Dokumentit ja media - Media files"
-msgstr "Dokumentit ja media - Mediatiedosto"
+msgstr "Mediatiedostot"
 
 #: blocks/show-media/block.json
 msgctxt "block description"
@@ -270,7 +254,7 @@ msgstr "Documentit ja media - Googlen tiedostopalvelu"
 msgid "Open files and choose the ones you want"
 msgstr "Avaa tiedostot ja valitse haluamasi. Kun painat tallenna painiketta tiedostot tulevat ruudulle"
 
-#: blocks/show-bucket/show-bucket.php:101 blocks/show-media/show-media.php:84
+#: blocks/show-bucket/show-bucket.php:132 blocks/show-media/show-media.php:97
 msgid "Open file"
 msgstr "Avaa tiedosto"
 
@@ -282,7 +266,7 @@ msgstr "Poista valinnat"
 msgid "Shows search bar and all files, you can change how many files you want to show"
 msgstr "Näyttää hakupalkin ja kaikki tiedostot, voit säätää näytettävien tiedostojen määrää"
 
-#: blocks/show-bucket/show-bucket.php:105 blocks/show-media/show-media.php:88
+#: blocks/show-bucket/show-bucket.php:136 blocks/show-media/show-media.php:101
 msgid "Page"
 msgstr "Sivu"
 

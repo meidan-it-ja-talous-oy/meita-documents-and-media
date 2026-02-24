@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Meidän IT ja Talous Oy
+# Copyright (C) 2026 Meidän IT ja Talous Oy
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-10-07T12:10:37+00:00\n"
+"POT-Creation-Date: 2026-02-24T11:21:27+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: meita-documents-and-media\n"
@@ -46,62 +46,46 @@ msgstr ""
 msgid "Save Pattern"
 msgstr ""
 
-#: blocks/show-bucket/show-bucket.php:69
-msgid "Show bucket documents"
-msgstr ""
-
-#: blocks/show-bucket/show-bucket.php:70
-msgid "Wordpress plugin which collects documents from Google Bucket"
-msgstr ""
-
-#: blocks/show-bucket/show-bucket.php:100
-#: blocks/show-media/show-media.php:83
+#: blocks/show-bucket/show-bucket.php:131
+#: blocks/show-media/show-media.php:96
 msgid "Download file"
 msgstr ""
 
-#: blocks/show-bucket/show-bucket.php:101
-#: blocks/show-media/show-media.php:84
+#: blocks/show-bucket/show-bucket.php:132
+#: blocks/show-media/show-media.php:97
 msgid "Open file"
 msgstr ""
 
-#: blocks/show-bucket/show-bucket.php:102
-#: blocks/show-media/show-media.php:85
+#: blocks/show-bucket/show-bucket.php:133
+#: blocks/show-media/show-media.php:98
 #: blocks/show-bucket/index.js:1
 #: blocks/show-media/index.js:1
 msgid "Modified"
 msgstr ""
 
-#: blocks/show-bucket/show-bucket.php:103
-#: blocks/show-media/show-media.php:86
+#: blocks/show-bucket/show-bucket.php:134
+#: blocks/show-media/show-media.php:99
 msgid "Previous page"
 msgstr ""
 
-#: blocks/show-bucket/show-bucket.php:104
-#: blocks/show-media/show-media.php:87
+#: blocks/show-bucket/show-bucket.php:135
+#: blocks/show-media/show-media.php:100
 msgid "Next page"
 msgstr ""
 
-#: blocks/show-bucket/show-bucket.php:105
-#: blocks/show-media/show-media.php:88
+#: blocks/show-bucket/show-bucket.php:136
+#: blocks/show-media/show-media.php:101
 msgid "Page"
 msgstr ""
 
-#: blocks/show-bucket/show-bucket.php:106
-#: blocks/show-media/show-media.php:89
+#: blocks/show-bucket/show-bucket.php:137
+#: blocks/show-media/show-media.php:102
 msgid " of "
 msgstr ""
 
-#: blocks/show-bucket/show-bucket.php:118
-#: blocks/show-media/show-media.php:187
+#: blocks/show-bucket/show-bucket.php:149
+#: blocks/show-media/show-media.php:191
 msgid "Settings"
-msgstr ""
-
-#: blocks/show-media/show-media.php:126
-msgid "Show media documents"
-msgstr ""
-
-#: blocks/show-media/show-media.php:127
-msgid "Wordpress plugin which collects documents from Medialibrary"
 msgstr ""
 
 #: blocks/show-bucket/index.js:1
