@@ -5,19 +5,9 @@
  * Replace them with your own styles or remove the file completely.
  */
 @use 'sass:math';
-@import "node_modules/@wordpress/base-styles/colors";
-@import "node_modules/@wordpress/base-styles/variables";
-@import "node_modules/@wordpress/base-styles/mixins";
-@import "node_modules/@wordpress/base-styles/breakpoints";
-@import "node_modules/@wordpress/base-styles/animations";
-@import "node_modules/@wordpress/base-styles/z-index";
 
 
 //Editorin CSS osuus
-.components-text-control__input.is-next-40px-default-size{
-	height: auto !important;
-}
-
 
 .wp-block-meita-documents-and-media-show-media .filesPreview>ul {
 	list-style: none;
@@ -237,4 +227,9 @@ $wp-spinner-anim-duration: 1.08s;
 		margin-left: calc(0px - math.div($wp-spinner-size-inner, 2));
 		background: $wp-spinner-fg;
 	}
+}
+
+.block-editor-page .spinnery {
+	display: none !important;
+	pointer-events: none !important;
 }

@@ -41,6 +41,7 @@ module.exports = {
                 { from: '**/*.php', to: buildpath, context: path.resolve(__dirname, 'src') },
                 { from: 'admin/*.php', to: buildpath, context: path.resolve(__dirname, 'src') },
                 { from: 'languages', to: buildpath + '/languages', context: path.resolve(__dirname, 'src') },
+                { from: 'js/*.js', to: buildpath + '/js/[name][ext]', context: path.resolve(__dirname, 'src') },
             ],
         }),
 

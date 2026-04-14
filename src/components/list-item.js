@@ -1,5 +1,6 @@
 import { __ } from '@wordpress/i18n';
-import RawHTML from '@wordpress/element';
+
+
 
 export default function Listitem(props) {
 
@@ -26,8 +27,7 @@ export default function Listitem(props) {
         noMargin: {
             margin: "0px"
         },
-    }
-
+    };
 
     const iconType = (mime_type) => {
         switch (true) {
@@ -61,11 +61,11 @@ export default function Listitem(props) {
                 </div>
             }
             <div className='meita-documents-and-media-content'>
-                <p className='document-name'><a target="_blank" area-label={title.replace(/_/g, ' ').replace(/\..*$/, '')} href={url} rel="noopener">{title}</a></p>
+                <p className='document-name'><a target="_blank" aria-label={title.replace(/_/g, ' ').replace(/\..*$/, '')} href={url} rel="noopener">{title}</a></p>
                 {showDate && <p className='updated-date' title={__('Modified ', 'meita-documents-and-media') + dateFormatted} >{__('Modified', 'meita-documents-and-media')} {dateFormatted}</p>}
                 {showDescription && rawHtmldescription && <span className='description' style={styles.noMargin}>{rawHtmldescription.replace(/<[^>]*>/g, '').trim()}</span>}
                 {showDescription && !rawHtmldescription && <span className='description' style={styles.noMargin}>{description}</span>}
-                {showDownloadLink && <p className='download-button'> <a className='download-link' rel="noopener" href={link} area-label={__('Download  ', 'meita-documents-and-media') + title.replace(/_/g, ' ').replace(/\..*$/, '')} download={filename}>{__('Download', 'meita-documents-and-media')}</a></p>}
+                {showDownloadLink && <p className='download-button'> <a className='download-link' rel="noopener" href={link} aria-label={__('Download  ', 'meita-documents-and-media') + title.replace(/_/g, ' ').replace(/\..*$/, '')} download={filename}>{__('Download', 'meita-documents-and-media')}</a></p>}
             </div>
         </li>
     )

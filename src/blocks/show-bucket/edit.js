@@ -3,7 +3,6 @@ import { useEffect, useState, Fragment, RawHTML, useRef, useLayoutEffect } from 
 import { Button, PanelBody, SelectControl, CheckboxControl, TextControl, ToggleControl, Modal, RangeControl, ToolbarGroup, ToolbarButton } from '@wordpress/components';
 import { InspectorControls, BlockControls, useBlockProps } from '@wordpress/block-editor';
 import './editor.scss';
-import './style.scss';
 import { more, file, box, button } from '@wordpress/icons';
 import apiFetch from '@wordpress/api-fetch';
 import Listitem from '../../components/list-item';
@@ -22,13 +21,10 @@ export default function Edit(props) {
     const [datasourceURL, setDatasourceURL] = useState(props.attributes.datasourceURL);
     const [files, setFiles] = useState(props.attributes.files);
     const [selectedFiles, setSelectedFiles] = useState(props.attributes.selectedFiles);
-    const [allFiles, setAllFiles] = useState(props.attributes.allFiles);
-    const [sortedItems, setSortedItems] = useState([]);
+    const [allFiles, setAllFiles] = useState([]);
     const [order, setOrder] = useState(props.attributes.order);
     const [orderBy, setOrderBy] = useState(props.attributes.orderBy);
     const [wpSelect, setWpSelect] = useState(props.attributes.wpSelect);
-    const [changed, setChanged] = useState(false);
-    const [folders, setFolders] = useState([]);
     const [selectedFolder, setSelectedFolder] = useState(props.attributes.selectedFolder);
     const [isOpen, setOpenModal] = useState(false);
     const [listScreen, setlistScreen] = useState(props.attributes.listScreen);
@@ -40,7 +36,7 @@ export default function Edit(props) {
     const [currentPage, setCurrentPage] = useState(props.attributes.currentPage);
     const [totalPages, setTotalPages] = useState(props.attributes.totalPages);
     const [loading, setLoading] = useState(true);
-    const [blockId, setBlockId] = useState(props.clientId);
+
     const [searchlabel, setSearchlabel] = useState(props.searchlabel);
 
     const page = 1
@@ -88,10 +84,10 @@ export default function Edit(props) {
     // INITIAL LOADS
     useEffect(() => {
         // Defaults from settings if new
-        if (blockId == "") {
-            setBlockId({ blockId: blockId });
-            setSearchlabel({ searchlabel: searchlabel });
-        }
+        // if (blockId == "") {
+        //     setBlockId({ blockId: blockId });
+        //     setSearchlabel({ searchlabel: searchlabel });
+        // }
 
         if (documentsBlockDefaults.bucketbrowseroptions) {
             if (documentsBlockDefaults.bucketbrowseroptions.GCPBucketAPIurl) {
@@ -101,7 +97,7 @@ export default function Edit(props) {
             //     setRange(documentsBlockDefaults.bucketbrowseroptions.range);
             // }
         }
-    }, [blockId])
+    }, [])
 
 
 
@@ -186,14 +182,11 @@ export default function Edit(props) {
             order: order,
             orderBy: orderBy,
             selectedFiles: selectedFiles,
-            checked: checked,
             listScreen: listScreen,
             filter: filter,
-            allFiles: allFiles,
             range: range,
             currentPage: currentPage,
             totalPages: totalPages,
-            blockId: blockId,
             searchlabel: searchlabel,
             searchbuttonlabel: searchbuttonlabel,
             selectclicked: selectclicked,
@@ -201,31 +194,64 @@ export default function Edit(props) {
 
         });
 
-    }, [showIcon, showDate, showDescription, allFiles, datasourceURL, listScreen, istrue, showDownloadLink, files, wpSelect, selectedFolder, order, orderBy, checked, currentPage, totalPages, selectedFiles, searchlabel, searchbuttonlabel, selectclicked, range])
+    }, [showIcon, showDate, showDescription, datasourceURL, listScreen, istrue, showDownloadLink, files, wpSelect, selectedFolder, order, orderBy, currentPage, totalPages, selectedFiles, searchlabel, searchbuttonlabel, selectclicked, range])
+
+
+    function getSortKey(item) {
+        return (item.name || "").toLowerCase();
+    }
+
+    function getDateKey(item) {
+        return new Date(item.updated || item.modified || 0).getTime();
+    }
 
     const getSortedItems = (items) => {
-        //console.log("items", items);
-        return [...items].sort((a, b) => {
-            if (orderBy === "title") {
-                return order === "ascending"
-                    ? a.name.localeCompare(b.name, 'fi', { sensitivity: 'base' })
-                    : b.name.localeCompare(a.name, 'fi', { sensitivity: 'base' });
-            } else {
-                return order === "ascending"
-                    ? new Date(a.updated) - new Date(b.updated)
-                    : new Date(b.updated) - new Date(a.updated);
-            }
-        });
-    };
+        const filtered = [...items];
 
-    useEffect(() => {
+        if (orderBy === "title") {
+            filtered.sort((a, b) => {
+                const aKey = getSortKey(a);
+                const bKey = getSortKey(b);
 
-        if (selectedFiles.length && selectclicked == true) {
-            const sorted = getSortedItems(selectedFiles);
-            setSortedItems(sorted);
+                const primary =
+                    order === "ascending"
+                        ? aKey.localeCompare(bKey, "fi", { sensitivity: "base" })
+                        : bKey.localeCompare(aKey, "fi", { sensitivity: "base" });
+
+                if (primary !== 0) return primary;
+
+                // ✅ fallback: date (lukitsee järjestyksen)
+                return getDateKey(a) - getDateKey(b);
+            });
+        } else if (orderBy === "date") {
+            filtered.sort((a, b) => {
+                const primary =
+                    order === "ascending"
+                        ? getDateKey(a) - getDateKey(b)
+                        : getDateKey(b) - getDateKey(a);
+
+                if (primary !== 0) return primary;
+
+                // ✅ fallback: name (lukitsee järjestyksen)
+                return getSortKey(a).localeCompare(
+                    getSortKey(b),
+                    "fi",
+                    { sensitivity: "base" }
+                );
+            });
         }
 
-    }, [selectedFiles, orderBy, order]);
+        return filtered;
+    };
+
+    // useEffect(() => {
+
+    //     if (selectedFiles.length && selectclicked == true) {
+    //         const sorted = getSortedItems(selectedFiles);
+    //         setSortedItems(sorted);
+    //     }
+
+    // }, [selectedFiles, orderBy, order]);
 
 
     const fetchItems = (selection, datasourceURL, page) => {
@@ -259,7 +285,6 @@ export default function Edit(props) {
     const saveTheChoiches = () => {
         if (checked.length > 0) {
             setSelectedFiles(checked);
-            setSortedItems(checked);
             setlistScreen(false);
         }
         closeModal()
@@ -292,20 +317,30 @@ export default function Edit(props) {
             const el = allFiles.find(obj => obj.id === id);
             if (el) {
                 updatedChecked.push(el);
+
+                // updatedChecked.push({
+                //     id: el.id,
+                //     name: el.name,
+                //     bucket: el.bucket
+                // });
+
             }
         }
         setSelectedFiles(updatedChecked);
         setSelectClicked(true);
         setChecked(updatedChecked);
-        setChanged(!changed);
         setTrue(true);
     }
 
+
+    const sorted = getSortedItems(selectedFiles);
+
     const filteredItems = filter
-        ? sortedItems.filter((item) =>
+        ? sorted.filter((item) =>
             item.name.toLowerCase().includes(filter.toLowerCase())
         )
-        : selectedFiles;
+        : sorted;
+
 
     const blockControls = (
         <BlockControls>
@@ -427,7 +462,7 @@ export default function Edit(props) {
                                     <TextControl
                                         placeholder={__('Filter', 'meita-documents-and-media')}
                                         value={filter}
-                                        onChange={(value) => setFilter(value)}
+                                        onChange={(value) => setFilter(value.toLowerCase())}
                                         __next40pxDefaultSize
                                         __nextHasNoMarginBottom
                                         style={{ paddingRight: 28 }} // tilaa ikonille
@@ -479,7 +514,7 @@ export default function Edit(props) {
                         <div></div>
 
                         <div>
-                            <ul id={blockId + "_dataList"} style={{ listStyle: "none" }}>
+                            <ul className="documents-and-media-data-list" style={{ listStyle: "none" }}>
                                 {allFiles?.filter(item => {
                                     // Skipaa nollakokoiset tiedostot
                                     if (item.size === "0") return false;
@@ -620,15 +655,10 @@ export default function Edit(props) {
             )}
         </InspectorControls >
     )
-    const ClientId = `${props.clientId}`;
-    const blockIdtoBlock = `meita-documents-and-media-${ClientId}`;
 
 
     return (
-        <div {...useBlockProps({
-            id: blockIdtoBlock,
-
-        })} ref={blockRootRef}>
+        <div {...useBlockProps()} ref={blockRootRef}>
             {inspectorControls}
             {blockControls}
 
@@ -654,7 +684,7 @@ export default function Edit(props) {
                             className="wp-block-search__button-outside wp-block-search__text-button wp-block-search"
                             style={{ "width": "60%" }}
                             onSubmit={(e) => {
-                                e.preventDefault();
+                                // e.preventDefault();
                             }}
                         >
                             <label
@@ -681,10 +711,7 @@ export default function Edit(props) {
                                     type='search'
                                     value={filter}
                                     onChange={(value) => {
-                                        setFilter(value.toLowerCase(value))
-                                        const arvo = allFiles.filter((item) =>
-                                            item.name.toLowerCase().includes(filter.toLowerCase()))
-                                        setSortedItems(arvo);
+                                        setFilter(value.toLowerCase());
                                     }}
                                     placeholder={__('Search files..', 'meita-documents-and-media')}
                                     style={{ flex: 1, marginBottom: 0, border: 0, padding: 0 }}
@@ -699,15 +726,6 @@ export default function Edit(props) {
                                     aria-label={showButtonIcon
                                         ? (searchbuttonlabel || __('Search', 'meita-documents-and-media'))
                                         : undefined}
-                                    onClick={() => {
-                                        setFilter(filter);
-                                        console.log("filter ", filter);
-                                        if (filter !== "") {
-                                            const arvo = allFiles.filter((item) =>
-                                                item.name.toLowerCase().includes(filter.toLowerCase()))
-                                            setSortedItems(arvo);
-                                        }
-                                    }}
                                 >
                                     {showButtonIcon ? (
                                         <svg
@@ -742,23 +760,12 @@ export default function Edit(props) {
                                 >
 
                                     {(() => {
-                                        const getSortKey = (item) => item.metadata?.FileTitle || item.name || "";
 
-                                        const displayedItems = filteredItems
-                                            .sort((a, b) => {
-                                                if (orderBy === "title") {
-                                                    const aKey = getSortKey(a);
-                                                    const bKey = getSortKey(b);
-                                                    return order === "ascending"
-                                                        ? aKey.localeCompare(bKey, "fi", { sensitivity: "base" })
-                                                        : bKey.localeCompare(aKey, "fi", { sensitivity: "base" });
-                                                } else {
-                                                    return order === "ascending"
-                                                        ? new Date(a.updated) - new Date(b.updated)
-                                                        : new Date(b.updated) - new Date(a.updated);
-                                                }
-                                            })
-                                            .slice(currentPage, filter ? filteredItems.length : range + currentPage);
+                                        const displayedItems = filteredItems.slice(
+                                            currentPage,
+                                            filter ? filteredItems.length : range + currentPage
+                                        );
+
 
                                         return displayedItems.map((item, index) => (
                                             <Listitem
@@ -800,7 +807,7 @@ export default function Edit(props) {
                 {selectclicked == true && listScreen == false && istrue == false && (
                     <div className='googlebucketlist'>
                         <ul className='googlebucketlist-ul'>
-                            {sortedItems && sortedItems.map(function (item, index) {
+                            {getSortedItems(selectedFiles).map((item, index) => {
                                 return (
                                     <Listitem
                                         index={index}

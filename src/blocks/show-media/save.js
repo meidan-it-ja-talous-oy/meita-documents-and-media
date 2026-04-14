@@ -18,10 +18,39 @@ export default function save(props) {
         blockId,
         showDownloadLink,
         showDate,
-        showIcon
+        showIcon,
+        order,
+        orderBy
     } = attributes;
 
 
+    const sortedFiles =
+        props.attributes.files
+            ? [...props.attributes.files].sort((a, b) => {
+                if (orderBy === 'title') {
+                    return order === 'ascending'
+                        ? a.title.localeCompare(b.title, 'fi', { sensitivity: 'base' })
+                        : b.title.localeCompare(a.title, 'fi', { sensitivity: 'base' });
+                }
+                return order === 'ascending'
+                    ? new Date(a.date) - new Date(b.date)
+                    : new Date(b.date) - new Date(a.date);
+            })
+            : [];
+
+    const sortedAttachments =
+        props.attributes.selectedAttachments
+            ? [...props.attributes.selectedAttachments].sort((a, b) => {
+                if (orderBy === 'title') {
+                    return order === 'ascending'
+                        ? a.title.rendered.localeCompare(b.title.rendered, 'fi', { sensitivity: 'base' })
+                        : b.title.rendered.localeCompare(a.title.rendered, 'fi', { sensitivity: 'base' });
+                }
+                return order === 'ascending'
+                    ? new Date(a.modified) - new Date(b.modified)
+                    : new Date(b.modified) - new Date(a.modified);
+            })
+            : [];
 
     return (
 
@@ -33,12 +62,13 @@ export default function save(props) {
             data-showDownloadlink={showDownloadLink}
             data-showdate={showDate}
             data-showicon={showIcon}
+
         >
 
             {(props.attributes.datasource == "wordpress" && props.attributes.wpSelect == "files") && (
 
                 <ul>
-                    {props.attributes.files && props.attributes.files.map(function (item, index) {
+                    {sortedFiles && sortedFiles.map(function (item, index) {
                         return (
                             <Listitem
                                 index={index}
@@ -63,7 +93,7 @@ export default function save(props) {
 
             {(props.attributes.datasource == "wordpress" && props.attributes.wpSelect == "folder") && (
                 <ul>
-                    {props.attributes.selectedAttachments && props.attributes.selectedAttachments.map(function (item, index) {
+                    {sortedAttachments && sortedAttachments.map(function (item, index) {
                         return (
                             <Listitem
                                 index={index}

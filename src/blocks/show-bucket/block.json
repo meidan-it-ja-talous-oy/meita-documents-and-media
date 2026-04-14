@@ -27,7 +27,6 @@
     "editorScript": "file:../../blocks/show-bucket/index.js",
     "editorStyle": "file:../../blocks/show-bucket/index.css",
     "style": "file:../../blocks/show-bucket/style-index.css",
-    "viewScript": "file:../../js/filter-script.js",
     "attributes": {
         "allFiles": {
             "type": "array",

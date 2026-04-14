@@ -1,16 +1,6 @@
 /**
- * The following styles get applied both on the front of your site
- * and in the editor.
- *
- * Replace them with your own styles or remove the file completely.
- */
-@use 'sass:math';
-@import "node_modules/@wordpress/base-styles/colors";
-@import "node_modules/@wordpress/base-styles/variables";
-@import "node_modules/@wordpress/base-styles/mixins";
-@import "node_modules/@wordpress/base-styles/breakpoints";
-@import "node_modules/@wordpress/base-styles/animations";
-@import "node_modules/@wordpress/base-styles/z-index";
+* Style for Show Bucket block
+*/
 
 //Molempien CSS
 
@@ -79,9 +69,6 @@
 
 //Editorin CSS osuus
 
-.components-text-control__input.is-next-40px-default-size {
-    height: auto !important;
-}
 
 .wp-block-meita-documents-and-media-show-bucket .filesPreview >ul{
     list-style: none;
@@ -201,44 +188,47 @@ form.documents-and-media-form{
     .googlebucketlist .pagination .page-of{
         margin-top: 1rem;
     }
-    .pagination button.num-button {
-        margin-left: 5px !important;
-    }
-    .pagination button.first-page:disabled, .pagination button.prev-page:disabled, .pagination .next-page:disabled, .pagination .last-page:disabled{
-        background-color: #efefef;
-        border: 1.8px solid #b3b3b3;
-        border-radius: inherit;
-        color: #b3b3b3;
-        padding: 2px 6px;
-    }
+    .wp-block-meita-documents-and-media-show-bucket { 
+        
+        .pagination button.num-button {
+            margin-left: 5px !important;
+        }
+        .pagination button.first-page:disabled, .pagination button.prev-page:disabled, .pagination .next-page:disabled, .pagination .last-page:disabled{
+            background-color: #efefef;
+            border: 1.8px solid #b3b3b3;
+            border-radius: inherit;
+            color: #b3b3b3;
+            padding: 2px 6px;
+        }
 
-    .pagination button.prev-page {
-        margin-right: 5px !important;
-    }
-    .pagination button.next-page {
-        margin-left: 10px !important;
-    }
-    .pagination .last-page{
-        margin-left: 10px;
-    }
-    .pagination .first-page{
-        margin-right: 10px;
-    }
-    .pagination button.active {
-        background-color: white;
-        border: 2px solid black;
-        border-radius: inherit;
-        padding: 2px 6px;
-        color: black;
-    }
-    .pagination .num-button, .pagination .last-page, .pagination .next-page{
-        padding: 2px 6px;
-        border: 1.8px solid #767676;
-        background-color: #efefef;
-        color: black;
-    }
-    .pagination .page-of {
-        margin-top: 0.2rem;
+        .pagination button.prev-page {
+            margin-right: 5px !important;
+        }
+        .pagination button.next-page {
+            margin-left: 10px !important;
+        }
+        .pagination .last-page{
+            margin-left: 10px;
+        }
+        .pagination .first-page{
+            margin-right: 10px;
+        }
+        .pagination button.active {
+            background-color: white;
+            border: 2px solid black;
+            border-radius: inherit;
+            padding: 2px 6px;
+            color: black;
+        }
+        .pagination .num-button, .pagination .last-page, .pagination .next-page{
+            padding: 2px 6px;
+            border: 1.8px solid #767676;
+            background-color: #efefef;
+            color: black;
+        }
+        .pagination .page-of {
+            margin-top: 0.2rem;
+        }
     }
     .wp-block-search__label {
          color: black;
@@ -293,7 +283,7 @@ $wp-spinner-anim-duration: 1.08s;
         height: $wp-spinner-size-inner;
         border-radius: $wp-spinner-size-inner;
         //		margin-left: -($wp-spinner-size-inner / 2);
-        margin-left: calc(0px - math.div($wp-spinner-size-inner, 2));
+        //margin-left: calc(0px - math.div($wp-spinner-size-inner, 2));
         background: $wp-spinner-fg;
     }
 }

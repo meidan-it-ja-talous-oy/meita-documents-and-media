@@ -10,6 +10,11 @@
     margin-top: 1rem;
 }
 
+.block-editor-page .spinnery {
+    display: none !important;
+    pointer-events: none !important;
+}
+
 //Editorin CSS osuus
 
 .wp-block-meita-documents-and-media-show-bucket .filesPreview>ul {
@@ -67,12 +72,6 @@ form#documents-and-media-form {
     .pagination .active {
         background-color: white;
     }
-    .css-1t5ousf {
-        margin-bottom: 0 !important;
-    }
-    .wp-block-search__input .components-base-control__field {
-        margin-bottom: 0px;
-    }
-
+    
 }
 

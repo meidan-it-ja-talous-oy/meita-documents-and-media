@@ -28,6 +28,8 @@
 		"copylang": "docker cp wp-cli-dev:/var/www/html/wp-content/plugins/meita-documents-and-media/languages ./src/"
 	},
 	"dependencies": {
+		"@iconify-icons/fa-solid": "^1.2.4",
+		"@iconify-icons/mdi": "^1.2.48",
 		"@wordpress/api-fetch": "^7.25.0",
 		"@wordpress/base-styles": "^6.2.0",
 		"@wordpress/block-editor": "^14.21.0",
@@ -42,7 +44,7 @@
 	},
 	"devDependencies": {
 		"@babel/preset-react": "^7.27.1",
-		"@iconify/react": "^3.1.4",
+		"@iconify/react": "^6.0.2",
 		"@wordpress/scripts": "^30.0.2",
 		"clean-webpack-plugin": "^4.0.0",
 		"copy-webpack-plugin": "^13.0.0",

@@ -25,7 +25,6 @@ export default function save(props) {
         filter,
         listScreen,
         range,
-        blockId,
         searchlabel,
         showLabel,
         showDownloadLink,
@@ -35,32 +34,58 @@ export default function save(props) {
     } = attributes;
 
 
+
     function getSortKey(item) {
-        return item.metadata?.FileTitle || item.title || item.name || "";
+        return (
+            item.metadata?.FileTitle ||
+            item.displayTitle ||
+            item.name
+        ).toLowerCase();
     }
 
+    function getDateKey(item) {
+        return new Date(item.updated || item.modified || 0).getTime();
+    }
 
     const getSortedItems = (items) => {
-
-        let filtered = [...items]
+        const filtered = [...items];
 
         if (orderBy === "title") {
             filtered.sort((a, b) => {
                 const aKey = getSortKey(a);
                 const bKey = getSortKey(b);
-                return order === "ascending"
-                    ? aKey.localeCompare(bKey, "fi", { sensitivity: "base" })
-                    : bKey.localeCompare(aKey, "fi", { sensitivity: "base" });
+
+                const primary =
+                    order === "ascending"
+                        ? aKey.localeCompare(bKey, "fi", { sensitivity: "base" })
+                        : bKey.localeCompare(aKey, "fi", { sensitivity: "base" });
+
+                if (primary !== 0) return primary;
+
+                // ✅ fallback: date (lukitsee järjestyksen)
+                return getDateKey(a) - getDateKey(b);
             });
-        } else if (orderBy === "date") { // date
+        } else if (orderBy === "date") {
             filtered.sort((a, b) => {
-                return order === "ascending"
-                    ? new Date(a.updated) - new Date(b.updated)
-                    : new Date(b.updated) - new Date(a.updated);
+                const primary =
+                    order === "ascending"
+                        ? getDateKey(a) - getDateKey(b)
+                        : getDateKey(b) - getDateKey(a);
+
+                if (primary !== 0) return primary;
+
+                // ✅ fallback: name (lukitsee järjestyksen)
+                return getSortKey(a).localeCompare(
+                    getSortKey(b),
+                    "fi",
+                    { sensitivity: "base" }
+                );
             });
         }
+
         return filtered;
-    }
+    };
+
 
     const filteredItems = filter
         ? getSortedItems(selectedFiles).filter((item) =>
@@ -76,7 +101,6 @@ export default function save(props) {
         <div
             {...blockprops}
             data-range={range}
-            id={blockId}
             data-listScreen={listScreen}
             data-showDownloadlink={showDownloadLink}
             data-showdate={showDate}
@@ -107,7 +131,7 @@ export default function save(props) {
                                                     className={"meita-documents-and-media-listitem"}
                                                     index={index}
                                                     link={item.mediaLink}
-                                                    title={item.metadata ? item.metadata.FileTitle : item.name}
+                                                    title={item.metadata?.FileTitle || item.title || item.name}
                                                     showDate={props.attributes.showDate}
                                                     showDescription={false}
                                                     showDownloadLink={showDownloadLink}
@@ -135,7 +159,7 @@ export default function save(props) {
                     <form
                         role="search"
                         className="documents-and-media-form block-editor-block-list__block wp-block wp-block-search__button-outside wp-block-search__text-button wp-block-search"
-                        id="documents-and-media-form"
+
                     >
                         <label
                             htmlFor="wp-block-search__input-1"
@@ -151,8 +175,7 @@ export default function save(props) {
 
                             <input
                                 type="search"
-                                id="documents-and-media-input"
-                                className="filter wp-block-search__input components-base-control filterResults"
+                                className="documents-and-media-input filter wp-block-search__input components-base-control filterResults"
                                 placeholder={__('Search files', 'meita-documents-and-media')}
                                 style={{ "padding": 10, "margin-bottom": 0, "border": 0, "padding-bottom": 8, "font-size": 15, "width": "100%" }}
                             >
@@ -195,14 +218,9 @@ export default function save(props) {
 
                     {/* <div className="pagination"></div> */}
 
-
                 </div>
 
-
             )}
-
-
-
 
         </div >
     );

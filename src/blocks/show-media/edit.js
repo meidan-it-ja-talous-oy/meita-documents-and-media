@@ -1,13 +1,11 @@
 import { __ } from '@wordpress/i18n';
-import { useEffect, useState, RawHTML, useRef } from '@wordpress/element';
-import { Button, Panel, Placeholder, PanelBody, SelectControl, CheckboxControl, TextControl, ToggleControl, Modal, RangeControl } from '@wordpress/components';
+import { useEffect, useState, useRef, useMemo } from '@wordpress/element';
+import { Button, Panel, PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
 import { InspectorControls, useBlockProps, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
-import { alignLeft, more, box, file, formatListNumbered } from '@wordpress/icons';
+import { box, file, formatListNumbered } from '@wordpress/icons';
 import './editor.scss';
-import './style.scss';
 import apiFetch from '@wordpress/api-fetch';
 import Listitem from '../../components/list-item';
-import Pagination from '../../components/pagination-script';
 import { format } from 'date-fns';
 
 export default function Edit(props) {
@@ -45,26 +43,60 @@ export default function Edit(props) {
     const page = 1
     const blockRootRef = useRef(null);
 
+    const { isSelected } = props;
 
     useEffect(() => {
+        setBlockId(props.clientId);
+    }, []);
 
-        if (blockId == "") {
-            setBlockId({ blockId: blockId });
-            setSearchlabel({ searchlabel: searchlabel });
-        }
 
-        if (datasourceURL != "" && datasource == "google" && listScreen == false) {
-            apiFetch({ url: datasourceURL }).then((files) => {
-                setAllFiles(files.items);
-                setTotalPages(files.length);
+    const sortedFiles = useMemo(() => {
+        if (!files || files.length === 0) return [];
 
-            });
+        const tmp = [...files];
+
+        if (orderBy === 'title') {
+            tmp.sort((a, b) =>
+                order === 'ascending'
+                    ? a.title.localeCompare(b.title, 'fi', { sensitivity: 'base' })
+                    : b.title.localeCompare(a.title, 'fi', { sensitivity: 'base' })
+            );
         } else {
-            fetchItems(datasource, datasourceURL, page);
+            tmp.sort((a, b) =>
+                order === 'ascending'
+                    ? new Date(a.date) - new Date(b.date)
+                    : new Date(b.date) - new Date(a.date)
+            );
         }
 
+        return tmp;
+    }, [files, order, orderBy]);
 
-    }, [datasource, datasourceURL, range, totalPages, filter, listScreen, blockId])
+
+    const sortedAttachments = useMemo(() => {
+        if (!selectedAttachments || selectedAttachments.length === 0) return [];
+
+        const tmp = [...selectedAttachments];
+
+        if (orderBy === 'title') {
+            tmp.sort((a, b) =>
+                order === 'ascending'
+                    ? a.title.rendered.localeCompare(b.title.rendered, 'fi', { sensitivity: 'base' })
+                    : b.title.rendered.localeCompare(a.title.rendered, 'fi', { sensitivity: 'base' })
+            );
+        } else {
+            tmp.sort((a, b) =>
+                order === 'ascending'
+                    ? new Date(a.modified) - new Date(b.modified)
+                    : new Date(b.modified) - new Date(a.modified)
+            );
+        }
+
+        return tmp;
+    }, [selectedAttachments, order, orderBy]);
+
+
+
 
     useEffect(() => {
         if (window.Iconify) {
@@ -74,6 +106,7 @@ export default function Edit(props) {
                 window.Iconify.scanDOM(blockRootRef.current);
             }
         }
+
     }, [files, selectedAttachments, showIcon, showDate, showDescription, showDownloadLink]);
 
 
@@ -102,47 +135,47 @@ export default function Edit(props) {
     }, [selectedFolder, filebirdApiKey])
 
 
-    useEffect(() => {
-        // Sortataan tiedostot
-        if (files && files.length > 0) {
-            let tmpFiles = [...files];
-            if (orderBy === "title") {
-                tmpFiles.sort((a, b) =>
-                    order === "ascending"
-                        ? a.title.localeCompare(b.title, 'fi', { sensitivity: 'base' })
-                        : b.title.localeCompare(a.title, 'fi', { sensitivity: 'base' })
-                );
-            } else {
-                tmpFiles.sort((a, b) =>
-                    order === "ascending"
-                        ? new Date(a.date).getTime() - new Date(b.date).getTime()
-                        : new Date(b.date).getTime() - new Date(a.date).getTime()
-                );
-            }
-            setFiles(tmpFiles);
-        }
+    // useEffect(() => {
+    //     // Sortataan tiedostot
+    //     if (files && files.length > 0) {
+    //         let tmpFiles = [...files];
+    //         if (orderBy === "title") {
+    //             tmpFiles.sort((a, b) =>
+    //                 order === "ascending"
+    //                     ? a.title.localeCompare(b.title, 'fi', { sensitivity: 'base' })
+    //                     : b.title.localeCompare(a.title, 'fi', { sensitivity: 'base' })
+    //             );
+    //         } else {
+    //             tmpFiles.sort((a, b) =>
+    //                 order === "ascending"
+    //                     ? new Date(a.date).getTime() - new Date(b.date).getTime()
+    //                     : new Date(b.date).getTime() - new Date(a.date).getTime()
+    //             );
+    //         }
+    //         setFiles(tmpFiles);
+    //     }
 
-        // Sortataan kansion tiedostot
-        if (selectedAttachments && selectedAttachments.length > 0) {
-            let tmpAttachments = [...selectedAttachments];
-            if (orderBy === "title") {
-                tmpAttachments.sort((a, b) =>
-                    order === "ascending"
-                        ? a.title.rendered.localeCompare(b.title.rendered, 'fi', { sensitivity: 'base' })
-                        : b.title.rendered.localeCompare(a.title.rendered, 'fi', { sensitivity: 'base' })
-                );
-            } else {
-                tmpAttachments.sort((a, b) =>
-                    order === "ascending"
-                        ? new Date(a.modified).getTime() - new Date(b.modified).getTime()
-                        : new Date(b.modified).getTime() - new Date(a.modified).getTime()
-                );
-            }
-            setSelectedAttachments(tmpAttachments);
-        }
+    //     // Sortataan kansion tiedostot
+    //     if (selectedAttachments && selectedAttachments.length > 0) {
+    //         let tmpAttachments = [...selectedAttachments];
+    //         if (orderBy === "title") {
+    //             tmpAttachments.sort((a, b) =>
+    //                 order === "ascending"
+    //                     ? a.title.rendered.localeCompare(b.title.rendered, 'fi', { sensitivity: 'base' })
+    //                     : b.title.rendered.localeCompare(a.title.rendered, 'fi', { sensitivity: 'base' })
+    //             );
+    //         } else {
+    //             tmpAttachments.sort((a, b) =>
+    //                 order === "ascending"
+    //                     ? new Date(a.modified).getTime() - new Date(b.modified).getTime()
+    //                     : new Date(b.modified).getTime() - new Date(a.modified).getTime()
+    //             );
+    //         }
+    //         setSelectedAttachments(tmpAttachments);
+    //     }
 
-        setChanged(changed ? false : true);
-    }, [order, orderBy, files, selectedAttachments]);
+    //     //setChanged(changed ? false : true);
+    // }, [order, orderBy, files, selectedAttachments]);
 
     useEffect(() => {
         if (datasource == "wordpress" && wpSelect == "files") {
@@ -191,9 +224,9 @@ export default function Edit(props) {
     // INITIAL LOADS
     useEffect(() => {
         // Defaults from settings if new
-        if (documentsBlockDefaults.bucketbrowseroptions) {
-            if (documentsBlockDefaults.bucketbrowseroptions.GCPBucketAPIurl) setDatasourceURL(documentsBlockDefaults.bucketbrowseroptions.GCPBucketAPIurl);
-        }
+        // if (documentsBlockDefaults.bucketbrowseroptions) {
+        //     if (documentsBlockDefaults.bucketbrowseroptions.GCPBucketAPIurl) setDatasourceURL(documentsBlockDefaults.bucketbrowseroptions.GCPBucketAPIurl);
+        // }
         if (apikey) {
             if (apikey.FILEBIRD_BEARER_TOKEN) setFilebirdApiKey(apikey.FILEBIRD_BEARER_TOKEN);
         }
@@ -240,7 +273,7 @@ export default function Edit(props) {
                         />
                     )}
 
-                    {(datasource == "wordpress" && wpSelect == "files") && (
+                    {(datasource == "wordpress" && wpSelect == "files" && isSelected) && (
                         <MediaUploadCheck>
                             <MediaUpload
                                 multiple={true}
@@ -253,7 +286,7 @@ export default function Edit(props) {
                         </MediaUploadCheck>
                     )}
 
-                    {(datasource == "wordpress" && wpSelect == "folder") &&
+                    {(datasource == "wordpress" && wpSelect == "folder" && isSelected) &&
                         (<div>
                             {!(folders.length === 0) ?
                                 <SelectControl
@@ -349,21 +382,6 @@ export default function Edit(props) {
         </InspectorControls>
     );
 
-    const fetchItems = (selection, datasourceURL, page) => {
-        page = currentPage;
-        const url = `${datasourceURL}?offset=${page}&limit=${range - 1}`;
-
-        if (datasourceURL != "" && selection == "google") {
-            apiFetch({ url: url })
-                .then((data) => {
-                    setTotalPages(data.items.length);
-                    setTimeout(function () {
-                        setSelectedFiles(data.items);
-                        setLoading(false);
-                    }, 1000);
-                });
-        }
-    };
 
 
     const fetchFolderContents = () => {
@@ -410,80 +428,88 @@ export default function Edit(props) {
     const ClientId = `${props.clientId}`;
     const blockIdtoBlock = `meita-documents-and-media-${ClientId}`;
 
-    return (
-        <div {...useBlockProps({
-            className: 'meita-documents-and-media',
-            id: { blockIdtoBlock },
-            showDownloadLink: { showDownloadLink }
-        })} ref={blockRootRef}>
 
+    const blockProps = useBlockProps({
+        className: 'meita-documents-and-media',
+        id: `meita-documents-and-media-${blockId}`,
+        'data-order': order,
+        'data-orderby': orderBy,
+
+    });
+
+
+    return (
+        <>
             {inspectorControls}
 
-            <div>
-                {(files.length === 0 && selectedAttachments.length == 0 && istrue == false && listScreen == false) &&
+            <div {...blockProps} ref={blockRootRef}>
 
-                    <div style={{ "border": "1px solid grey", "padding": 15 }}>
-                        <h3 style={{ "color": "black" }}>{__('Documents and media - Media files', 'meita-documents-and-media')}</h3>
-                        <label style={{ "font-weight": "bold" }}>{__('Start by selecting a file or folder', 'meita-documents-and-media')}</label>
-                        <p>{__('Then you can adjust the display settings and change the order of the documents.', 'meita-documents-and-media')}</p>
-                    </div>
-                }
+                <div>
+                    {(files.length === 0 && selectedAttachments.length == 0 && istrue == false && listScreen == false) &&
+
+                        <div style={{ "border": "1px solid grey", "padding": 15 }}>
+                            <h3 style={{ "color": "black" }}>{__('Documents and media - Media files', 'meita-documents-and-media')}</h3>
+                            <label style={{ "font-weight": "bold" }}>{__('Start by selecting a file or folder', 'meita-documents-and-media')}</label>
+                            <p>{__('Then you can adjust the display settings and change the order of the documents.', 'meita-documents-and-media')}</p>
+                        </div>
+                    }
+                </div>
+
+                <div className="filesPreview">
+
+
+                    {(datasource == "wordpress" && wpSelect == "files") && (
+                        <ul>
+                            {sortedFiles && sortedFiles.map(function (item, index) {
+                                return (
+                                    <Listitem
+                                        index={index}
+                                        link={item.link}
+                                        title={item.title}
+                                        showDate={showDate}
+                                        showDescription={showDescription}
+                                        showDownloadLink={showDownloadLink}
+                                        showIcon={showIcon}
+                                        dateFormatted={item.dateFormatted}
+                                        description={item.description}
+                                        rawHtmldescription={item.caption.rendered}
+                                        iconImg={item.icon}
+                                        iconMimetype={item.mime}
+                                        url={item.url}
+                                        filename={item.name}
+                                    />
+                                );
+                            })}
+                        </ul>
+                    )}
+
+                    {(datasource == "wordpress" && wpSelect == "folder") && (
+                        <ul>
+                            {sortedAttachments && sortedAttachments.map(function (item, index) {
+                                return (
+                                    <Listitem
+                                        index={index}
+                                        link={item.link}
+                                        title={item.title.rendered}
+                                        showDate={showDate}
+                                        showDescription={showDescription}
+                                        showDownloadLink={showDownloadLink}
+                                        showIcon={showIcon}
+                                        dateFormatted={format(new Date(item.modified), 'd.M.yy')}
+                                        rawHtmldescription={item.caption.rendered}
+                                        description={item.caption.rendered}
+                                        //iconImg={item}
+                                        iconMimetype={item.mime_type}
+                                        url={item.source_url}
+                                        filename={item.slug}
+                                    />
+                                );
+                            })}
+                        </ul>
+                    )}
+                </div>
+
             </div>
-
-            <div class="filesPreview">
-
-
-                {(datasource == "wordpress" && wpSelect == "files") && (
-                    <ul>
-                        {files && files.map(function (item, index) {
-                            return (
-                                <Listitem
-                                    index={index}
-                                    link={item.link}
-                                    title={item.title}
-                                    showDate={showDate}
-                                    showDescription={showDescription}
-                                    showDownloadLink={showDownloadLink}
-                                    showIcon={showIcon}
-                                    dateFormatted={item.dateFormatted}
-                                    description={item.description}
-                                    rawHtmldescription={item.caption.rendered}
-                                    iconImg={item.icon}
-                                    iconMimetype={item.mime}
-                                    url={item.url}
-                                    filename={item.name}
-                                />
-                            );
-                        })}
-                    </ul>
-                )}
-
-                {(datasource == "wordpress" && wpSelect == "folder") && (
-                    <ul>
-                        {selectedAttachments && selectedAttachments.map(function (item, index) {
-                            return (
-                                <Listitem
-                                    index={index}
-                                    link={item.link}
-                                    title={item.title.rendered}
-                                    showDate={showDate}
-                                    showDescription={showDescription}
-                                    showDownloadLink={showDownloadLink}
-                                    showIcon={showIcon}
-                                    dateFormatted={format(new Date(item.modified), 'd.M.yy')}
-                                    rawHtmldescription={item.caption.rendered}
-                                    description={item.caption.rendered}
-                                    //iconImg={item}
-                                    iconMimetype={item.mime_type}
-                                    url={item.source_url}
-                                    filename={item.slug}
-                                />
-                            );
-                        })}
-                    </ul>
-                )}
-            </div>
-
-        </div>
+        </>
     );
 }
