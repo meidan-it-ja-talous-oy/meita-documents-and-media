@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { useEffect, useState, Fragment, RawHTML, useRef, useLayoutEffect } from '@wordpress/element';
+import { useEffect, useState, Fragment, useRef, useLayoutEffect } from '@wordpress/element';
 import { Button, PanelBody, SelectControl, CheckboxControl, TextControl, ToggleControl, Modal, RangeControl, ToolbarGroup, ToolbarButton } from '@wordpress/components';
 import { InspectorControls, BlockControls, useBlockProps } from '@wordpress/block-editor';
 import './editor.scss';
@@ -19,7 +19,6 @@ export default function Edit(props) {
     const [showDownloadLink, setShowDownloadLink] = useState(props.attributes.showDownloadLink);
     const [datasource, setDatasource] = useState(props.attributes.datasource);
     const [datasourceURL, setDatasourceURL] = useState(props.attributes.datasourceURL);
-    const [files, setFiles] = useState(props.attributes.files);
     const [selectedFiles, setSelectedFiles] = useState(props.attributes.selectedFiles);
     const [allFiles, setAllFiles] = useState([]);
     const [order, setOrder] = useState(props.attributes.order);
@@ -39,7 +38,6 @@ export default function Edit(props) {
 
     const [searchlabel, setSearchlabel] = useState(props.searchlabel);
 
-    const page = 1
     const blockRootRef = useRef(null);
 
     const { attributes, setAttributes } = props;
@@ -100,7 +98,9 @@ export default function Edit(props) {
     }, [])
 
 
-
+    /** reads global Iconify settings 
+     * ja skannaa blockin uudestaan jos Iconify latautuu myöhemmin tai jos blockin sisältö muuttuu (esim. valitaan uusia tiedostoja)
+    */
     useLayoutEffect(() => {
         if (!blockRootRef.current) return;
 
@@ -121,49 +121,61 @@ export default function Edit(props) {
     }, []);
 
 
-
+    /** 
+     * Hakee tiedostot bucketista, tallentaa ne tilaan ja asettaa ne näytettäviksi, jos käyttäjä ei ole erikseen valinnut tiedostoja.
+     * Skannaa uudestaan aina kun datasourceURL tai datasource muuttuu (esim. käyttäjä vaihtaa bucketin URL:in)
+     */
     useEffect(() => {
+        if (!datasourceURL || datasource !== "google") return;
 
-        if (datasourceURL != "" && selectclicked == false && listScreen == false && istrue == true) {
-            let reqCounter = 0;
+        let aborted = false;
+        setLoading(true);
 
-            apiFetch({ url: datasourceURL })
-                .then((files) => {
-                    reqCounter++;
-                    //console.log(`✅ Request #${reqCounter} OK`, files.items);
-                    setAllFiles(files.items);
-                    setTotalPages(files.items.length);
-                })
-                .catch((err) => {
-                    reqCounter++;
-                    //console.log(`❌ Request #${reqCounter} ERROR`, err);
-                });
+        apiFetch({ url: datasourceURL })
+            .then((res) => {
+                if (aborted) return;
 
-            if (selectedFiles.length > 0) {
-                setLoading(false);
-            } else {
-                fetchItems(datasource, datasourceURL, page);
-                setLoading(false);
-            }
-        }
-        if (selectclicked === true) {
-            if (checked.length > 0) {
-                setSelectedFiles(checked);
-                setlistScreen(false);
-                setTrue(false);
-            } else {
-                setTrue(true);
-                setlistScreen(true);
-            }
-        }
-        if (listScreen == false && selectclicked == false && istrue == false) {
+                const items = res?.items || [];
+                setAllFiles(items);
+
+                // vain jos käyttäjä ei ole valinnut erikseen
+                if (!selectclicked) {
+                    setSelectedFiles(items);
+                    setTotalPages(items.length);
+                }
+            })
+            .catch((err) => {
+                console.error("Bucket fetch failed", err);
+            })
+            .finally(() => {
+                if (!aborted) setLoading(false);
+            });
+
+        return () => {
+            aborted = true;
+        };
+
+    }, [datasourceURL, datasource]);
+
+
+    /** 
+    * Harmonisoidaan UI-tila mountissa.
+    * Jos lohkolla on jo valittuja tiedostoja (attribuuteissa),
+    * varmistetaan etteivät intro- tai valintanäkymät näy refreshin jälkeen.
+    */
+    useEffect(() => {
+        if (selectclicked && selectedFiles.length > 0) {
+            setTrue(false);
             setlistScreen(false);
-            setTrue(true);
-            fetchItems(datasource, documentsBlockDefaults.bucketbrowseroptions.GCPBucketAPIurl, page);
         }
-    }, [datasourceURL, selectclicked, checked, clicked])
+    }, []);
 
 
+    /**
+     * Päivittää blockin attribuutit aina, kun jokin niistä muuttuu. 
+     * Tämä pitää varmistaa, että kaikki attribuutit pysyvät synkronissa ja tallentuvat oikein, jotta ne voidaan hakea uudestaan, 
+     * kun block renderöidään uudestaan (esim. tallennettaessa tai esikatselussa).
+     */
     useEffect(() => {
 
         if (documentsBlockDefaults.bucketbrowseroptions) {
@@ -175,7 +187,6 @@ export default function Edit(props) {
             showDate: showDate,
             showDescription: showDescription,
             showDownloadLink: showDownloadLink,
-            files: files,
             datasource: datasource,
             selectedFolder: selectedFolder,
             wpSelect: wpSelect,
@@ -194,9 +205,13 @@ export default function Edit(props) {
 
         });
 
-    }, [showIcon, showDate, showDescription, datasourceURL, listScreen, istrue, showDownloadLink, files, wpSelect, selectedFolder, order, orderBy, currentPage, totalPages, selectedFiles, searchlabel, searchbuttonlabel, selectclicked, range])
+    }, [showIcon, showDate, showDescription, datasourceURL, listScreen, istrue, showDownloadLink, wpSelect, selectedFolder, order, orderBy, currentPage, totalPages, selectedFiles, searchlabel, searchbuttonlabel, selectclicked, range])
 
 
+    /* Järjestää tiedostot valinnan mukaan.
+     * Jos järjestetään nimellä, järjestetään aakkosjärjestykseen. Jos nimet ovat samoja, järjestetään päivämäärän mukaan (vanhimmat ensin).
+     * Jos järjestetään päivämäärällä, järjestetään uusimmasta vanhimpaan tai päinvastoin. Jos päivämäärät ovat samoja, järjestetään nimellä.
+     */
     function getSortKey(item) {
         return (item.name || "").toLowerCase();
     }
@@ -244,34 +259,12 @@ export default function Edit(props) {
         return filtered;
     };
 
-    // useEffect(() => {
-
-    //     if (selectedFiles.length && selectclicked == true) {
-    //         const sorted = getSortedItems(selectedFiles);
-    //         setSortedItems(sorted);
-    //     }
-
-    // }, [selectedFiles, orderBy, order]);
-
-
-    const fetchItems = (selection, datasourceURL, page) => {
-        page = currentPage;
-        const url = `${datasourceURL}?offset=${page}&limit=${range - 1}`;
-
-        if (datasourceURL != "" && selection == "google") {
-            apiFetch({ url: url })
-                .then((data) => {
-                    setTotalPages(data.items.length);
-                    setTimeout(() => {
-                        setSelectedFiles(data.items);
-                        setLoading(false);
-                    }, 1000);
-                });
-        }
-    };
-
+    /**
+     * Avaa ja sulkee modaalin, jossa käyttäjä voi valita näytettävät tiedostot.
+     */
     const openModal = () => {
         setlistScreen(false);
+        //setTrue(true); // ollaan valintatilassa
         setOpenModal(true);
     }
 
@@ -282,10 +275,14 @@ export default function Edit(props) {
         setOpenModal(false);
     }
 
+    /**
+     * Tallenna käyttäjän valinnat ja näytä valitut tiedostot.
+     */
     const saveTheChoiches = () => {
         if (checked.length > 0) {
             setSelectedFiles(checked);
             setlistScreen(false);
+            setTrue(false); // ✅ näytä valitut tiedostot
         }
         closeModal()
     }
@@ -297,7 +294,12 @@ export default function Edit(props) {
             setClicked(false);
         }
     }
-
+    /**
+     *  Tämä funktio määrittää, mitä tapahtuu, kun käyttäjä klikkaa "Select files to use" -togglea.
+     *  Jos toggle on pois päältä, näytä kaikki tiedostot ja piilota valintalista. 
+     *  Jos toggle on päällä, tyhjennä kaikki valinnat ja näytä valintalista, jossa käyttäjä voi valita tiedostoja. 
+     * @param {*} value 
+     */
     const clicktoChange = (value) => {
         //tämä määrittä toggle nappulan select files to use
         if (checked.length > 0) {
@@ -307,6 +309,12 @@ export default function Edit(props) {
         setSelectClicked(value);
     }
 
+    /**
+     *  Tämä funktio määrittää, mitä tapahtuu, kun käyttäjä klikkaa tiedoston valintalistalla.
+     *  Jos tiedosto on jo valittuna, poista se valinnoista. 
+     *  Jos tiedosto ei ole valittuna, lisää se valintoihin.       
+     * @param {*} id 
+     */
     const onChangeElement = (id) => {
         let updatedChecked = [...checked];
         const index = updatedChecked.findIndex(obj => obj.id === id);
@@ -317,13 +325,6 @@ export default function Edit(props) {
             const el = allFiles.find(obj => obj.id === id);
             if (el) {
                 updatedChecked.push(el);
-
-                // updatedChecked.push({
-                //     id: el.id,
-                //     name: el.name,
-                //     bucket: el.bucket
-                // });
-
             }
         }
         setSelectedFiles(updatedChecked);
@@ -332,7 +333,11 @@ export default function Edit(props) {
         setTrue(true);
     }
 
-
+    /**
+     * Järjestää tiedostot ennen näyttämistä. 
+     * Tämä varmistaa, että tiedostot näytetään aina käyttäjän valinnan mukaisessa järjestyksessä, 
+     * vaikka datasourceURL:in päivitys olisi tuonut mukanaan uusia tiedostoja tai käyttäjä olisi valinnut uusia tiedostoja.
+     */
     const sorted = getSortedItems(selectedFiles);
 
     const filteredItems = filter
@@ -663,7 +668,7 @@ export default function Edit(props) {
             {blockControls}
 
             <div>
-                {(checked.length == 0 && selectclicked == true) &&
+                {(selectclicked === true && selectedFiles.length === 0) &&
 
                     <div className='meita-documens-and-media-block-intro' style={{ "border": "1px solid grey", "padding": 15 }}>
                         <h3 style={{ "color": "black" }}>{__('Documents and media - Google Bucket', 'meita-documents-and-media')}</h3>
